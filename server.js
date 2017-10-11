@@ -8,6 +8,7 @@ const Joi = require('joi');
 const Bcrypt = require('bcrypt');
 // Create a server with a host and port
 const server = new Hapi.Server();
+var port = process.env.PORT || 1337;
 
 const connection = MySQL.createConnection({
     host: '139.59.187.168',
@@ -16,7 +17,8 @@ const connection = MySQL.createConnection({
     database: 'super'
 });
 server.connection({
-    port: 8000
+    host: '52.233.175.59',
+    port: port
 });
 
 connection.connect();
