@@ -17,7 +17,6 @@ const connection = MySQL.createConnection({
     database: 'super'
 });
 server.connection({
-    host: '52.233.175.59',
     port: port
 });
 
