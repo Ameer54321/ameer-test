@@ -16,7 +16,6 @@ const connection = MySQL.createConnection({
     database: 'super'
 });
 server.connection({
-    host: 'localhost',
     port: 8000
 });
 
