@@ -240,8 +240,87 @@ server.route({
         }
     }
 });
+/*
+*
+* route to retrieve all proccessed orders for the month
+*
+* */
+server.route({
+    method: 'GET',
+    path: '/api/v1/orders/{r_id}/{c_id}/total/processed',
+    handler: function (request, reply) {
+        const r_id = request.params.r_id;
+        const c_id = request.params.c_id;
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = "' + c_id + '"',
+            function (error, results, fields) {
+                if (error){
+                    throw error;
+                } else{
+                    var db = results[0].companydb;
+                    connection.query('SELECT od.order_id,od.customer_id,od.total,od.date_added FROM '+db+'.oc_order od inner join '+db+'.oc_customer cs on cs.customer_id = od.customer_id WHERE cs.salesrep_id = '+r_id+' AND DATE_FORMAT(od.date_added,"%Y-%m") = DATE_FORMAT(NOW(),"%Y-%m") AND od.order_status_id = 15',
+                        function (error, results, fields) {
+                            if (error) throw error;
+                            // console.log(fields);
+                            reply(results);
+                        });
+                }
 
 
+
+            });
+
+    },
+    config: {
+        validate: {
+            params: {
+                r_id: Joi.number().integer(),
+                c_id: Joi.number().integer()
+            }
+        }
+    }
+});
+
+/*
+ *
+ * route to retrieve all appointments for today
+ *
+ * */
+server.route({
+    method: 'GET',
+    path: '/api/v1/appointments/{r_id}/{c_id}/today',
+    handler: function (request, reply) {
+        const r_id = request.params.r_id;
+        const c_id = request.params.c_id;
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = "' + c_id + '"',
+            function (error, results, fields) {
+                if (error){
+                    throw error;
+                } else{
+                    var db = results[0].companydb;
+                    connection.query('SELECT ap.appointment_id,cs.firstname as cutomer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content FROM '+db+'.oc_appointment ap left join '+db+'.oc_customer cs on cs.customer_id = ap.customer_id left join '+db+'.oc_address ad on ad.address_id = cs.address_id left join '+db+'.oc_notes nt on nt.appointment_id = ap.appointment_id WHERE ap.salesrep_id = '+r_id+' AND DATE_FORMAT(ap.appointment_date,"%Y-%m-%d") = DATE_FORMAT(NOW(),"%Y-%m-%d")',
+                        function (error, results, fields) {
+                            if (error) throw error;
+                            // console.log(fields);
+                            reply(results);
+                        });
+                }
+
+
+
+            });
+
+    },
+    config: {
+        validate: {
+            params: {
+                r_id: Joi.number().integer(),
+                c_id: Joi.number().integer()
+            }
+        }
+    }
+});
 
  server.route({
     method: 'DELETE',
