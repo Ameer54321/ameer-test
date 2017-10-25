@@ -9,7 +9,7 @@
   "author": "Kiroshan Govender",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "*",
+    "bcrypt": "^1.0.3",
     "hapi": "^16.6.2",
     "joi": "^11.3.4",
     "mysql": "^2.15.0",
