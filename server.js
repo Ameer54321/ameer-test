@@ -119,6 +119,50 @@ server.route({
 });
 
 /*
+ *
+ * route to retrieve all current appointments for customer
+ *
+ * */
+server.route({
+    method: 'GET',
+    path: '/api/v1/customer/appointments/{customer_id}/{r_id}/{c_id}',
+    handler: function (request, reply) {
+        const r_id = request.params.r_id;
+        const c_id = request.params.c_id;
+        const customer_id = request.params.customer_id;
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = "' + c_id + '"',
+            function (error, results, fields) {
+                if (error){
+                    throw error;
+                } else{
+                    var db = results[0].companydb;
+                    connection.query('SELECT ap.appointment_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content FROM '+db+'.oc_appointment ap left join '+db+'.oc_customer cs on cs.customer_id = ap.customer_id left join '+db+'.oc_address ad on ad.address_id = cs.address_id left join '+db+'.oc_notes nt on nt.appointment_id = ap.appointment_id WHERE ap.salesrep_id = '+r_id+' AND cs.customer_id ='+customer_id+' AND DATE_FORMAT(ap.appointment_date,"%Y-%m-%d") >= DATE_FORMAT(NOW(),"%Y-%m-%d")',
+                        function (error, results, fields) {
+                            if (error) throw error;
+                            // console.log(fields);
+                            reply(results);
+                        });
+                }
+
+
+
+            });
+
+    },
+    config: {
+        validate: {
+            params: {
+                customer_id: Joi.number().integer(),
+                r_id: Joi.number().integer(),
+                c_id: Joi.number().integer()
+
+            }
+        }
+    }
+});
+
+/*
  *  Route to get all customer contacts
  *
  * */
