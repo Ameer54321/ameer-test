@@ -179,7 +179,7 @@ server.route({
                     throw error;
                 } else{
                     var db = results[0].companydb;
-                    connection.query('SELECT * FROM '+db+'.oc_customer_contact WHERE customer_id = "' + customer_id + '"',
+                    connection.query('SELECT first_name as name,last_name as surname,cellphone_number as cell,role,email FROM '+db+'.oc_customer_contact WHERE customer_id = "' + customer_id + '"',
                         function (error, results, fields) {
                             if (error) throw error;
                             // console.log(fields);
@@ -289,6 +289,7 @@ server.route({
 * route to retrieve all proccessed orders for the month
 *
 * */
+
 server.route({
     method: 'GET',
     path: '/api/v1/orders/{r_id}/{c_id}/total/processed',
@@ -326,6 +327,60 @@ server.route({
 });
 
 /*
+*
+*
+* route to add a new appointment
+*
+* */
+server.route({
+    method: 'POST',
+    path: '/api/v1/create/appointment',
+    handler: function (request, reply) {
+        const title = request.payload.title;
+        const c_id = request.payload.c_id;
+        const r_id = request.payload.r_id;
+        const customer_id = request.payload.customer_id;
+        const appointmentdate = request.payload.appointmentdate;
+        const duration_hours = request.payload.duration_hours;
+        const duration_minutes = request.payload.duration_minutes;
+        const description = request.payload.description;
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = "' + c_id + '"',
+            function (error, results, fields) {
+                if (error){
+                    throw error;
+                } else{
+                    var db = results[0].companydb;
+                    connection.query('INSERT INTO '+db+'.oc_appointment (appointment_name,appointment_description,appointment_date,duration_hours,duration_minutes,salesrep_id,customer_id) VALUES ("' + title + '","' + description + '","' + appointmentdate + '",' + duration_hours + ',' + duration_minutes + ',' + r_id + ',' + customer_id + ')',
+                        function (error, results, fields) {
+                            if (error) throw error;
+                            // console.log(fields);
+                            var response = {
+                                'status': 'success',
+                                'message': 'appointment created successfully'
+
+                            }
+                            reply(results);
+                        });
+                }
+
+
+
+            });
+
+    }
+
+
+     /*   connection.query('INSERT INTO user (username,email,password,salt) VALUES ("' + username + '","' + email + '","' + encryptedPassword + '","' + salt + '")',
+            function (error, results, fields) {
+                if (error) throw error;
+
+                reply(results);
+            });
+    }*/
+});
+
+ /*
  *
  * route to retrieve all appointments for today
  *
@@ -432,6 +487,7 @@ server.route({
     }
 
 });
+
 
 /*
 * Route to register users
