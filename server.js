@@ -5,7 +5,7 @@
 const Hapi = require('hapi');
 const MySQL = require('mysql');
 const Joi = require('joi');
-const Bcrypt = require('bcrypt');
+const Bcrypt = require('./local/bcrypt');
 const generatePassword = require('password-generator');
 const emailClient = require('./email_client');
 
