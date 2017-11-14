@@ -6,11 +6,20 @@ const Hapi = require('hapi');
 const MySQL = require('mysql');
 const Joi = require('joi');
 const Bcrypt = require('bcrypt');
+const generatePassword = require('password-generator');
+const emailClient = require('./email_client');
+
 // Create a server with a host and port
 const server = new Hapi.Server();
 var port = process.env.PORT || 1337;
+
 /*change below to false if in production*/
 var istest = false;
+
+// email configuration settings
+const emailSettings = {
+    api_key: 'njqRVZ3J9J3psHDoFjnTLQ'
+}
 
 var host ='';
 var user ='';
@@ -523,6 +532,102 @@ server.route({
                 password: Joi.string().regex(/^[a-zA-Z0-9]{8,30}$/)
             }
         }
+    }
+});
+
+
+/**
+ * Route to register a sales rep
+ * Sends a welcome email with new auto-generated login password
+ *
+ * @method POST
+ * @path salesrep/register
+ * @data:
+ *          <company_id> Company id
+ *          <rep_id> Sales rep id
+ *          <username> Sales rep username
+ *          <email> Sales rep email address
+ */
+server.route({
+    method: 'POST',
+    path: '/api/v1/salesrep/register',
+    handler: function (request, reply) {
+
+        const companyId = request.payload.company_id;
+        const realId = request.payload.rep_id;
+        const username = request.payload.username;
+        const email = request.payload.email;
+        const password = generatePassword();    // Auto-generate new password
+
+        // Pass encryption
+        var salt = Bcrypt.genSaltSync();
+        var encryptedPassword = Bcrypt.hashSync(password, salt);
+
+        connection.query('INSERT INTO user (username,email,password,salt, companyId, realId) VALUES ("' + username + '","' + email + '","' + encryptedPassword + '","' + salt + '", "' + companyId + '", "' + realId + '")',
+            function (error, results, fields) {
+                if (error) throw error;
+
+                // if successful database insert, send email to sales rep
+                if (results) {
+
+                    // build email message object for the email to be sent to sales rep
+                    var data = {
+                        "html": "<h1>Welcome to Dashlogic!</h1><p>Your new password: " + password + "</p>",
+                        "text": "Welcome to Dashlogic! Your new password: " + password,
+                        "subject": "Welcome to Dashlogic",
+                        "sender": "info@dashlogic.co.za",
+                        "recipient": email
+                    };
+
+                    // send email to sales rep
+                    emailClient.send(emailSettings.api_key, data, function(result) {
+                        results.emailSent = true;
+                        results.emailError = "";
+                        results.emailResults = result;
+                        reply(results);
+                    }, function(error) {
+                        results.emailSent = false;
+                        results.emailError = error.name + ': ' + error.message;
+                        results.emailResults = "error";
+                        reply(results);
+                    });
+                }
+            });
+    },
+    config: {
+        validate: {
+            payload: {
+                username: Joi.string().alphanum().min(3).max(30).required(),
+                email: Joi.string().email(),
+                company_id: Joi.number().integer(),
+                rep_id: Joi.number().integer()
+            }
+        }
+    }
+});
+
+
+/**
+ * Route to add a company
+ * Returns newly created company id
+ *
+ * @method POST
+ * @path /api/v1/company/create
+ */
+server.route({
+    method: 'POST',
+    path: '/api/v1/company/create',
+    handler: function (request, reply) {
+        const companyName = request.payload.company_name;
+        const companyDb = request.payload.company_db;
+
+        connection.query('INSERT INTO companies (companyname, companydb) VALUES ("' + companyName + '","' + companyDb + '")',
+            function (error, results, fields) {
+                if (error) throw error;
+
+                results.companyId = results.insertId;
+                reply(results);
+            });
     }
 });
 
