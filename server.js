@@ -557,7 +557,7 @@ server.route({
         const realId = request.payload.rep_id;
         const username = request.payload.username;
         const email = request.payload.email;
-        const password = generatePassword();    // Auto-generate new password
+        const password = generatePassword(10, false);    // Auto-generate new password
 
         // Pass encryption
         var salt = Bcrypt.genSaltSync();
@@ -580,16 +580,34 @@ server.route({
                     };
 
                     // send email to sales rep
-                    emailClient.send(emailSettings.api_key, data, function(result) {
-                        results.emailSent = true;
-                        results.emailError = "";
-                        results.emailResults = result;
-                        reply(results);
+                    emailClient.send(emailSettings.api_key, data, function(res) {
+                        // email successfully sent
+                        var response = {
+                            "status": 200,
+                            "user_id": results.insertId,
+                            "message": "user created and email sent successfully",
+                            "email_results": {
+                                "status": res[0].status,
+                                "id": res[0]._id,
+                                "recipient": res[0].email,
+                                "error": res[0].reject_reason
+                            }
+                        };
+                        reply(response);
                     }, function(error) {
-                        results.emailSent = false;
-                        results.emailError = error.name + ': ' + error.message;
-                        results.emailResults = "error";
-                        reply(results);
+                        // email failed to send
+                        var response = {
+                            "status": 201,
+                            "user_id": results.insertId,
+                            "message": "user created but email failed to send",
+                            "email_results": {
+                                "status": "error",
+                                "id": null,
+                                "recipient": null,
+                                "error": error.name + ': ' + error.message
+                            }
+                        };
+                        reply(response);
                     });
                 }
             });
@@ -625,8 +643,12 @@ server.route({
             function (error, results, fields) {
                 if (error) throw error;
 
-                results.companyId = results.insertId;
-                reply(results);
+                var response = {
+                    "status": 200,
+                    "message": "company successfully created",
+                    "company_id": results.insertId
+                };
+                reply(response);
             });
     }
 });
