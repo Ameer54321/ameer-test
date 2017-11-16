@@ -335,6 +335,152 @@ server.route({
     }
 });
 
+
+/**
+ * Route to retrieve all orders
+ *
+ * @method GET
+ * @params
+ *          r_id <integer>  Sales rep id
+ *          c_id <integer>  Company id
+ * @path /api/v1/orders/{r_id}/{c_id}/list
+ */
+server.route({
+    method: 'GET',
+    path: '/api/v1/orders/{r_id}/{c_id}',
+    handler: function (request, reply) {
+        const r_id = request.params.r_id;
+        const c_id = request.params.c_id;
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = "' + c_id + '"',
+            function (error, results, fields) {
+                if (error){
+                    throw error;
+                } else{
+                    var db = results[0].companydb;
+                    connection.query('SELECT od.order_id, od.order_status_id, cs.salesrep_id FROM '+db+'.oc_order od INNER JOIN '+db+'.oc_customer cs ON cs.customer_id = od.customer_id WHERE cs.salesrep_id = '+r_id,
+                        function (error, results, fields) {
+                            if (error) throw error;
+
+                            var response = {
+                                'status': 200,
+                                'orders': results
+                            }
+                            reply(response);
+                        });
+                }
+
+            });
+
+    },
+    config: {
+        validate: {
+            params: {
+                r_id: Joi.number().integer(),
+                c_id: Joi.number().integer()
+            }
+        }
+    }
+});
+
+
+
+/**
+ * Route to create new customer
+ *
+ * @method POST
+ * @path /api/v1/customers/create
+ */
+server.route({
+    method: 'POST',
+    path: '/api/v1/customers/create',
+    handler: function (request, reply) {
+        const rep_id = request.payload.rep_id;
+        const firstname = request.payload.firstname;
+        const surname = request.payload.surname;
+        const company_name = request.payload.company_name;
+        const mobile_number = request.payload.mobile_number;
+        const alt_contact_number = request.payload.alt_contact_number;
+        const email = request.payload.email;
+
+        connection.query('INSERT INTO dev.oc_replogic_customer (salesrep_id,firstname,lastname,company_name,mobile_number,alt_contact_number,email) VALUES ("' + rep_id + '", "' + firstname + '", "' + surname + '", "' + company_name + '", "' + mobile_number + '", "' + alt_contact_number + '", "' + email + '")',
+            function (error, results, fields) {
+                if (error) throw error;
+
+                var response = {
+                    'status': 200,
+                    'message': 'customer created successfully',
+                    'customer_id': results.insertId
+
+                }
+                reply(response);
+            });
+    },
+    config: {
+        validate: {
+            payload: {
+                rep_id: Joi.number().integer().required(),
+                firstname: Joi.string().alphanum().required(),
+                surname: Joi.string().alphanum().required(),
+                company_name: Joi.string().alphanum().required(),
+                mobile_number: Joi.string().alphanum().required(),
+                alt_contact_number: Joi.string().alphanum(),
+                email: Joi.string().email().required()
+            }
+        }
+    }
+});
+
+
+
+/**
+ * Route to create new customer contact
+ *
+ * @method POST
+ * @path /api/v1/customers/contact/create
+ */
+server.route({
+    method: 'POST',
+    path: '/api/v1/customers/contact/create',
+    handler: function (request, reply) {
+        const customer_id = request.payload.customer_id;
+        const firstname = request.payload.firstname;
+        const surname = request.payload.surname;
+        const mobile_number = request.payload.mobile_number;
+        const telephone = request.payload.telephone;
+        const email = request.payload.email;
+        const role = request.payload.role;
+
+        connection.query('INSERT INTO dev.oc_customer_contact (first_name,last_name,email,telephone_number,cellphone_number,customer_id,role) VALUES ("' + firstname + '", "' + surname + '", "' + email + '", "' + telephone + '", "' + mobile_number + '", "' + customer_id + '", "' + role + '")',
+            function (error, results, fields) {
+                if (error) throw error;
+
+                var response = {
+                    'status': 200,
+                    'message': 'customer contact created successfully',
+                    'customer_contact_id': results.insertId
+
+                }
+                reply(response);
+            });
+    },
+    config: {
+        validate: {
+            payload: {
+                customer_id: Joi.number().integer().required(),
+                firstname: Joi.string().alphanum().required(),
+                surname: Joi.string().alphanum().required(),
+                mobile_number: Joi.string().alphanum().required(),
+                telephone: Joi.string().alphanum().required(),
+                email: Joi.string().email().required(),
+                role: Joi.string().alphanum()
+            }
+        }
+    }
+});
+
+
+
 /*
 *
 *
@@ -557,7 +703,7 @@ server.route({
         const realId = request.payload.rep_id;
         const username = request.payload.username;
         const email = request.payload.email;
-        const password = generatePassword();    // Auto-generate new password
+        const password = generatePassword(10, false);    // Auto-generate new password
 
         // Pass encryption
         var salt = Bcrypt.genSaltSync();
@@ -580,16 +726,34 @@ server.route({
                     };
 
                     // send email to sales rep
-                    emailClient.send(emailSettings.api_key, data, function(result) {
-                        results.emailSent = true;
-                        results.emailError = "";
-                        results.emailResults = result;
-                        reply(results);
+                    emailClient.send(emailSettings.api_key, data, function(res) {
+                        // email successfully sent
+                        var response = {
+                            "status": 200,
+                            "user_id": results.insertId,
+                            "message": "user created and email sent successfully",
+                            "email_results": {
+                                "status": res[0].status,
+                                "id": res[0]._id,
+                                "recipient": res[0].email,
+                                "error": res[0].reject_reason
+                            }
+                        };
+                        reply(response);
                     }, function(error) {
-                        results.emailSent = false;
-                        results.emailError = error.name + ': ' + error.message;
-                        results.emailResults = "error";
-                        reply(results);
+                        // email failed to send
+                        var response = {
+                            "status": 201,
+                            "user_id": results.insertId,
+                            "message": "user created but email failed to send",
+                            "email_results": {
+                                "status": "error",
+                                "id": null,
+                                "recipient": null,
+                                "error": error.name + ': ' + error.message
+                            }
+                        };
+                        reply(response);
                     });
                 }
             });
@@ -597,7 +761,7 @@ server.route({
     config: {
         validate: {
             payload: {
-                username: Joi.string().alphanum().min(3).max(30).required(),
+                username: Joi.string().email(),
                 email: Joi.string().email(),
                 company_id: Joi.number().integer(),
                 rep_id: Joi.number().integer()
@@ -625,8 +789,12 @@ server.route({
             function (error, results, fields) {
                 if (error) throw error;
 
-                results.companyId = results.insertId;
-                reply(results);
+                var response = {
+                    "status": 200,
+                    "message": "company successfully created",
+                    "company_id": results.insertId
+                };
+                reply(response);
             });
     }
 });
