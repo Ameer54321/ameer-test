@@ -9,12 +9,12 @@
   "author": "Kiroshan Govender",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^1.0.3",
+    "bcrypt-nodejs": "0.0.3",
     "hapi": "^16.6.2",
     "joi": "^11.3.4",
+    "mandrill-api": "1.0.45",
     "mysql": "^2.15.0",
     "nodemon": "^1.12.1",
-    "password-generator": "2.2.0",
-    "mandrill-api": "1.0.45"
+    "password-generator": "2.2.0"
   }
 }
