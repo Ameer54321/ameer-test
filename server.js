@@ -52,7 +52,11 @@ connection.connect();
 /* re-usable functions */
 
 
-/* define api routes */
+/**
+ *
+ * Route to get all users
+ *
+ */
 server.route({
     method: 'GET',
     path: '/user/all',
@@ -66,6 +70,12 @@ server.route({
     }
 });
 
+
+/**
+ *
+ * Route to get a single user by id
+ *
+ */
 server.route({
     method: 'GET',
     path: '/user/{uid}',
@@ -87,10 +97,13 @@ server.route({
         }
     }
 });
-/*
-*  Route to get all customers assigned to a specific sales rep
-*
-* */
+
+
+/**
+ *
+ *  Route to get all customers assigned to a specific sales rep
+ *
+ */
 server.route({
     method: 'GET',
     path: '/api/v1/customers/{r_id}/{c_id}',
@@ -127,11 +140,11 @@ server.route({
     }
 });
 
-/*
+/**
  *
  * route to retrieve all current appointments for customer
  *
- * */
+ */
 server.route({
     method: 'GET',
     path: '/api/v1/customer/appointments/{customer_id}/{r_id}/{c_id}',
@@ -171,10 +184,10 @@ server.route({
     }
 });
 
-/*
+/**
  *  Route to get all customer contacts
  *
- * */
+ */
 server.route({
     method: 'GET',
     path: '/api/v1/customer/contacts/{customer_id}/{c_id}',
@@ -211,12 +224,12 @@ server.route({
     }
 });
 
-/*
-*
-* Route to retrieve all current orders for the current month
-*
-* */
 
+/**
+ *
+ * Route to retrieve all current orders for the current month
+ *
+ */
 server.route({
     method: 'GET',
     path: '/api/v1/orders/{r_id}/{c_id}/total/current',
@@ -252,12 +265,13 @@ server.route({
         }
     }
 });
-/*
+
+
+/**
  *
  * Route to retrieve all pending orders for the current month
  *
- * */
-
+ */
 server.route({
     method: 'GET',
     path: '/api/v1/orders/{r_id}/{c_id}/total/pending',
@@ -358,7 +372,7 @@ server.route({
                     throw error;
                 } else{
                     var db = results[0].companydb;
-                    connection.query('SELECT od.order_id, od.order_status_id, cs.salesrep_id FROM '+db+'.oc_order od INNER JOIN '+db+'.oc_customer cs ON cs.customer_id = od.customer_id WHERE cs.salesrep_id = '+r_id,
+                    connection.query('SELECT od.order_id, od.order_status_id, cs.salesrep_id FROM '+db+'.oc_order od INNER JOIN '+db+'.oc_customer cs ON cs.customer_id = od.customer_id WHERE cs.salesrep_id = '+r_id+' AND od.isReplogic=1',
                         function (error, results, fields) {
                             if (error) throw error;
 
@@ -425,7 +439,7 @@ server.route({
                 company_name: Joi.string().alphanum().required(),
                 mobile_number: Joi.string().alphanum().required(),
                 alt_contact_number: Joi.string().alphanum(),
-                email: Joi.string().email().required()
+                email: Joi.string().email()
             }
         }
     }
@@ -552,6 +566,7 @@ server.route({
                 if (error){
                     throw error;
                 } else{
+                    console.log(results);
                     var db = results[0].companydb;
                     connection.query('SELECT ap.appointment_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content FROM '+db+'.oc_appointment ap left join '+db+'.oc_customer cs on cs.customer_id = ap.customer_id left join '+db+'.oc_address ad on ad.address_id = cs.address_id left join '+db+'.oc_notes nt on nt.appointment_id = ap.appointment_id WHERE ap.salesrep_id = '+r_id+' AND DATE_FORMAT(ap.appointment_date,"%Y-%m-%d") = DATE_FORMAT(NOW(),"%Y-%m-%d")',
                         function (error, results, fields) {
@@ -743,7 +758,7 @@ server.route({
                     }, function(error) {
                         // email failed to send
                         var response = {
-                            "status": 201,
+                            "status": 203,
                             "user_id": results.insertId,
                             "message": "user created but email failed to send",
                             "email_results": {
@@ -799,6 +814,84 @@ server.route({
     }
 });
 
+
+/***********************************************************************************************************************
+ *                                          Product Related API Routes
+ ***********************************************************************************************************************/
+
+
+/**
+ * Route to list all products
+ *
+ * @method POST
+ * @path /api/v1/products/{customer_id}/{r_id}/{c_id}
+ */
+server.route({
+    method: 'GET',
+    path: '/api/v1/products/{customer_id}/{r_id}/{c_id}',
+    handler: function (request, reply) {
+        const customerId = request.params.customer_id;
+        const r_id = request.params.r_id;
+        const c_id = request.params.c_id;
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = "' + c_id + '"',
+            function (error, results, fields) {
+                if (error){
+                    throw error;
+                } else{
+
+                    var db = results[0].companydb;
+                    connection.query('SELECT pr.product_id, pd.name, pr.price FROM '+db+'.oc_product pr INNER JOIN '+db+'.oc_product_description pd ON pd.product_id=pr.product_id INNER JOIN '+db+'.oc_product_to_customer_group pc ON pc.product_id=pr.product_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_group_id=pc.customer_group_id WHERE cs.customer_id='+customerId+' AND cs.salesrep_id='+r_id+' GROUP BY pr.product_id',
+                        function (error, results, fields) {
+                            if (error) throw error;
+
+                            var response = {
+                                'status': 200,
+                                'products': results
+                            };
+                            reply(response);
+                        });
+                }
+            });
+    }
+});
+
+
+/**
+ * Route to list all products
+ *
+ * @method POST
+ * @path /api/v1/products/{customer_id}/{r_id}/{c_id}
+ */
+server.route({
+    method: 'GET',
+    path: '/api/v1/products/{customer_id}/{r_id}/{c_id}/categories',
+    handler: function (request, reply) {
+        const customerId = request.params.customer_id;
+        const r_id = request.params.r_id;
+        const c_id = request.params.c_id;
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = "' + c_id + '"',
+            function (error, results, fields) {
+                if (error){
+                    throw error;
+                } else{
+
+                    var db = results[0].companydb;
+                    connection.query('SELECT ct.category_id, cd.name, ct.parent_id FROM '+db+'.oc_category ct INNER JOIN '+db+'.oc_category_description cd ON cd.category_id=ct.category_id INNER JOIN '+db+'.oc_category_to_customer_group cc ON cc.category_id=ct.category_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_group_id=cc.customer_group_id WHERE cs.customer_id='+customerId+' AND cs.salesrep_id='+r_id,
+                        function (error, results, fields) {
+                            if (error) throw error;
+
+                            var response = {
+                                'status': 200,
+                                'categories': results
+                            };
+                            reply(response);
+                        });
+                }
+            });
+    }
+});
 
 
 server.start(function(err){
