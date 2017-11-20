@@ -5,7 +5,7 @@
 const Hapi = require('hapi');
 const MySQL = require('mysql');
 const Joi = require('joi');
-const Bcrypt = require('bcrypt');
+const Bcrypt = require('bcrypt-nodejs');
 const generatePassword = require('password-generator');
 const emailClient = require('./email_client');
 
@@ -828,11 +828,12 @@ server.route({
  */
 server.route({
     method: 'GET',
-    path: '/api/v1/products/{customer_id}/{r_id}/{c_id}',
+    path: '/api/v1/products/{customer_id}/{r_id}/{c_id}/{category_id}',
     handler: function (request, reply) {
         const customerId = request.params.customer_id;
         const r_id = request.params.r_id;
         const c_id = request.params.c_id;
+        const category_id = request.params.category_id;
 
         connection.query('SELECT companydb FROM super.companies WHERE company_id = "' + c_id + '"',
             function (error, results, fields) {
@@ -841,7 +842,7 @@ server.route({
                 } else{
 
                     var db = results[0].companydb;
-                    connection.query('SELECT pr.product_id, pd.name, pr.price FROM '+db+'.oc_product pr INNER JOIN '+db+'.oc_product_description pd ON pd.product_id=pr.product_id INNER JOIN '+db+'.oc_product_to_customer_group pc ON pc.product_id=pr.product_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_group_id=pc.customer_group_id WHERE cs.customer_id='+customerId+' AND cs.salesrep_id='+r_id+' GROUP BY pr.product_id',
+                    connection.query('SELECT pr.product_id, pd.name, pr.price FROM '+db+'.oc_product pr INNER JOIN '+db+'.oc_product_description pd ON pd.product_id=pr.product_id INNER JOIN '+db+'.oc_product_to_customer_group pc ON pc.product_id=pr.product_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_group_id=pc.customer_group_id INNER JOIN '+db+'.oc_product_to_category ct ON ct.product_id=pr.product_id WHERE cs.customer_id='+customerId+' AND cs.salesrep_id='+r_id+' AND ct.category_id='+category_id+' GROUP BY pr.product_id',
                         function (error, results, fields) {
                             if (error) throw error;
 
@@ -858,10 +859,10 @@ server.route({
 
 
 /**
- * Route to list all products
+ * Route to list all product categories
  *
  * @method POST
- * @path /api/v1/products/{customer_id}/{r_id}/{c_id}
+ * @path /api/v1/products/{customer_id}/{r_id}/{c_id}/categories
  */
 server.route({
     method: 'GET',
