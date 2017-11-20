@@ -184,6 +184,7 @@ server.route({
     }
 });
 
+
 /**
  *  Route to get all customer contacts
  *
@@ -219,6 +220,50 @@ server.route({
             params: {
                 customer_id: Joi.number().integer(),
                 c_id: Joi.number().integer()
+            }
+        }
+    }
+});
+
+
+
+/**
+ *  Route to get all customer orders
+ *
+ * @method GET
+ * @path /api/v1/customer/orders/{customer_id}/{c_id}
+ *
+ */
+server.route({
+    method: 'GET',
+    path: '/api/v1/customer/orders/{customer_id}/{c_id}',
+    handler: function (request, reply) {
+        const customer_id = request.params.customer_id;
+        const c_id = request.params.c_id;
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = "' + c_id + '"',
+            function (error, results, fields) {
+                if (error){
+                    throw error;
+                } else{
+                    var db = results[0].companydb;
+                    connection.query('SELECT od.order_id, od.order_status_id, cs.salesrep_id FROM '+db+'.oc_order od INNER JOIN '+db+'.oc_customer cs ON cs.customer_id = od.customer_id WHERE cs.customer_id = '+customer_id+' AND od.isReplogic=1',
+                        function (error, results, fields) {
+                            if (error) throw error;
+                            var response = {
+                                'status': 200,
+                                'orders': results
+                            };
+                            reply(response);
+                        });
+                }
+            });
+    },
+    config: {
+        validate: {
+            params: {
+                customer_id: Joi.number().integer().required(),
+                c_id: Joi.number().integer().required()
             }
         }
     }
@@ -357,7 +402,7 @@ server.route({
  * @params
  *          r_id <integer>  Sales rep id
  *          c_id <integer>  Company id
- * @path /api/v1/orders/{r_id}/{c_id}/list
+ * @path /api/v1/orders/{r_id}/{c_id}
  */
 server.route({
     method: 'GET',
