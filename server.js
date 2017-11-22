@@ -443,6 +443,11 @@ server.route({
 });
 
 
+/***********************************************************************************************************************
+ *                                          Customer Related API Routes
+ ***********************************************************************************************************************/
+
+
 
 /**
  * Route to create new customer
@@ -454,87 +459,120 @@ server.route({
     method: 'POST',
     path: '/api/v1/customers/create',
     handler: function (request, reply) {
-        const rep_id = request.payload.rep_id;
-        const firstname = request.payload.firstname;
-        const surname = request.payload.surname;
+
+        /////////////////////////////////////////////////////////
+        //          CUSTOMER TABLE FIELDS (PAYLOAD)
+        /////////////////////////////////////////////////////////
+        const c_id = request.payload.c_id;
+        const rep_id = request.payload.r_id;
         const company_name = request.payload.company_name;
-        const mobile_number = request.payload.mobile_number;
-        const alt_contact_number = request.payload.alt_contact_number;
+        const telephone = request.payload.telephone;
+        const fax = (request.payload.fax) ? request.payload.fax : "";
         const email = request.payload.email;
 
-        connection.query('INSERT INTO dev.oc_replogic_customer (salesrep_id,firstname,lastname,company_name,mobile_number,alt_contact_number,email) VALUES ("' + rep_id + '", "' + firstname + '", "' + surname + '", "' + company_name + '", "' + mobile_number + '", "' + alt_contact_number + '", "' + email + '")',
-            function (error, results, fields) {
-                if (error) throw error;
+        // hard-coded fields/values
+        const customer_group_id = 1;
+        const store_id = 0;
+        const language_id = 1;
+        const address_id = 0; // will be updated on after the address insert later on (below)
+        const firstname = company_name; // since customer is a company rather the actual person
+        const lastname = company_name; // since customer is a company rather the actual person
+        const password = 'Replogic'; // general initial password
+        const newsletter = 0;
+        const ip = 0;
+        const custom_field = "";
+        const status = 1;
+        const approved = 0;
+        const safe = 0;
+        const token = "";
+        const code = "";
+        const date_added = "";
 
-                /**
-                 * @TODO:
-                 * if successful database insert, send email to company admin
-                 * to notify about the customer that needs approval
-                 */
-                if (results) {
+        // password encryption
+        const salt = Bcrypt.genSaltSync();
+        const encryptedPassword = Bcrypt.hashSync(password, salt);
 
-                    var response = {
-                        'status': 200,
-                        'message': 'customer created successfully',
-                        'customer_id': results.insertId
-                    };
-                    reply(response);
+        /////////////////////////////////////////////////////////
+        //          ADDRESS TABLE FIELDS (PAYLOAD)
+        /////////////////////////////////////////////////////////
+        const address_1 = request.payload.address_1;
+        const address_2 = (request.payload.address_2) ? request.payload.address_2 : "";
+        const city = request.payload.city;
+        const postcode = request.payload.postcode;
+        const country_id = request.payload.country_id;
+        const zone_id = request.payload.region_id;
 
-                    // get company admin
+        // select company by id
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = ' + c_id,
+            function(error, results, fields) {
+                if (error) {
+                    throw error;
+                } else {
 
-                    // build email message object for the email to be sent to sales rep
-                    // var data = {
-                    //     "html": "<h1>New Customer Added!</h1><p>Information:</p><p></p>",
-                    //     "text": "New Customer Added! Information: ",
-                    //     "subject": "New Customer Added!",
-                    //     "sender": "info@dashlogic.co.za",
-                    //     "recipient": email
-                    // };
-                    //
-                    // // send email to company admin
-                    // emailClient.send(emailSettings.api_key, data, function(res) {
-                    //     // email successfully sent
-                    //     var response = {
-                    //         "status": 200,
-                    //         "customer_id": results.insertId,
-                    //         "message": "customer created and email to company admin sent successfully",
-                    //         "email_results": {
-                    //             "status": res[0].status,
-                    //             "id": res[0]._id,
-                    //             "recipient": res[0].email,
-                    //             "error": res[0].reject_reason
-                    //         }
-                    //     };
-                    //     reply(response);
-                    //
-                    // }, function(error) {
-                    //     // email failed to send
-                    //     var response = {
-                    //         "status": 203,
-                    //         "customer_id": results.insertId,
-                    //         "message": "customer created but email to company admin failed to send",
-                    //         "email_results": {
-                    //             "status": "error",
-                    //             "id": null,
-                    //             "recipient": null,
-                    //             "error": error.name + ': ' + error.message
-                    //         }
-                    //     };
-                    //     reply(response);
-                    // });
+                    const db = results[0].companydb;
+
+                    // insert into the customer table
+                    connection.query('INSERT INTO ' + db + '.oc_customer (customer_group_id,salesrep_id,store_id,language_id,firstname,lastname,email,telephone,fax,password,salt,newsletter,address_id,custom_field,ip,status,approved,safe,token,code,date_added) VALUES (' + customer_group_id + ',' + rep_id + ',' + store_id + ',' + language_id + ',"' + firstname + '","' + lastname + '","' + email + '","' + telephone + '","' + fax + '","' + encryptedPassword + '","' + salt + '",' + newsletter + ',' + address_id + ',"' + custom_field + '","' + ip + '",' + status + ',' + approved + ',' + safe + ',"' + token + '","' + code + '","' + date_added + '")',
+                        function (error, results, fields) {
+                            if (error) {
+                                throw error;
+                            } else {
+
+                                // hard-coded and dynamic fields/values
+                                const customer_id = results.insertId;
+                                const address_custom_field = "";
+
+                                // insert into the customer address table
+                                connection.query('INSERT INTO ' + db + '.oc_address (customer_id,firstname,lastname,company,address_1,address_2,city,postcode,country_id,zone_id,custom_field) VALUES (' + customer_id + ',"' + firstname + '","' + lastname + '","' + company_name + '","' + address_1 + '","' + address_2 + '","' + city + '","' + postcode + '",' + country_id + ',' + zone_id + ',"' + address_custom_field + '")',
+                                    function (error, results, fields) {
+                                        if (error) {
+                                            throw error;
+                                        } else {
+
+                                            var address_id = results.insertId;
+
+                                            // update customer table with the address id
+                                            connection.query('UPDATE ' + db + '.oc_customer SET address_id=' + address_id + ' WHERE customer_id=' + customer_id,
+                                                function (error, results, fields) {
+                                                    if (error) throw error;
+
+                                                    /**
+                                                     * @TODO:
+                                                     * if successful customer insert, send email to company admin
+                                                     * to notify about the customer that needs approval
+                                                     */
+                                                    if (results) {
+                                                        var response = {
+                                                            'status': 200,
+                                                            'message': 'customer created successfully',
+                                                            'customer_id': customer_id,
+                                                            'customer_address_id': address_id
+                                                        };
+                                                        reply(response);
+                                                    }
+                                                });
+                                        }
+                                    });
+                            }
+                        });
                 }
             });
     },
     config: {
         validate: {
             payload: {
-                rep_id: Joi.number().integer().required(),
-                firstname: Joi.string().required(),
-                surname: Joi.string().required(),
+                c_id: Joi.number().integer().required(),
+                r_id: Joi.number().integer().required(),
                 company_name: Joi.string().required(),
-                mobile_number: Joi.string().required(),
-                alt_contact_number: Joi.string(),
-                email: Joi.string().email()
+                telephone: Joi.string().required(),
+                fax: Joi.string(),
+                email: Joi.string().email().required(),
+                address_1: Joi.string().required(),
+                address_2: Joi.string(),
+                city: Joi.string().required(),
+                postcode: Joi.string().required(),
+                country_id: Joi.number().integer().required(),
+                region_id: Joi.number().integer().required()
             }
         }
     }
@@ -552,6 +590,7 @@ server.route({
     method: 'POST',
     path: '/api/v1/customers/contact/create',
     handler: function (request, reply) {
+        const c_id = request.payload.c_id;
         const customer_id = request.payload.customer_id;
         const firstname = request.payload.firstname;
         const surname = request.payload.surname;
@@ -560,22 +599,37 @@ server.route({
         const email = request.payload.email;
         const role = request.payload.role;
 
-        connection.query('INSERT INTO dev.oc_customer_contact (first_name,last_name,email,telephone_number,cellphone_number,customer_id,role) VALUES ("' + firstname + '", "' + surname + '", "' + email + '", "' + telephone + '", "' + mobile_number + '", "' + customer_id + '", "' + role + '")',
-            function (error, results, fields) {
-                if (error) throw error;
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = ' + c_id,
+            function(error, results, fields) {
+                if (error) {
+                    throw error;
+                } else {
 
-                var response = {
-                    'status': 200,
-                    'message': 'customer contact created successfully',
-                    'customer_contact_id': results.insertId
+                    var db = results[0].companydb;
 
+                    // insert into the customer contact table
+                    connection.query('INSERT INTO ' + db + '.oc_customer_contact (first_name,last_name,email,telephone_number,cellphone_number,customer_id,role) VALUES ("' + firstname + '", "' + surname + '", "' + email + '", "' + telephone + '", "' + mobile_number + '", "' + customer_id + '", "' + role + '")',
+                        function (error, results, fields) {
+                            if (error) {
+                                throw error;
+                            } else {
+
+                                var response = {
+                                    'status': 200,
+                                    'message': 'customer contact created successfully',
+                                    'customer_contact_id': results.insertId
+
+                                }
+                                reply(response);
+                            }
+                        });
                 }
-                reply(response);
             });
     },
     config: {
         validate: {
             payload: {
+                c_id: Joi.number().integer().required(),
                 customer_id: Joi.number().integer().required(),
                 firstname: Joi.string().required(),
                 surname: Joi.string().required(),
@@ -715,13 +769,15 @@ server.route({
                     var db = results[0].companydb;
                     connection.query('SELECT ap.appointment_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs on cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad on ad.address_id = cs.address_id WHERE ap.salesrep_id = '+r_id,
                         function (error, results, fields) {
-                            if (error) throw error;
-
-                            var response = {
-                                'status': 200,
-                                'appointments': results
-                            };
-                            reply(response);
+                            if (error) {
+                                throw error;
+                            } else {
+                                var response = {
+                                    'status': 200,
+                                    'appointments': results
+                                };
+                                reply(response);
+                            }
                         });
                 }
             });
@@ -754,12 +810,16 @@ server.route({
         const content = request.payload.content;
         const appointment_id = request.payload.appointment_id;
 
+        // get company db
         connection.query('SELECT companydb FROM super.companies WHERE company_id = "' + c_id + '"',
             function (error, results, fields) {
-                if (error){
+                if (error) {
                     throw error;
-                } else{
+                } else {
+
                     var db = results[0].companydb;
+
+                    // insert appointment note into database
                     connection.query('INSERT INTO '+db+'.oc_notes (note_title,note_content,appointment_id,salesrep_id) VALUES ("' + title + '", "' + content + '", ' + appointment_id + ', ' + r_id + ')',
                         function (error, results, fields) {
                             if (error) throw error;
