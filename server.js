@@ -466,24 +466,74 @@ server.route({
             function (error, results, fields) {
                 if (error) throw error;
 
-                var response = {
-                    'status': 200,
-                    'message': 'customer created successfully',
-                    'customer_id': results.insertId
+                /**
+                 * @TODO:
+                 * if successful database insert, send email to company admin
+                 * to notify about the customer that needs approval
+                 */
+                if (results) {
 
+                    var response = {
+                        'status': 200,
+                        'message': 'customer created successfully',
+                        'customer_id': results.insertId
+                    };
+                    reply(response);
+
+                    // get company admin
+
+                    // build email message object for the email to be sent to sales rep
+                    // var data = {
+                    //     "html": "<h1>New Customer Added!</h1><p>Information:</p><p></p>",
+                    //     "text": "New Customer Added! Information: ",
+                    //     "subject": "New Customer Added!",
+                    //     "sender": "info@dashlogic.co.za",
+                    //     "recipient": email
+                    // };
+                    //
+                    // // send email to company admin
+                    // emailClient.send(emailSettings.api_key, data, function(res) {
+                    //     // email successfully sent
+                    //     var response = {
+                    //         "status": 200,
+                    //         "customer_id": results.insertId,
+                    //         "message": "customer created and email to company admin sent successfully",
+                    //         "email_results": {
+                    //             "status": res[0].status,
+                    //             "id": res[0]._id,
+                    //             "recipient": res[0].email,
+                    //             "error": res[0].reject_reason
+                    //         }
+                    //     };
+                    //     reply(response);
+                    //
+                    // }, function(error) {
+                    //     // email failed to send
+                    //     var response = {
+                    //         "status": 203,
+                    //         "customer_id": results.insertId,
+                    //         "message": "customer created but email to company admin failed to send",
+                    //         "email_results": {
+                    //             "status": "error",
+                    //             "id": null,
+                    //             "recipient": null,
+                    //             "error": error.name + ': ' + error.message
+                    //         }
+                    //     };
+                    //     reply(response);
+                    // });
                 }
-                reply(response);
             });
     },
     config: {
         validate: {
             payload: {
                 rep_id: Joi.number().integer().required(),
-                firstname: Joi.string().alphanum().required(),
-                surname: Joi.string().alphanum().required(),
-                company_name: Joi.string().alphanum().required(),
-                mobile_number: Joi.string().alphanum().required(),
-                alt_contact_number: Joi.string().alphanum(),
+                firstname: Joi.string().required(),
+                surname: Joi.string().required(),
+                company_name: Joi.string().required(),
+                mobile_number: Joi.string().required(),
+                alt_contact_number: Joi.string(),
                 email: Joi.string().email()
             }
         }
@@ -527,17 +577,21 @@ server.route({
         validate: {
             payload: {
                 customer_id: Joi.number().integer().required(),
-                firstname: Joi.string().alphanum().required(),
-                surname: Joi.string().alphanum().required(),
-                mobile_number: Joi.string().alphanum().required(),
-                telephone: Joi.string().alphanum().required(),
+                firstname: Joi.string().required(),
+                surname: Joi.string().required(),
+                mobile_number: Joi.string().required(),
+                telephone: Joi.string().required(),
                 email: Joi.string().email().required(),
-                role: Joi.string().alphanum()
+                role: Joi.string()
             }
         }
     }
 });
 
+
+/***********************************************************************************************************************
+ *                                          Appointment Related API Routes
+ ***********************************************************************************************************************/
 
 
 /*
@@ -631,6 +685,103 @@ server.route({
             params: {
                 r_id: Joi.number().integer(),
                 c_id: Joi.number().integer()
+            }
+        }
+    }
+});
+
+
+
+/**
+ * Route to retrieve all appointments
+ *
+ * @method GET
+ * @path /api/v1/appointments/{r_id}/{c_id}
+ *
+ */
+server.route({
+    method: 'GET',
+    path: '/api/v1/appointments/{r_id}/{c_id}',
+    handler: function (request, reply) {
+        const r_id = request.params.r_id;
+        const c_id = request.params.c_id;
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = "' + c_id + '"',
+            function (error, results, fields) {
+                if (error){
+                    throw error;
+                } else {
+
+                    var db = results[0].companydb;
+                    connection.query('SELECT ap.appointment_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs on cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad on ad.address_id = cs.address_id WHERE ap.salesrep_id = '+r_id,
+                        function (error, results, fields) {
+                            if (error) throw error;
+
+                            var response = {
+                                'status': 200,
+                                'appointments': results
+                            };
+                            reply(response);
+                        });
+                }
+            });
+    },
+    config: {
+        validate: {
+            params: {
+                r_id: Joi.number().integer().required(),
+                c_id: Joi.number().integer().required()
+            }
+        }
+    }
+});
+
+
+/**
+ * Route to add a new appointment note
+ *
+ * @method POST
+ * @path /api/v1/appointments/note/create
+ *
+ */
+server.route({
+    method: 'POST',
+    path: '/api/v1/appointments/note/create',
+    handler: function (request, reply) {
+        const c_id = request.payload.c_id;
+        const r_id = request.payload.r_id;
+        const title = request.payload.title;
+        const content = request.payload.content;
+        const appointment_id = request.payload.appointment_id;
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = "' + c_id + '"',
+            function (error, results, fields) {
+                if (error){
+                    throw error;
+                } else{
+                    var db = results[0].companydb;
+                    connection.query('INSERT INTO '+db+'.oc_notes (note_title,note_content,appointment_id,salesrep_id) VALUES ("' + title + '", "' + content + '", ' + appointment_id + ', ' + r_id + ')',
+                        function (error, results, fields) {
+                            if (error) throw error;
+
+                            var response = {
+                                'status': 200,
+                                'note_id': results.insertId,
+                                'message': 'appointment note created successfully'
+                            }
+                            reply(response);
+                        });
+                }
+            });
+    },
+    config: {
+        validate: {
+            payload: {
+                c_id: Joi.number().integer().required(),
+                r_id: Joi.number().integer().required(),
+                title: Joi.string().required(),
+                content: Joi.string().required(),
+                appointment_id: Joi.number().integer().required()
             }
         }
     }
@@ -742,6 +893,11 @@ server.route({
 });
 
 
+/***********************************************************************************************************************
+ *                                          Sales Rep Related API Routes
+ ***********************************************************************************************************************/
+
+
 /**
  * Route to register a sales rep
  * Sends a welcome email with new auto-generated login password
@@ -829,6 +985,11 @@ server.route({
         }
     }
 });
+
+
+/***********************************************************************************************************************
+ *                                          Company Related API Routes
+ ***********************************************************************************************************************/
 
 
 /**
