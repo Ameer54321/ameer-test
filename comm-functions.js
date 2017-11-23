@@ -10,15 +10,15 @@ module.exports = function() {
      * @param customer_email
      * @param order
      */
-    function orderConfirmationToCustomer(customer, data) {
+    function orderConfirmationToCustomer(customer, data, quote_number) {
 
         /**
          * @TODO build html for the order details
          */
 
         var emailData1 = {
-            "html": "<h1>Order Confirmation!</h1><p>Your order has been successfully received.</p>",
-            "text": "Order Confirmation! Your order has been successfully received.",
+            "html": "<h1>Order Confirmation!</h1><p>Order has been successfully received. Order quote number is "+quote_number+".</p>",
+            "text": "Order Confirmation! Order has been successfully received. Order quote number is "+quote_number+".",
             "subject": "Order Confirmation!",
             "sender": "info@dashlogic.co.za",
             "recipient": customer.customer_email
@@ -28,8 +28,8 @@ module.exports = function() {
         emailClient.send(emailSettings.api_key, emailData1);
 
         var emailData2 = {
-            "html": "<h1>Order Confirmation!</h1><p>Your order has been successfully received. Your quote reference number is: ######.</p>",
-            "text": "Order Confirmation! Your order has been successfully received. Your quote reference number is: ######.",
+            "html": "<h1>Order Confirmation!</h1><p>Order has been successfully received. Your quote reference number is "+quote_number+".</p>",
+            "text": "Order Confirmation! Order has been successfully received. Order quote number is "+quote_number+".",
             "subject": "Order Confirmation!",
             "sender": "info@dashlogic.co.za",
             "recipient": customer.cust_contact_email
@@ -45,15 +45,15 @@ module.exports = function() {
      * @param admin_email
      * @param data
      */
-    function orderConfirmationToAdmin(admin, data) {
+    function orderConfirmationToAdmin(admin, data, quote_number) {
 
         /**
          * @TODO build html for the order details
          */
 
         var data = {
-            "html": "<h1>Order Confirmation!</h1><p>An order quote has been placed and awaiting approval.</p>",
-            "text": "Order quote has been received! An order quote has been placed and awaiting approval.",
+            "html": "<h1>Order Confirmation!</h1><p>An order quote has been placed and awaiting approval with quote number: "+quote_number+".</p>",
+            "text": "Order quote has been received! An order quote has been placed and awaiting approval with quote number: "+quote_number+".",
             "subject": "Order Confirmation!",
             "sender": "info@dashlogic.co.za",
             "recipient": admin.email
