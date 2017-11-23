@@ -314,7 +314,7 @@ server.route({
                                             throw error;
                                         } else {
                                             if (results[0].customer_email !== undefined) {
-                                                comms.orderConfirmationToCustomer(results[0], cart);
+                                                comms.orderConfirmationToCustomer(results[0], cart, quote_id);
                                             }
                                         }
                                     });
