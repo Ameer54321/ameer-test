@@ -8,6 +8,7 @@ const Joi = require('joi');
 const Bcrypt = require('bcrypt-nodejs');
 const generatePassword = require('password-generator');
 const emailClient = require('./email_client');
+const comms = require('./comm-functions');
 
 // Create a server with a host and port
 const server = new Hapi.Server();
@@ -19,7 +20,7 @@ var istest = false;
 // email configuration settings
 const emailSettings = {
     api_key: 'njqRVZ3J9J3psHDoFjnTLQ'
-}
+};
 
 var host ='';
 var user ='';
@@ -270,6 +271,79 @@ server.route({
 });
 
 
+/***********************************************************************************************************************
+ *                                          Order Related API Routes
+ ***********************************************************************************************************************/
+
+
+/**
+ *
+ * Route to create an order [quote]
+ */
+server.route({
+    method: 'POST',
+    path: '/api/v1/orders/create',
+    handler: function(request, reply) {
+        const r_id = request.payload.r_id;
+        const c_id = request.payload.c_id;
+        const customer_id = request.payload.customer_id;
+        const contact_id = request.payload.contact_id;
+        const cart = request.payload.cart;
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = "' + c_id + '"',
+            function (error, results, fields) {
+                if (error) {
+                    throw error;
+                } else {
+
+                    var db = results[0].companydb;
+
+                    // insert order quote information
+                    connection.query('INSERT INTO '+db+'.oc_replogic_order_quote (salesrep_id, customer_id, customer_contact_id, cart, date_added) VALUES ('+r_id+', '+customer_id+', '+contact_id+', "'+cart+'", NOW())',
+                        function (error, results, fields) {
+                            if (error) {
+                                throw error;
+                            } else {
+
+                                var quote_id = results.insertId;
+
+                                // get customer email from database to send order confirmation
+                                connection.query('SELECT cs.email AS customer_email, cc.email AS cust_contact_email FROM '+db+'.oc_customer cs INNER JOIN '+db+'.oc_customer_contact cc ON cc.customer_id=cs.customer_id WHERE cs.customer_id='+customer_id+' AND cc.customer_con_id='+contact_id,
+                                    function (error, results, fields) {
+                                        if (error) {
+                                            throw error;
+                                        } else {
+                                            if (results[0].customer_email !== undefined) {
+                                                comms.orderConfirmationToCustomer(results[0], cart);
+                                            }
+                                        }
+                                    });
+
+                                var response = {
+                                    'status': 200,
+                                    'quote_id': quote_id,
+                                    'message': 'order quote successfully created'
+                                };
+                                reply(response);
+                            }
+                        });
+                }
+            });
+    },
+    config: {
+        validate: {
+            payload: {
+                r_id: Joi.number().integer().required(),
+                c_id: Joi.number().integer().required(),
+                customer_id: Joi.number().integer().required(),
+                contact_id: Joi.number().integer().required(),
+                cart: Joi.string().required()
+            }
+        }
+    }
+});
+
+
 /**
  *
  * Route to retrieve all current orders for the current month
@@ -486,7 +560,6 @@ server.route({
         const safe = 0;
         const token = "";
         const code = "";
-        const date_added = "";
 
         // password encryption
         const salt = Bcrypt.genSaltSync();
@@ -512,7 +585,7 @@ server.route({
                     const db = results[0].companydb;
 
                     // insert into the customer table
-                    connection.query('INSERT INTO ' + db + '.oc_customer (customer_group_id,salesrep_id,store_id,language_id,firstname,lastname,email,telephone,fax,password,salt,newsletter,address_id,custom_field,ip,status,approved,safe,token,code,date_added) VALUES (' + customer_group_id + ',' + rep_id + ',' + store_id + ',' + language_id + ',"' + firstname + '","' + lastname + '","' + email + '","' + telephone + '","' + fax + '","' + encryptedPassword + '","' + salt + '",' + newsletter + ',' + address_id + ',"' + custom_field + '","' + ip + '",' + status + ',' + approved + ',' + safe + ',"' + token + '","' + code + '","' + date_added + '")',
+                    connection.query('INSERT INTO ' + db + '.oc_customer (customer_group_id,salesrep_id,store_id,language_id,firstname,lastname,email,telephone,fax,password,salt,newsletter,address_id,custom_field,ip,status,approved,safe,token,code,date_added) VALUES (' + customer_group_id + ',' + rep_id + ',' + store_id + ',' + language_id + ',"' + firstname + '","' + lastname + '","' + email + '","' + telephone + '","' + fax + '","' + encryptedPassword + '","' + salt + '",' + newsletter + ',' + address_id + ',"' + custom_field + '","' + ip + '",' + status + ',' + approved + ',' + safe + ',"' + token + '","' + code + '", NOW())',
                         function (error, results, fields) {
                             if (error) {
                                 throw error;
