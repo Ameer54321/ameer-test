@@ -11,6 +11,7 @@
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
     "hapi": "^16.6.2",
+    "hapi-cors-headers": "^1.0.3",
     "joi": "^11.3.4",
     "mandrill-api": "1.0.45",
     "mysql": "^2.15.0",

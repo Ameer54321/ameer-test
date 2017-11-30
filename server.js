@@ -12,6 +12,7 @@ const comms = require('./comm-functions');
 
 // Create a server with a host and port
 const server = new Hapi.Server();
+var corsHeaders = require('hapi-cors-headers');
 var port = process.env.PORT || 1337;
 
 /*change below to false if in production*/
@@ -45,7 +46,8 @@ const connection = MySQL.createConnection({
     database: database
 });
 server.connection({
-    port: port
+    port: port,
+    routes: { cors: true }
 });
 
 connection.connect();
@@ -1262,7 +1264,7 @@ server.route({
     }
 });
 
-
+server.ext('onPreResponse', corsHeaders);
 server.start(function(err){
     if (err) {
     throw err;
