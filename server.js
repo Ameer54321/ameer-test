@@ -958,21 +958,39 @@ server.route({
         const username = request.payload.username;
         const password = request.payload.password;
 
-        connection.query('SELECT uid,salt,password,companyId,realId FROM user WHERE username ="'+username+'"',function(error, results, fields){
+        connection.query('SELECT u.uid, u.salt, u.password, u.companyId, u.realId, c.companyname, c.companydb FROM super.user u INNER JOIN super.companies c ON c.company_id=u.companyId WHERE u.username="'+username+'"', function(error, results, fields) {
             if(error){
                 throw error;
-            }else{
+            } else {
                 var orgPassword = Bcrypt.compareSync(password, results[0].password);
-                if(orgPassword === true){
+                if (orgPassword === true){
 
-                    var response = {
-                        'status': 200,
-                        'message': 'login succesful',
-                        'c_id': results[0].companyId,
-                        'uid' : results[0].uid,
-                        'r_id': results[0].realId
-                    }
-                    reply(response);
+                    const db = results[0].companydb;
+                    const companyName = results[0].companyname;
+                    const companyId = results[0].companyId;
+                    const repId = results[0].realId;
+                    const userId = results[0].uid;
+
+                    connection.query('SELECT salesrep_name FROM '+db+'.oc_salesrep WHERE salesrep_id='+repId,
+                        function (error, results, fields) {
+
+                            if (error) {
+                                throw error;
+                            } else {
+
+                                var response = {
+                                    'status': 200,
+                                    'message': 'login succesful',
+                                    'c_id': companyId,
+                                    'uid' : userId,
+                                    'r_id': repId,
+                                    'company_name': companyName,
+                                    'rep_name': results[0].salesrep_name
+                                };
+                                reply(response);
+
+                            }
+                        });
                 }else{
                     var response = {
                         'response': 400,
