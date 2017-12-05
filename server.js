@@ -1167,7 +1167,7 @@ server.route({
         var salt = Bcrypt.genSaltSync();
         var encryptedPassword = Bcrypt.hashSync(password, salt);
 
-        connection.query('INSERT INTO user (username,email,password,salt, companyId, realId) VALUES ("' + username + '","' + email + '","' + encryptedPassword + '","' + salt + '", "' + companyId + '", "' + realId + '")',
+        connection.query('INSERT INTO super.user (username,email,password,salt, companyId, realId) VALUES ("' + username + '","' + email + '","' + encryptedPassword + '","' + salt + '", "' + companyId + '", "' + realId + '")',
             function (error, results, fields) {
                 if (error) throw error;
 
