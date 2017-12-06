@@ -299,8 +299,10 @@ server.route({
                 } else {
 
                     var db = results[0].companydb;
+                    var cartJson = JSON.stringify(cart);
+
                     // insert order quote information
-                    connection.query('INSERT INTO '+db+'.oc_replogic_order_quote (salesrep_id, customer_id, customer_contact_id, cart, date_added) VALUES ('+r_id+', '+customer_id+', '+contact_id+', "'+cart+'", NOW())',
+                    connection.query("INSERT INTO "+db+".oc_replogic_order_quote (salesrep_id, customer_id, customer_contact_id, cart, date_added) VALUES ("+r_id+", "+customer_id+", "+contact_id+", '"+cartJson+"', NOW())",
                         function (error, results, fields) {
                             if (error) {
                                 throw error;
