@@ -347,6 +347,73 @@ server.route({
 });
 
 
+
+/**
+ *
+ * Route to retrieve all order quotes
+ *
+ */
+server.route({
+    method: 'GET',
+    path: '/api/v1/orders/{r_id}/{c_id}/quotes',
+    handler: function (request, reply) {
+        const r_id = request.params.r_id;
+        const c_id = request.params.c_id;
+        const filter = request.url.query;
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = ' + c_id,
+            function (error, results, fields) {
+                if (error) {
+                    throw error;
+                } else {
+
+                    var db = results[0].companydb;
+
+                    // build select query filter
+                    var query = '';
+                    if (filter.quote_id !== undefined) {
+                        // filter by quote id
+                        query += ' AND oq.quote_id='+filter.quote_id;
+                    }
+                    if (filter.date_added !== undefined) {
+                        // filter by date added
+                        query += ' AND DATE(oq.date_added) = STR_TO_DATE("'+filter.date_added+'", "%Y-%m-%d")';
+                    }
+                    if (filter.customer_name !== undefined) {
+                        // filter by date added
+                        query += ' AND (cs.firstname="'+filter.customer_name+'" OR cs.lastname="'+filter.customer_name+'")';
+                    }
+
+                    // query database
+                    connection.query('SELECT oq.quote_id,oq.status,oq.date_added,cs.firstname AS customer_name,CONCAT(cc.first_name, " ", cc.last_name) AS contact_name FROM '+db+'.oc_replogic_order_quote oq INNER JOIN '+db+'.oc_customer cs ON cs.customer_id=oq.customer_id INNER JOIN '+db+'.oc_customer_contact cc ON cc.customer_con_id=oq.customer_contact_id WHERE oq.salesrep_id='+r_id+' '+query,
+                        function (error, results, fields) {
+                            if (error) {
+                                throw error;
+                            } else {
+
+                                var response = {
+                                    status: 200,
+                                    order_quotes: results
+                                };
+
+                                reply(response);
+                            }
+                        });
+
+                }
+            });
+    },
+    config: {
+        validate: {
+            params: {
+                r_id: Joi.number().integer().required(),
+                c_id: Joi.number().integer().required()
+            }
+        }
+    }
+});
+
+
 /**
  *
  * Route to retrieve all current orders for the current month
