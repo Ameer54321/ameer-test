@@ -205,10 +205,9 @@ server.route({
                     throw error;
                 } else{
                     var db = results[0].companydb;
-                    connection.query('SELECT first_name as name,last_name as surname,cellphone_number as cell,role,email FROM '+db+'.oc_customer_contact WHERE customer_id = "' + customer_id + '"',
+                    connection.query('SELECT customer_con_id AS contact_id,first_name AS name,last_name AS surname,cellphone_number AS cell,role,email FROM '+db+'.oc_customer_contact WHERE customer_id='+customer_id,
                         function (error, results, fields) {
                             if (error) throw error;
-                            // console.log(fields);
                             reply(results);
                         });
                 }
@@ -1166,6 +1165,101 @@ server.route({
 });
 
 
+/**
+ *
+ * Route to reset password for a user
+ *
+ */
+server.route({
+    method: 'POST',
+    path: '/api/v1/user/resetpassword',
+    handler: function (request, reply) {
+
+        const email = request.payload.email;
+
+        // validate email against database | check if user exists or not
+        connection.query('SELECT u.uid, u.salt, u.password, u.companyId, u.realId, c.companyname, c.companydb FROM super.user u INNER JOIN super.companies c ON c.company_id=u.companyId WHERE u.email="'+email+'"',
+            function(error, results, fields) {
+                if (error){
+                    throw error;
+                } else {
+
+                    if (results[0]) {
+
+                        // auto-generate new password
+                        const newPassword = generatePassword(6, false);
+
+                        // encryption
+                        var salt = Bcrypt.genSaltSync();
+                        var encryptedPassword = Bcrypt.hashSync(newPassword, salt);
+
+                        connection.query("UPDATE super.user SET password='"+encryptedPassword+"', salt='"+salt+"' WHERE uid="+results[0].uid,
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+
+                                    // build email message object
+                                    var data = {
+                                        "html": "<p>Dear User</p><p>You have requested that we reset your password. Your new password: <strong>" + newPassword + "</strong>.</p><p>If you did not send this request urgently contact support.</p>",
+                                        "text": "Dear Dashlogic User. You have requested that we reset your password. Your new password: " + newPassword + ". If you did not send this request urgently contact Dashlogic support.",
+                                        "subject": "Password Reset Confirmation",
+                                        "sender": "info@dashlogic.co.za",
+                                        "recipient": email
+                                    };
+
+                                    // send email to user
+                                    emailClient.send(emailSettings.api_key, data, function(res) {
+                                        // email successfully sent
+                                        var response = {
+                                            "status": 200,
+                                            "message": "Password reset and email sent successfully",
+                                            "email_results": {
+                                                "status": res[0].status,
+                                                "id": res[0]._id,
+                                                "recipient": email,
+                                                "error": res[0].reject_reason
+                                            }
+                                        };
+                                        reply(response);
+                                    }, function(error) {
+                                        // email failed to send
+                                        var response = {
+                                            "status": 203,
+                                            "message": "Password could not be sent to user",
+                                            "email_results": {
+                                                "status": "error",
+                                                "id": null,
+                                                "recipient": null,
+                                                "error": error.name + ': ' + error.message
+                                            }
+                                        };
+                                        reply(response);
+                                    });
+                                }
+                            });
+
+                    }else{
+                        var response = {
+                            'response': 400,
+                            'message': 'User does not exist'
+                        };
+                        reply(response);
+                    }
+
+                }
+            });
+    },
+    config: {
+        validate: {
+            payload: {
+                email: Joi.string().email().required()
+            }
+        }
+    }
+});
+
+
 /*
 * Route to register users
 *
@@ -1230,7 +1324,7 @@ server.route({
         const realId = request.payload.rep_id;
         const username = request.payload.username;
         const email = request.payload.email;
-        const password = generatePassword(10, false);    // Auto-generate new password
+        const password = generatePassword(6, false);    // Auto-generate new password
 
         // Pass encryption
         var salt = Bcrypt.genSaltSync();
@@ -1292,6 +1386,69 @@ server.route({
                 email: Joi.string().email(),
                 company_id: Joi.number().integer(),
                 rep_id: Joi.number().integer()
+            }
+        }
+    }
+});
+
+
+
+server.route({
+    method: 'PUT',
+    path: '/api/v1/salesrep',
+    handler: function (request, reply) {
+        const c_id = request.payload.c_id;
+        const r_id = request.payload.r_id;
+        const firstName = request.payload.firstname;
+        const lastName = request.payload.lastname;
+        const cell = request.payload.cell;
+        const tel = request.payload.tel;
+        const email = request.payload.email;
+        const teamId = request.payload.team_id;
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = '+c_id,
+            function (error, results, fields) {
+                if (error) {
+                    throw error;
+                } else {
+
+                    var db = results[0].companydb;
+
+                    connection.query("UPDATE "+db+".oc_salesrep SET salesrep_name='"+firstName+"', salesrep_lastname='"+lastName+"', cell='"+cell+"', tel='"+tel+"', email='"+email+"', sales_team_id="+teamId+" WHERE salesrep_id="+r_id,
+                        function (error, results, fields) {
+                            if (error) {
+                                throw error;
+                            } else {
+
+                                connection.query("UPDATE super.user SET username='"+email+"', email='"+email+"' WHERE realId="+r_id+" AND companyId="+c_id,
+                                    function (error, results, fields) {
+                                        if (error) {
+                                            throw error;
+                                        } else {
+
+                                            var response = {
+                                                status: 200,
+                                                message: 'Sales rep details successfully updated'
+                                            };
+                                            reply(response);
+                                        }
+                                    });
+                            }
+                        });
+                }
+            });
+    },
+    config: {
+        validate: {
+            payload: {
+                c_id: Joi.number().integer().required(),
+                r_id: Joi.number().integer().required(),
+                firstname: Joi.string().required(),
+                lastname: Joi.string().required(),
+                cell: Joi.string().required(),
+                tel: Joi.string().required(),
+                email: Joi.string().email().required(),
+                team_id: Joi.number().integer().required()
             }
         }
     }
