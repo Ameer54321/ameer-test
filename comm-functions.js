@@ -7,14 +7,12 @@ module.exports = function() {
 
     /**
      * Send order confirmation email to customer
-     * @param customer_email
-     * @param order
+     * @param customer
+     * @param data
+     * @param quote_number
+     * @param reply
      */
-    function orderConfirmationToCustomer(customer, data, quote_number) {
-
-        /**
-         * @TODO build html for the order details
-         */
+    function orderConfirmationToCustomer(customer, data, quote_number, reply) {
 
         // Go through items in cart for display items in a table
         var body = '';
@@ -55,21 +53,45 @@ module.exports = function() {
         };
 
         // send email to customer contact
-        emailClient.send(emailSettings.api_key, emailData2);
+        emailClient.send(emailSettings.api_key, emailData2, function (res) {
+            // email successfully sent
+            var response = {
+                "status": 200,
+                "message": "Order quote successfully created",
+                "quote_id": quote_number,
+                "email_results": {
+                    "status": res[0].status,
+                    "id": res[0]._id,
+                    "recipient": customer.cust_contact_email,
+                    "error": res[0].reject_reason
+                }
+            };
+            reply(response);
+        }, function (error) {
+            // email failed to send
+            var response = {
+                "status": 200,
+                "quote_id": quote_number,
+                "message": "Order quote successfully created, but email comms failed",
+                "email_results": {
+                    "status": "error",
+                    "id": null,
+                    "recipient": null,
+                    "error": error.name + ': ' + error.message
+                }
+            };
+            reply(response);
+        });
     };
 
 
     /**
      * Send order confirmation email to company admin
-     * @param admin
+     * @param admin_email
      * @param data
      * @param quote_number
      */
-    function orderConfirmationToAdmin(admin, data, quote_number) {
-
-        /**
-         * @TODO build html for the order details
-         */
+    function orderConfirmationToAdmin(admin_email, data, quote_number) {
 
         // Go through items in cart for display
         var body = '';
@@ -90,21 +112,70 @@ module.exports = function() {
             body += '</table>';
         }
 
-        var data = {
+        var emailData = {
             "html": '<h1>Order Quote Confirmation!</h1><p>Order Quote has been placed and awaiting approval with quote number: '+quote_number+'.</p><h3>Order Information:</h3>'+body,
             "text": "Order Quote Confirmation! Order Quote has been received! An order quote has been placed and awaiting approval with quote number: "+quote_number+".",
             "subject": "Order Confirmation!",
             "sender": "info@dashlogic.co.za",
-            "recipient": admin.email
+            "recipient": admin_email
         };
 
         // send email to customer
-        emailClient.send(emailSettings.api_key, data);
+        emailClient.send(emailSettings.api_key, emailData);
+    };
+
+
+    /**
+     * Reset Password
+     * Send new auto-generated password
+     * @param email
+     * @param password
+     * @param reply
+     */
+    function resetPassword(email, password, reply) {
+
+        var data = {
+            "html": "<p>Dear User</p><p>You have requested that we reset your password. Your new password: <strong>" + password + "</strong>.</p><p>If you did not send this request urgently contact support.</p>",
+            "text": "Dear Dashlogic User. You have requested that we reset your password. Your new password: " + password + ". If you did not send this request urgently contact Dashlogic support.",
+            "subject": "Password Reset Confirmation",
+            "sender": "info@dashlogic.co.za",
+            "recipient": email
+        };
+
+        // send email to user
+        emailClient.send(emailSettings.api_key, data, function(res) {
+            // email successfully sent
+            var response = {
+                "status": 200,
+                "message": "Password reset and email sent successfully",
+                "email_results": {
+                    "status": res[0].status,
+                    "id": res[0]._id,
+                    "recipient": email,
+                    "error": res[0].reject_reason
+                }
+            };
+            reply(response);
+        }, function(error) {
+            // email failed to send
+            var response = {
+                "status": 203,
+                "message": "Password could not be sent to user",
+                "email_results": {
+                    "status": "error",
+                    "id": null,
+                    "recipient": null,
+                    "error": error.name + ': ' + error.message
+                }
+            };
+            reply(response);
+        });
     };
 
     return {
         orderConfirmationToCustomer: orderConfirmationToCustomer,
-        orderConfirmationToAdmin: orderConfirmationToAdmin
+        orderConfirmationToAdmin: orderConfirmationToAdmin,
+        resetPassword: resetPassword
     };
 
 }();

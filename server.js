@@ -310,23 +310,17 @@ server.route({
                                 var quote_id = results.insertId;
 
                                 // get customer email from database to send order confirmation
-                                connection.query('SELECT cs.email AS customer_email, cc.email AS cust_contact_email FROM '+db+'.oc_customer cs INNER JOIN '+db+'.oc_customer_contact cc ON cc.customer_id=cs.customer_id WHERE cs.customer_id='+customer_id+' AND cc.customer_con_id='+contact_id,
+                                connection.query('SELECT cs.email AS customer_email,cc.email AS cust_contact_email,rs.email AS comp_admin_email FROM '+db+'.oc_customer cs INNER JOIN '+db+'.oc_customer_contact cc ON cc.customer_id=cs.customer_id INNER JOIN '+db+'.oc_rep_settings rs ON rs.company_id='+c_id+' WHERE cs.customer_id='+customer_id+' AND cc.customer_con_id='+contact_id,
                                     function (error, results, fields) {
                                         if (error) {
                                             throw error;
                                         } else {
-                                            if (results[0].customer_email !== undefined) {
-                                                comms.orderConfirmationToCustomer(results[0], cart, quote_id);
+                                            if (results[0]) {
+                                                comms.orderConfirmationToAdmin(results[0].comp_admin_email, cart, quote_id);
+                                                comms.orderConfirmationToCustomer(results[0], cart, quote_id, reply);
                                             }
                                         }
                                     });
-
-                                var response = {
-                                    'status': 200,
-                                    'quote_id': quote_id,
-                                    'message': 'order quote successfully created'
-                                };
-                                reply(response);
                             }
                         });
                 }
@@ -1198,44 +1192,7 @@ server.route({
                                 if (error) {
                                     throw error;
                                 } else {
-
-                                    // build email message object
-                                    var data = {
-                                        "html": "<p>Dear User</p><p>You have requested that we reset your password. Your new password: <strong>" + newPassword + "</strong>.</p><p>If you did not send this request urgently contact support.</p>",
-                                        "text": "Dear Dashlogic User. You have requested that we reset your password. Your new password: " + newPassword + ". If you did not send this request urgently contact Dashlogic support.",
-                                        "subject": "Password Reset Confirmation",
-                                        "sender": "info@dashlogic.co.za",
-                                        "recipient": email
-                                    };
-
-                                    // send email to user
-                                    emailClient.send(emailSettings.api_key, data, function(res) {
-                                        // email successfully sent
-                                        var response = {
-                                            "status": 200,
-                                            "message": "Password reset and email sent successfully",
-                                            "email_results": {
-                                                "status": res[0].status,
-                                                "id": res[0]._id,
-                                                "recipient": email,
-                                                "error": res[0].reject_reason
-                                            }
-                                        };
-                                        reply(response);
-                                    }, function(error) {
-                                        // email failed to send
-                                        var response = {
-                                            "status": 203,
-                                            "message": "Password could not be sent to user",
-                                            "email_results": {
-                                                "status": "error",
-                                                "id": null,
-                                                "recipient": null,
-                                                "error": error.name + ': ' + error.message
-                                            }
-                                        };
-                                        reply(response);
-                                    });
+                                    comms.resetPassword(email, newPassword, reply);
                                 }
                             });
 
@@ -1414,18 +1371,19 @@ server.route({
 
                     var db = results[0].companydb;
 
+                    // update sales rep database table
                     connection.query("UPDATE "+db+".oc_salesrep SET salesrep_name='"+firstName+"', salesrep_lastname='"+lastName+"', cell='"+cell+"', tel='"+tel+"', email='"+email+"', sales_team_id="+teamId+" WHERE salesrep_id="+r_id,
                         function (error, results, fields) {
                             if (error) {
                                 throw error;
                             } else {
 
+                                // update super user database table
                                 connection.query("UPDATE super.user SET username='"+email+"', email='"+email+"' WHERE realId="+r_id+" AND companyId="+c_id,
                                     function (error, results, fields) {
                                         if (error) {
                                             throw error;
                                         } else {
-
                                             var response = {
                                                 status: 200,
                                                 message: 'Sales rep details successfully updated'
