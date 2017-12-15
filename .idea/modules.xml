@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../ReplogicExtension/.idea/ReplogicExtension.iml" filepath="$PROJECT_DIR$/../ReplogicExtension/.idea/ReplogicExtension.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/Rest.iml" filepath="$PROJECT_DIR$/.idea/Rest.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../../Scripts/SHOPin/.idea/SHOPin.iml" filepath="$PROJECT_DIR$/../../Scripts/SHOPin/.idea/SHOPin.iml" />
     </modules>
   </component>
 </project>

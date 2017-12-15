@@ -407,6 +407,56 @@ server.route({
 });
 
 
+
+/**
+ *
+ * Route to retrieve single order quote details
+ *
+ */
+server.route({
+    method: 'GET',
+    path: '/api/v1/orders/{c_id}/quotes/{quote_id}',
+    handler: function (request, reply) {
+        const c_id = request.params.c_id;
+        const quote_id = request.params.quote_id;
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = ' + c_id,
+            function (error, results, fields) {
+                if (error) {
+                    throw error;
+                } else {
+
+                    var db = results[0].companydb;
+
+                    connection.query('SELECT oq.quote_id,oq.status,oq.date_added,oq.cart,cs.email,cs.telephone,CONCAT(ca.address_1," ",ca.address_2," ",ca.city," ",postcode) AS address,cs.firstname AS customer_name,CONCAT(cc.first_name, " ", cc.last_name) AS contact_name FROM '+db+'.oc_replogic_order_quote oq INNER JOIN '+db+'.oc_customer cs ON cs.customer_id=oq.customer_id INNER JOIN '+db+'.oc_customer_contact cc ON cc.customer_con_id=oq.customer_contact_id INNER JOIN '+db+'.oc_address ca ON ca.customer_id=cs.customer_id WHERE oq.quote_id='+quote_id,
+                        function (error, results, fields) {
+                            if (error) {
+                                throw error;
+                            } else {
+
+                                var response = {
+                                    status: 200,
+                                    order_quotes: results
+                                };
+
+                                reply(response);
+                            }
+                        });
+
+                }
+            });
+    },
+    config: {
+        validate: {
+            params: {
+                quote_id: Joi.number().integer().required(),
+                c_id: Joi.number().integer().required()
+            }
+        }
+    }
+});
+
+
 /**
  *
  * Route to retrieve all current orders for the current month
@@ -432,8 +482,6 @@ server.route({
                             reply(results);
                         });
                 }
-
-
 
             });
 
@@ -533,13 +581,9 @@ server.route({
 
 
 /**
+ *
  * Route to retrieve all orders
  *
- * @method GET
- * @params
- *          r_id <integer>  Sales rep id
- *          c_id <integer>  Company id
- * @path /api/v1/orders/{r_id}/{c_id}
  */
 server.route({
     method: 'GET',
@@ -573,6 +617,64 @@ server.route({
         validate: {
             params: {
                 r_id: Joi.number().integer(),
+                c_id: Joi.number().integer()
+            }
+        }
+    }
+});
+
+
+/**
+ *
+ * Route to retrieve single order details
+ *
+ */
+server.route({
+    method: 'GET',
+    path: '/api/v1/order/{c_id}/{order_id}',
+    handler: function (request, reply) {
+        const order_id = request.params.order_id;
+        const c_id = request.params.c_id;
+
+        // get company db
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = "' + c_id + '"',
+            function (error, results, fields) {
+                if (error) {
+                    throw error;
+                } else {
+
+                    var db = results[0].companydb;
+
+                    // get order details
+                    connection.query('SELECT * FROM '+db+'.oc_order od WHERE od.order_id='+order_id,
+                        function (error, results, fields) {
+                            if (error) {
+                                throw error;
+                            } else {
+
+                                const orderDetails = results;
+
+                                // get order products
+                                connection.query('SELECT op.product_id,op.name,op.model,op.quantity,op.price,op.total,op.tax FROM '+db+'.oc_order_product op WHERE op.order_id='+order_id,
+                                    function (error, results, fields) {
+                                        if (error) throw error;
+
+                                        var response = {
+                                            'status': 200,
+                                            'orders': orderDetails,
+                                            'order_lines': results
+                                        }
+                                        reply(response);
+                                    });
+                            }
+                        });
+                }
+            });
+    },
+    config: {
+        validate: {
+            params: {
+                order_id: Joi.number().integer(),
                 c_id: Joi.number().integer()
             }
         }
@@ -1020,10 +1122,8 @@ server.route({
 
 
 /**
- * Route to add a new appointment note
  *
- * @method POST
- * @path /api/v1/appointments/note/create
+ * Route to add a new appointment note
  *
  */
 server.route({
@@ -1068,6 +1168,59 @@ server.route({
                 title: Joi.string().required(),
                 content: Joi.string().required(),
                 appointment_id: Joi.number().integer().required()
+            }
+        }
+    }
+});
+
+
+/**
+ *
+ * Route to update and appointment note
+ *
+ */
+server.route({
+    method: 'PUT',
+    path: '/api/v1/appointments/note',
+    handler: function (request, reply) {
+        const c_id = request.payload.c_id;
+        const note_id = request.payload.note_id;
+        const title = request.payload.title;
+        const content = request.payload.content;
+
+        // get company db
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = "' + c_id + '"',
+            function (error, results, fields) {
+                if (error) {
+                    throw error;
+                } else {
+
+                    var db = results[0].companydb;
+
+                    // update appointment note
+                    connection.query('UPDATE '+db+'.oc_notes SET note_title="'+title+'", note_content="'+content+'" WHERE note_id='+ note_id,
+                        function (error, results, fields) {
+                            if (error) {
+                                throw error;
+                            } else {
+
+                                var response = {
+                                    'status': 200,
+                                    'message': 'appointment note updated successfully'
+                                };
+                                reply(response);
+                            }
+                        });
+                }
+            });
+    },
+    config: {
+        validate: {
+            payload: {
+                c_id: Joi.number().integer().required(),
+                note_id: Joi.number().integer().required(),
+                title: Joi.string(),
+                content: Joi.string()
             }
         }
     }
@@ -1261,16 +1414,10 @@ server.route({
 
 
 /**
+ *
  * Route to register a sales rep
  * Sends a welcome email with new auto-generated login password
  *
- * @method POST
- * @path salesrep/register
- * @data:
- *          <company_id> Company id
- *          <rep_id> Sales rep id
- *          <username> Sales rep username
- *          <email> Sales rep email address
  */
 server.route({
     method: 'POST',
@@ -1350,6 +1497,11 @@ server.route({
 
 
 
+/**
+ *
+ * Route to update sales rep details
+ *
+ */
 server.route({
     method: 'PUT',
     path: '/api/v1/salesrep',
@@ -1407,6 +1559,223 @@ server.route({
                 tel: Joi.string().required(),
                 email: Joi.string().email().required(),
                 team_id: Joi.number().integer().required()
+            }
+        }
+    }
+});
+
+
+
+/**
+ *
+ * Route to log check-in for a sales rep customer visit
+ *
+ */
+server.route({
+    method: 'POST',
+    path: '/api/v1/salesrep/checkin',
+    handler: function (request, reply) {
+        const companyId = request.payload.c_id;
+        const repId = request.payload.r_id;
+        const customerId = request.payload.customer_id;
+        const location = request.payload.location;
+        const start = request.payload.start;
+        const end = request.payload.end;
+        const checkIn = request.payload.checkin;
+        const checkInLocation = request.payload.checkin_location;
+        const type = request.payload.type;
+
+        // get company db
+        connection.query("SELECT companydb FROM super.companies WHERE company_id="+companyId,
+            function (error, results, fields) {
+                if (error) {
+                    throw error;
+                } else {
+
+                    var db = results[0].companydb;
+
+                    connection.query("INSERT INTO "+db+".oc_salesrep_checkins (salesrep_id,customer_id,location,start,end,checkin,checkin_location,type) VALUES ("+repId+","+customerId+",'"+location+"','"+start+"','"+end+"','"+checkIn+"','"+checkInLocation+"',"+type+")",
+                        function (error, results, fields) {
+                            if (error) {
+                                throw error;
+                            } else {
+
+                                var response = {
+                                    status: 200,
+                                    checkin_id: results.insertId,
+                                    message: 'Successfully checked in'
+                                };
+                                reply(response);
+                            }
+                        });
+                }
+            });
+    },
+    config: {
+        validate: {
+            payload: {
+                c_id: Joi.number().integer().required(),
+                r_id: Joi.number().integer().required(),
+                customer_id: Joi.number().integer().required(),
+                location: Joi.string().required(),
+                start: Joi.string().required(),
+                end: Joi.string().required(),
+                checkin: Joi.string().required(),
+                checkin_location: Joi.string().required(),
+                type: Joi.number().integer().required()
+            }
+        }
+    }
+});
+
+
+
+/**
+ *
+ * Route to log check-out for a sales rep customer visit
+ *
+ */
+server.route({
+    method: 'PUT',
+    path: '/api/v1/salesrep/checkout',
+    handler: function (request, reply) {
+        const companyId = request.payload.c_id;
+        const checkInId = request.payload.checkin_id;
+        const checkOut = request.payload.checkout;
+        const remarks = request.payload.remarks;
+
+        // get company db
+        connection.query("SELECT companydb FROM super.companies WHERE company_id="+companyId,
+            function (error, results, fields) {
+                if (error) {
+                    throw error;
+                } else {
+
+                    var db = results[0].companydb;
+
+                    connection.query("UPDATE "+db+".oc_salesrep_checkins SET checkout='"+checkOut+"', remarks='"+remarks+"' WHERE checkin_id="+checkInId,
+                        function (error, results, fields) {
+                            if (error) {
+                                throw error;
+                            } else {
+
+                                var response = {
+                                    status: 200,
+                                    message: 'Successfully checked out'
+                                };
+                                reply(response);
+                            }
+                        });
+                }
+            });
+    },
+    config: {
+        validate: {
+            payload: {
+                c_id: Joi.number().integer().required(),
+                checkin_id: Joi.number().integer().required(),
+                checkout: Joi.string().required(),
+                remarks: Joi.string()
+            }
+        }
+    }
+});
+
+
+
+/**
+ *
+ * Route to retrieve sales rep customer visits
+ *
+ */
+server.route({
+    method: 'GET',
+    path: '/api/v1/salesrep/{r_id}/{c_id}/visits',
+    handler: function (request, reply) {
+        const companyId = request.params.c_id;
+        const repId = request.params.r_id;
+
+        // get company db
+        connection.query("SELECT companydb FROM super.companies WHERE company_id="+companyId,
+            function (error, results, fields) {
+                if (error) {
+                    throw error;
+                } else {
+
+                    var db = results[0].companydb;
+
+                    connection.query("SELECT rc.checkin_id,rc.start,rc.end,rc.checkin,rc.checkout,rc.location,rc.checkin_location,rc.remarks,cs.customer_id,cs.firstname AS customer_firstname,cs.lastname AS customer_lastname FROM "+db+".oc_salesrep_checkins rc INNER JOIN "+db+".oc_customer cs ON cs.customer_id=rc.customer_id WHERE rc.salesrep_id="+repId,
+                        function (error, results, fields) {
+                            if (error) {
+                                throw error;
+                            } else {
+
+                                var response = {
+                                    status: 200,
+                                    visits: results
+                                };
+                                reply(response);
+                            }
+                        });
+                }
+            });
+    },
+    config: {
+        validate: {
+            params: {
+                c_id: Joi.number().integer().required(),
+                r_id: Joi.number().integer().required()
+            }
+        }
+    }
+});
+
+
+
+/**
+ *
+ * Route to retrieve sales rep visits to a specific customer
+ *
+ */
+server.route({
+    method: 'GET',
+    path: '/api/v1/salesrep/{r_id}/{c_id}/visits/customer/{customer_id}',
+    handler: function (request, reply) {
+        const companyId = request.params.c_id;
+        const repId = request.params.r_id;
+        const customerId = request.params.customer_id;
+
+        // get company db
+        connection.query("SELECT companydb FROM super.companies WHERE company_id="+companyId,
+            function (error, results, fields) {
+                if (error) {
+                    throw error;
+                } else {
+
+                    var db = results[0].companydb;
+
+                    connection.query("SELECT rc.checkin_id,rc.start,rc.end,rc.checkin,rc.checkout,rc.location,rc.checkin_location,rc.remarks,cs.customer_id,cs.firstname AS customer_firstname,cs.lastname AS customer_lastname FROM "+db+".oc_salesrep_checkins rc INNER JOIN "+db+".oc_customer cs ON cs.customer_id=rc.customer_id WHERE rc.salesrep_id="+repId+" AND rc.customer_id="+customerId,
+                        function (error, results, fields) {
+                            if (error) {
+                                throw error;
+                            } else {
+
+                                var response = {
+                                    status: 200,
+                                    visits: results
+                                };
+                                reply(response);
+                            }
+                        });
+                }
+            });
+    },
+    config: {
+        validate: {
+            params: {
+                c_id: Joi.number().integer().required(),
+                r_id: Joi.number().integer().required(),
+                customer_id: Joi.number().integer().required()
             }
         }
     }
