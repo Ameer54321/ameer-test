@@ -1095,7 +1095,7 @@ server.route({
                 } else {
 
                     var db = results[0].companydb;
-                    connection.query('SELECT ap.appointment_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs ON cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad ON ad.address_id = cs.address_id LEFT JOIN '+db+'.oc_notes nt ON nt.appointment_id = ap.appointment_id WHERE ap.salesrep_id ='+r_id,
+                    connection.query('SELECT ap.appointment_id,cs.customer_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs ON cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad ON ad.address_id = cs.address_id LEFT JOIN '+db+'.oc_notes nt ON nt.appointment_id = ap.appointment_id WHERE ap.salesrep_id ='+r_id,
                         function (error, results, fields) {
                             if (error) {
                                 throw error;
@@ -1115,6 +1115,54 @@ server.route({
             params: {
                 r_id: Joi.number().integer().required(),
                 c_id: Joi.number().integer().required()
+            }
+        }
+    }
+});
+
+
+
+/**
+ *
+ * Route to retrieve a single appointment details
+ *
+ */
+server.route({
+    method: 'GET',
+    path: '/api/v1/appointment/{c_id}/{appointment_id}',
+    handler: function (request, reply) {
+        const companyId = request.params.c_id;
+        const appointmentId = request.params.appointment_id;
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id='+companyId,
+            function (error, results, fields) {
+                if (error){
+                    throw error;
+                } else {
+
+                    var db = results[0].companydb;
+
+                    // get appointment details
+                    connection.query('SELECT ap.appointment_id,cs.customer_id,cs.firstname as customer_name,ap.appointment_date,ap.duration_hours,ap.duration_minutes,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs ON cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad ON ad.address_id = cs.address_id LEFT JOIN '+db+'.oc_notes nt ON nt.appointment_id = ap.appointment_id WHERE ap.appointment_id ='+appointmentId,
+                        function (error, results, fields) {
+                            if (error) {
+                                throw error;
+                            } else {
+                                var response = {
+                                    'status': 200,
+                                    'appointments': results
+                                };
+                                reply(response);
+                            }
+                        });
+                }
+            });
+    },
+    config: {
+        validate: {
+            params: {
+                c_id: Joi.number().integer().required(),
+                appointment_id: Joi.number().integer().required()
             }
         }
     }
@@ -1583,7 +1631,7 @@ server.route({
         const end = request.payload.end;
         const checkIn = request.payload.checkin;
         const checkInLocation = request.payload.checkin_location;
-        const type = request.payload.type;
+        const appointmentId = request.payload.appointment_id;
 
         // get company db
         connection.query("SELECT companydb FROM super.companies WHERE company_id="+companyId,
@@ -1594,7 +1642,8 @@ server.route({
 
                     var db = results[0].companydb;
 
-                    connection.query("INSERT INTO "+db+".oc_salesrep_checkins (salesrep_id,customer_id,location,start,end,checkin,checkin_location,type) VALUES ("+repId+","+customerId+",'"+location+"','"+start+"','"+end+"','"+checkIn+"','"+checkInLocation+"',"+type+")",
+                    // record sales rep check-in
+                    connection.query("INSERT INTO "+db+".oc_salesrep_checkins (salesrep_id,customer_id,appointment_id,location,start,end,checkin,checkin_location) VALUES ("+repId+","+customerId+","+appointmentId+", '"+location+"','"+start+"','"+end+"','"+checkIn+"','"+checkInLocation+"')",
                         function (error, results, fields) {
                             if (error) {
                                 throw error;
@@ -1622,7 +1671,8 @@ server.route({
                 end: Joi.string().required(),
                 checkin: Joi.string().required(),
                 checkin_location: Joi.string().required(),
-                type: Joi.number().integer().required()
+                type: Joi.number().integer().required(),
+                appointment_id: Joi.number().integer().required()
             }
         }
     }
@@ -1704,6 +1754,7 @@ server.route({
 
                     var db = results[0].companydb;
 
+                    // get sales rep visits
                     connection.query("SELECT rc.checkin_id,rc.start,rc.end,rc.checkin,rc.checkout,rc.location,rc.checkin_location,rc.remarks,cs.customer_id,cs.firstname AS customer_firstname,cs.lastname AS customer_lastname FROM "+db+".oc_salesrep_checkins rc INNER JOIN "+db+".oc_customer cs ON cs.customer_id=rc.customer_id WHERE rc.salesrep_id="+repId,
                         function (error, results, fields) {
                             if (error) {
