@@ -9,6 +9,7 @@ const Bcrypt = require('bcrypt-nodejs');
 const generatePassword = require('password-generator');
 const emailClient = require('./email_client');
 const comms = require('./comm-functions');
+const geonoder = require('geonoder')
 
 // Create a server with a host and port
 const server = new Hapi.Server();
@@ -740,6 +741,9 @@ server.route({
         const country_id = request.payload.country_id;
         const zone_id = request.payload.region_id;
 
+        // get latitude and longitude from address
+        const address = address_1+ ' '+address_2+' '+city+' '+postcode;
+
         // select company by id
         connection.query('SELECT companydb FROM super.companies WHERE company_id = ' + c_id,
             function(error, results, fields) {
@@ -760,37 +764,42 @@ server.route({
                                 const customer_id = results.insertId;
                                 const address_custom_field = "";
 
-                                // insert into the customer address table
-                                connection.query('INSERT INTO ' + db + '.oc_address (customer_id,firstname,lastname,company,address_1,address_2,city,postcode,country_id,zone_id,custom_field) VALUES (' + customer_id + ',"' + firstname + '","' + lastname + '","' + company_name + '","' + address_1 + '","' + address_2 + '","' + city + '","' + postcode + '",' + country_id + ',' + zone_id + ',"' + address_custom_field + '")',
-                                    function (error, results, fields) {
-                                        if (error) {
-                                            throw error;
-                                        } else {
+                                // get GPS coordinates for the address specified
+                                geonoder.toCoordinates(address, geonoder.providers.google, function(lat, long) {
 
-                                            var address_id = results.insertId;
+                                    // insert into the customer address table
+                                    connection.query('INSERT INTO ' + db + '.oc_address (customer_id,firstname,lastname,company,address_1,address_2,city,postcode,country_id,zone_id,custom_field,latitude,longitude) VALUES (' + customer_id + ',"' + firstname + '","' + lastname + '","' + company_name + '","' + address_1 + '","' + address_2 + '","' + city + '","' + postcode + '",' + country_id + ',' + zone_id + ',"' + address_custom_field + '","'+lat+'","'+long+'")',
+                                        function (error, results, fields) {
+                                            if (error) {
+                                                throw error;
+                                            } else {
 
-                                            // update customer table with the address id
-                                            connection.query('UPDATE ' + db + '.oc_customer SET address_id=' + address_id + ' WHERE customer_id=' + customer_id,
-                                                function (error, results, fields) {
-                                                    if (error) throw error;
+                                                var address_id = results.insertId;
 
-                                                    /**
-                                                     * @TODO:
-                                                     * if successful customer insert, send email to company admin
-                                                     * to notify about the customer that needs approval
-                                                     */
-                                                    if (results) {
-                                                        var response = {
-                                                            'status': 200,
-                                                            'message': 'customer created successfully',
-                                                            'customer_id': customer_id,
-                                                            'customer_address_id': address_id
-                                                        };
-                                                        reply(response);
-                                                    }
-                                                });
-                                        }
-                                    });
+                                                // update customer table with the address id
+                                                connection.query('UPDATE ' + db + '.oc_customer SET address_id=' + address_id + ' WHERE customer_id=' + customer_id,
+                                                    function (error, results, fields) {
+                                                        if (error) throw error;
+
+                                                        /**
+                                                         * @TODO:
+                                                         * if successful customer insert, send email to company admin
+                                                         * to notify about the customer that needs approval
+                                                         */
+                                                        if (results) {
+                                                            var response = {
+                                                                'status': 200,
+                                                                'message': 'customer created successfully',
+                                                                'customer_id': customer_id,
+                                                                'customer_address_id': address_id
+                                                            };
+                                                            reply(response);
+                                                        }
+                                                    });
+                                            }
+                                        });
+                                });
+
                             }
                         });
                 }
@@ -911,23 +920,41 @@ server.route({
                     throw error;
                 } else{
                     var db = results[0].companydb;
-                    connection.query('INSERT INTO '+db+'.oc_appointment (appointment_name,appointment_description,appointment_date,duration_hours,duration_minutes,salesrep_id,customer_id) VALUES ("' + title + '","' + description + '","' + appointmentdate + '",' + duration_hours + ',' + duration_minutes + ',' + r_id + ',' + customer_id + ')',
-                        function (error, results, fields) {
-                            if (error) throw error;
-                            // console.log(fields);
-                            var response = {
-                                'status': 'success',
-                                'message': 'appointment created successfully'
+                    var duration = duration_hours+":"+duration_minutes;
 
+                    connection.query('SELECT ap.* FROM '+db+'.oc_appointment ap WHERE ap.appointment_date>="'+appointmentdate+'" AND ap.appointment_date<=DATE_ADD("2017-12-06 18:18:31", INTERVAL "'+duration+'" HOUR_MINUTE)',
+                        function (error, results, fields) {
+                            if (error) {
+                                throw error;
+                            } else {
+
+                                if (results[0]) {
+                                    // matching appointment is found at the same datetime
+                                    var response = {
+                                        status: 400,
+                                        message: "Can't have multiple appointments for the same time"
+                                    };
+                                    reply(response);
+                                } else {
+
+                                    connection.query('INSERT INTO '+db+'.oc_appointment (appointment_name,appointment_description,appointment_date,duration_hours,duration_minutes,salesrep_id,customer_id) VALUES ("' + title + '","' + description + '","' + appointmentdate + '",' + duration_hours + ',' + duration_minutes + ',' + r_id + ',' + customer_id + ')',
+                                        function (error, results, fields) {
+                                            if (error) {
+                                                throw error;
+                                            } else {
+                                                var response = {
+                                                    status: 'success',
+                                                    appointment_id: results.insertId,
+                                                    message: 'appointment created successfully'
+                                                };
+                                                reply(response);
+                                            }
+                                        });
+                                }
                             }
-                            reply(response);
                         });
                 }
-
-
-
             });
-
     }
 
 
@@ -1642,21 +1669,25 @@ server.route({
 
                     var db = results[0].companydb;
 
-                    // record sales rep check-in
-                    connection.query("INSERT INTO "+db+".oc_salesrep_checkins (salesrep_id,customer_id,appointment_id,location,start,end,checkin,checkin_location) VALUES ("+repId+","+customerId+","+appointmentId+", '"+location+"','"+start+"','"+end+"','"+checkIn+"','"+checkInLocation+"')",
-                        function (error, results, fields) {
-                            if (error) {
-                                throw error;
-                            } else {
+                    // get gps coordinates for the address specified
+                    geonoder.toCoordinates(checkInLocation, geonoder.providers.google, function(lat, long) {
 
-                                var response = {
-                                    status: 200,
-                                    checkin_id: results.insertId,
-                                    message: 'Successfully checked in'
-                                };
-                                reply(response);
-                            }
-                        });
+                        // record sales rep check-in
+                        connection.query("INSERT INTO " + db + ".oc_salesrep_checkins (salesrep_id,customer_id,appointment_id,location,start,end,checkin,checkin_location,latitude,longitude) VALUES (" + repId + "," + customerId + "," + appointmentId + ", '" + location + "','" + start + "','" + end + "','" + checkIn + "','" + checkInLocation + "', '"+lat+"', '"+long+"')",
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+
+                                    var response = {
+                                        status: 200,
+                                        checkin_id: results.insertId,
+                                        message: 'Successfully checked in'
+                                    };
+                                    reply(response);
+                                }
+                            });
+                    });
                 }
             });
     },
@@ -1671,7 +1702,6 @@ server.route({
                 end: Joi.string().required(),
                 checkin: Joi.string().required(),
                 checkin_location: Joi.string().required(),
-                type: Joi.number().integer().required(),
                 appointment_id: Joi.number().integer().required()
             }
         }
