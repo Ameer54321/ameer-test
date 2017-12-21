@@ -929,6 +929,7 @@ server.route({
                             } else {
 
                                 if (results[0]) {
+                                    // matching appointment is found at the same datetime
                                     var response = {
                                         status: 400,
                                         message: "Can't have multiple appointments for the same time"
@@ -941,7 +942,12 @@ server.route({
                                             if (error) {
                                                 throw error;
                                             } else {
-                                                reply(results);
+                                                var response = {
+                                                    status: 'success',
+                                                    appointment_id: results.insertId,
+                                                    message: 'appointment created successfully'
+                                                };
+                                                reply(response);
                                             }
                                         });
                                 }
