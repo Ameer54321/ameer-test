@@ -9,7 +9,8 @@ const Bcrypt = require('bcrypt-nodejs');
 const generatePassword = require('password-generator');
 const emailClient = require('./email_client');
 const comms = require('./comm-functions');
-const geonoder = require('geonoder')
+const geonoder = require('geonoder');
+const parser = require('json-parser');
 
 // Create a server with a host and port
 const server = new Hapi.Server();
@@ -273,6 +274,48 @@ server.route({
 });
 
 
+
+/**
+ *
+ *  Route to get single customer details
+ *
+ */
+server.route({
+    method: 'GET',
+    path: '/api/v1/customer/{customer_id}/{c_id}',
+    handler: function (request, reply) {
+        const customer_id = request.params.customer_id;
+        const c_id = request.params.c_id;
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = "' + c_id + '"',
+            function (error, results, fields) {
+                if (error) {
+                    throw error;
+                } else{
+                    var db = results[0].companydb;
+                    connection.query('SELECT firstname,lastname,email,telephone,fax FROM '+db+'.oc_customer WHERE customer_id='+customer_id,
+                        function (error, results, fields) {
+                            if (error) throw error;
+                            var response = {
+                                'status': 200,
+                                'customer': results[0]
+                            };
+                            reply(response);
+                        });
+                }
+            });
+    },
+    config: {
+        validate: {
+            params: {
+                customer_id: Joi.number().integer().required(),
+                c_id: Joi.number().integer().required()
+            }
+        }
+    }
+});
+
+
 /***********************************************************************************************************************
  *                                          Order Related API Routes
  ***********************************************************************************************************************/
@@ -434,6 +477,8 @@ server.route({
                             if (error) {
                                 throw error;
                             } else {
+
+                                results[0].cart = parser.parse(results[0].cart);
 
                                 var response = {
                                     status: 200,
