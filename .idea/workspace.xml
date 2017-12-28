@@ -26,8 +26,8 @@
       <file leaf-file-name="server.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/server.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="458">
-              <caret line="166" column="196" lean-forward="false" selection-start-line="166" selection-start-column="196" selection-end-line="166" selection-end-column="196" />
+            <state relative-caret-position="481">
+              <caret line="1975" column="51" lean-forward="true" selection-start-line="1975" selection-start-column="51" selection-end-line="1975" selection-end-column="51" />
               <folding />
             </state>
           </provider>
@@ -37,9 +37,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>checkin</find>
-      <find>appointments/{</find>
-      <find>quotes</find>
       <find>quote</find>
       <find>orders/{</find>
       <find>appointments</find>
@@ -67,6 +64,9 @@
       <find>/quotes/</find>
       <find>quotes/</find>
       <find>{customer_id}</find>
+      <find>appoint</find>
+      <find>geonoder</find>
+      <find>order quo</find>
     </findStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$/../../Scripts/dashboard</dir>
@@ -92,13 +92,13 @@
         <option value="$PROJECT_DIR$/../../Scripts/SHOPin/app/src/pages/item-detail/item-detail.html" />
         <option value="$PROJECT_DIR$/../../Scripts/SHOPin/app/src/pages/item-detail/item-detail.ts" />
         <option value="$PROJECT_DIR$/../../Scripts/SHOPin/app/src/pages/home/home.ts" />
-        <option value="$PROJECT_DIR$/comm-functions.js" />
         <option value="$PROJECT_DIR$/../../Scripts/ionic-googlemaps-quickdemo/config.xml" />
         <option value="$PROJECT_DIR$/../../Scripts/dashboard/src/index.html" />
         <option value="$PROJECT_DIR$/../../Scripts/dashboard/src/app/pages/authNavigation/authNavigation.html" />
         <option value="$PROJECT_DIR$/geo-functions.js" />
         <option value="$PROJECT_DIR$/package.json" />
         <option value="$PROJECT_DIR$/server.js" />
+        <option value="$PROJECT_DIR$/comm-functions.js" />
       </list>
     </option>
   </component>
@@ -237,12 +237,12 @@
       <workItem from="1513842283225" duration="2740000" />
       <workItem from="1513881242810" duration="155000" />
       <workItem from="1514356420841" duration="2642000" />
-      <workItem from="1514439965169" duration="227000" />
+      <workItem from="1514439965169" duration="1743000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="56459000" />
+    <option name="totallyTimeSpent" value="57975000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="805" extended-state="0" />
@@ -625,13 +625,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/comm-functions.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2066">
-          <caret line="5" column="0" lean-forward="false" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/geo-functions.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="285">
@@ -661,10 +654,21 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/comm-functions.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="222">
+          <caret line="37" column="21" lean-forward="true" selection-start-line="37" selection-start-column="21" selection-end-line="37" selection-end-column="27" />
+          <folding>
+            <marker date="1514452642471" expanded="true" signature="600:615" ph="..." />
+            <marker date="1514452642471" expanded="true" signature="4205:4220" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/server.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="458">
-          <caret line="166" column="196" lean-forward="false" selection-start-line="166" selection-start-column="196" selection-end-line="166" selection-end-column="196" />
+        <state relative-caret-position="481">
+          <caret line="1975" column="51" lean-forward="true" selection-start-line="1975" selection-start-column="51" selection-end-line="1975" selection-end-column="51" />
           <folding />
         </state>
       </provider>
