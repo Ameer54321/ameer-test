@@ -291,17 +291,29 @@ server.route({
             function (error, results, fields) {
                 if (error) {
                     throw error;
-                } else{
-                    var db = results[0].companydb;
-                    connection.query('SELECT firstname,lastname,email,telephone,fax FROM '+db+'.oc_customer WHERE customer_id='+customer_id,
-                        function (error, results, fields) {
-                            if (error) throw error;
-                            var response = {
-                                'status': 200,
-                                'customer': results[0]
-                            };
-                            reply(response);
-                        });
+                } else {
+
+                    if (results.length > 0) {
+                        var db = results[0].companydb;
+                        connection.query('SELECT cs.firstname,cs.lastname,cs.email,cs.telephone,cs.fax,cs.address_id,ca.address_1,ca.address_2,ca.city,ca.postcode FROM ' + db + '.oc_customer cs INNER JOIN ' + db + '.oc_address ca ON ca.address_id=cs.address_id WHERE cs.customer_id=' + customer_id,
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+                                    var response = {
+                                        'status': 200,
+                                        'customer': results[0]
+                                    };
+                                    reply(response);
+                                }
+                            });
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
             });
     },
@@ -310,6 +322,86 @@ server.route({
             params: {
                 customer_id: Joi.number().integer().required(),
                 c_id: Joi.number().integer().required()
+            }
+        }
+    }
+});
+
+
+
+/**
+ *
+ *  Route to update customer details
+ *
+ */
+server.route({
+    method: 'PUT',
+    path: '/api/v1/customer',
+    handler: function (request, reply) {
+        const customer_id = request.payload.customer_id;
+        const c_id = request.payload.c_id;
+        const email = request.payload.email;
+        const telephone = request.payload.telephone;
+        const fax = request.payload.fax;
+        const address_id = request.payload.address_id;
+        const address_1 = request.payload.address_1;
+        const address_2 = request.payload.address_2;
+        const city = request.payload.city;
+        const postcode = request.payload.postcode;
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id=' + c_id,
+            function (error, results, fields) {
+                if (error) {
+                    throw error;
+                } else {
+
+                    if (results.length > 0) {
+
+                        var db = results[0].companydb;
+
+                        connection.query('UPDATE ' + db + '.oc_customer SET email="' + email + '",telephone="' + telephone + '",fax="' + fax + '" WHERE customer_id=' + customer_id,
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+
+                                    connection.query('UPDATE ' + db + '.oc_address SET address_1="' + address_1 + '",address_2="' + address_2 + '",city="' + city + '",postcode="' + postcode + '" WHERE address_id=' + address_id,
+                                        function (error, results, fields) {
+                                            if (error) {
+                                                throw error;
+                                            } else {
+                                                var response = {
+                                                    'status': 200,
+                                                    'message': 'successfully updated customer details'
+                                                };
+                                                reply(response);
+                                            }
+                                        });
+                                }
+                            });
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
+                }
+            });
+    },
+    config: {
+        validate: {
+            payload: {
+                customer_id: Joi.number().integer(),
+                c_id: Joi.number().integer(),
+                email: Joi.string().email(),
+                telephone: Joi.string(),
+                fax: Joi.string(),
+                address_id: Joi.number().integer(),
+                address_1: Joi.string(),
+                address_2: Joi.string(),
+                city: Joi.string(),
+                postcode: Joi.string()
             }
         }
     }
@@ -1967,7 +2059,7 @@ server.route({
                 } else{
 
                     var db = results[0].companydb;
-                    connection.query('SELECT pr.product_id, pd.name, pr.price FROM '+db+'.oc_product pr INNER JOIN '+db+'.oc_product_description pd ON pd.product_id=pr.product_id INNER JOIN '+db+'.oc_product_to_customer_group pc ON pc.product_id=pr.product_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_group_id=pc.customer_group_id INNER JOIN '+db+'.oc_product_to_category ct ON ct.product_id=pr.product_id WHERE ct.category_id='+category_id+' AND pr.status=0 GROUP BY pr.product_id',
+                    connection.query('SELECT pr.product_id, pd.name, pr.price FROM '+db+'.oc_product pr INNER JOIN '+db+'.oc_product_description pd ON pd.product_id=pr.product_id INNER JOIN '+db+'.oc_product_to_customer_group pc ON pc.product_id=pr.product_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_group_id=pc.customer_group_id INNER JOIN '+db+'.oc_product_to_category ct ON ct.product_id=pr.product_id WHERE ct.category_id='+category_id+' AND pr.status=1 GROUP BY pr.product_id',
                         function (error, results, fields) {
                             if (error) throw error;
 
