@@ -6,5 +6,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="Scripts" />
     <orderEntry type="module" module-name="ReplogicExtension" />
+    <orderEntry type="module" module-name="htdocs" />
   </component>
 </module>
