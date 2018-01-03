@@ -121,13 +121,24 @@ server.route({
                 if (error){
                     throw error;
                 } else{
-                    var db = results[0].companydb;
-                    connection.query('SELECT customer_id,firstname as name,email,telephone FROM '+db+'.oc_customer WHERE salesrep_id = "' + r_id + '"',
-                        function (error, results, fields) {
-                            if (error) throw error;
-                           // console.log(fields);
-                            reply(results);
-                        });
+
+                    if (results.length > 0) {
+
+                        var db = results[0].companydb;
+                        connection.query('SELECT customer_id,firstname as name,email,telephone FROM '+db+'.oc_customer WHERE salesrep_id = "' + r_id + '"',
+                            function (error, results, fields) {
+                                if (error) throw error;
+
+                                reply(results);
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
 
 
@@ -163,16 +174,25 @@ server.route({
                 if (error){
                     throw error;
                 } else{
-                    var db = results[0].companydb;
-                    connection.query('SELECT ap.appointment_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,ap.duration_hours,ap.duration_minutes,nt.note_id,nt.note_content FROM '+db+'.oc_appointment ap left join '+db+'.oc_customer cs on cs.customer_id = ap.customer_id left join '+db+'.oc_address ad on ad.address_id = cs.address_id left join '+db+'.oc_notes nt on nt.appointment_id = ap.appointment_id WHERE ap.salesrep_id = '+r_id+' AND cs.customer_id ='+customer_id+' AND DATE_FORMAT(ap.appointment_date,"%Y-%m-%d") >= DATE_FORMAT(NOW(),"%Y-%m-%d")',
-                        function (error, results, fields) {
-                            if (error) throw error;
-                            // console.log(fields);
-                            reply(results);
-                        });
+
+                    if (results.length > 0) {
+
+                        var db = results[0].companydb;
+                        connection.query('SELECT ap.appointment_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,ap.duration_hours,ap.duration_minutes,nt.note_id,nt.note_content FROM '+db+'.oc_appointment ap left join '+db+'.oc_customer cs on cs.customer_id = ap.customer_id left join '+db+'.oc_address ad on ad.address_id = cs.address_id left join '+db+'.oc_notes nt on nt.appointment_id = ap.appointment_id WHERE ap.salesrep_id = '+r_id+' AND cs.customer_id ='+customer_id+' AND DATE_FORMAT(ap.appointment_date,"%Y-%m-%d") >= DATE_FORMAT(NOW(),"%Y-%m-%d")',
+                            function (error, results, fields) {
+                                if (error) throw error;
+
+                                reply(results);
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
-
-
 
             });
 
@@ -205,16 +225,27 @@ server.route({
             function (error, results, fields) {
                 if (error){
                     throw error;
-                } else{
-                    var db = results[0].companydb;
-                    connection.query('SELECT customer_con_id AS contact_id,first_name AS name,last_name AS surname,cellphone_number AS cell,role,email FROM '+db+'.oc_customer_contact WHERE customer_id='+customer_id,
-                        function (error, results, fields) {
-                            if (error) throw error;
-                            reply(results);
-                        });
+                } else {
+
+                    if (results.length > 0) {
+
+                        var db = results[0].companydb;
+
+                        connection.query('SELECT customer_con_id AS contact_id,first_name AS name,last_name AS surname,cellphone_number AS cell,role,email FROM '+db+'.oc_customer_contact WHERE customer_id='+customer_id,
+                            function (error, results, fields) {
+                                if (error) throw error;
+
+                                reply(results);
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
-
-
 
             });
 
@@ -250,16 +281,28 @@ server.route({
                 if (error){
                     throw error;
                 } else{
-                    var db = results[0].companydb;
-                    connection.query('SELECT od.order_id, od.order_status_id, cs.salesrep_id FROM '+db+'.oc_order od INNER JOIN '+db+'.oc_customer cs ON cs.customer_id = od.customer_id WHERE cs.customer_id = '+customer_id+' AND od.isReplogic=1',
-                        function (error, results, fields) {
-                            if (error) throw error;
-                            var response = {
-                                'status': 200,
-                                'orders': results
-                            };
-                            reply(response);
-                        });
+
+                    if (results.length > 0) {
+
+                        var db = results[0].companydb;
+
+                        connection.query('SELECT od.order_id, od.order_status_id, cs.salesrep_id FROM '+db+'.oc_order od INNER JOIN '+db+'.oc_customer cs ON cs.customer_id = od.customer_id WHERE cs.customer_id = '+customer_id+' AND od.isReplogic=1',
+                            function (error, results, fields) {
+                                if (error) throw error;
+                                var response = {
+                                    'status': 200,
+                                    'orders': results
+                                };
+                                reply(response);
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
             });
     },
@@ -392,16 +435,16 @@ server.route({
     config: {
         validate: {
             payload: {
-                customer_id: Joi.number().integer(),
-                c_id: Joi.number().integer(),
-                email: Joi.string().email(),
-                telephone: Joi.string(),
+                customer_id: Joi.number().integer().required(),
+                c_id: Joi.number().integer().required(),
+                email: Joi.string().email().required(),
+                telephone: Joi.string().required(),
                 fax: Joi.string(),
-                address_id: Joi.number().integer(),
-                address_1: Joi.string(),
+                address_id: Joi.number().integer().required(),
+                address_1: Joi.string().required(),
                 address_2: Joi.string(),
-                city: Joi.string(),
-                postcode: Joi.string()
+                city: Joi.string().required(),
+                postcode: Joi.string().required()
             }
         }
     }
@@ -433,32 +476,42 @@ server.route({
                     throw error;
                 } else {
 
-                    var db = results[0].companydb;
-                    var cartJson = JSON.stringify(cart);
+                    if (results.length > 0) {
 
-                    // insert order quote information
-                    connection.query("INSERT INTO "+db+".oc_replogic_order_quote (salesrep_id, customer_id, customer_contact_id, cart, date_added) VALUES ("+r_id+", "+customer_id+", "+contact_id+", '"+cartJson+"', NOW())",
-                        function (error, results, fields) {
-                            if (error) {
-                                throw error;
-                            } else {
+                        var db = results[0].companydb;
+                        var cartJson = JSON.stringify(cart);
 
-                                var quote_id = results.insertId;
+                        // insert order quote information
+                        connection.query("INSERT INTO "+db+".oc_replogic_order_quote (salesrep_id, customer_id, customer_contact_id, cart, date_added) VALUES ("+r_id+", "+customer_id+", "+contact_id+", '"+cartJson+"', NOW())",
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
 
-                                // get customer email from database to send order confirmation
-                                connection.query('SELECT cs.email AS customer_email,cc.email AS cust_contact_email,rs.email AS comp_admin_email FROM '+db+'.oc_customer cs INNER JOIN '+db+'.oc_customer_contact cc ON cc.customer_id=cs.customer_id INNER JOIN '+db+'.oc_rep_settings rs ON rs.company_id='+c_id+' WHERE cs.customer_id='+customer_id+' AND cc.customer_con_id='+contact_id,
-                                    function (error, results, fields) {
-                                        if (error) {
-                                            throw error;
-                                        } else {
-                                            if (results[0]) {
-                                                comms.orderConfirmationToAdmin(results[0].comp_admin_email, cart, quote_id);
-                                                comms.orderConfirmationToCustomer(results[0], cart, quote_id, reply);
+                                    var quote_id = results.insertId;
+
+                                    // get customer email from database to send order confirmation
+                                    connection.query('SELECT cs.email AS customer_email,cc.email AS cust_contact_email,rs.email AS comp_admin_email FROM '+db+'.oc_customer cs INNER JOIN '+db+'.oc_customer_contact cc ON cc.customer_id=cs.customer_id INNER JOIN '+db+'.oc_rep_settings rs ON rs.company_id='+c_id+' WHERE cs.customer_id='+customer_id+' AND cc.customer_con_id='+contact_id,
+                                        function (error, results, fields) {
+                                            if (error) {
+                                                throw error;
+                                            } else {
+                                                if (results[0]) {
+                                                    comms.orderConfirmationToAdmin(results[0].comp_admin_email, cart, quote_id);
+                                                    comms.orderConfirmationToCustomer(results[0], cart, quote_id, reply);
+                                                }
                                             }
-                                        }
-                                    });
-                            }
-                        });
+                                        });
+                                }
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
             });
     },
@@ -496,39 +549,48 @@ server.route({
                     throw error;
                 } else {
 
-                    var db = results[0].companydb;
+                    if (results.length > 0) {
 
-                    // build select query filter
-                    var query = '';
-                    if (filter.quote_id !== undefined) {
-                        // filter by quote id
-                        query += ' AND oq.quote_id='+filter.quote_id;
+                        var db = results[0].companydb;
+
+                        // build select query filter
+                        var query = '';
+                        if (filter.quote_id !== undefined) {
+                            // filter by quote id
+                            query += ' AND oq.quote_id='+filter.quote_id;
+                        }
+                        if (filter.date_added !== undefined) {
+                            // filter by date added
+                            query += ' AND DATE(oq.date_added) = STR_TO_DATE("'+filter.date_added+'", "%Y-%m-%d")';
+                        }
+                        if (filter.customer_name !== undefined) {
+                            // filter by date added
+                            query += ' AND (cs.firstname="'+filter.customer_name+'" OR cs.lastname="'+filter.customer_name+'")';
+                        }
+
+                        // query database
+                        connection.query('SELECT oq.quote_id,oq.status,oq.date_added,cs.firstname AS customer_name,CONCAT(cc.first_name, " ", cc.last_name) AS contact_name FROM '+db+'.oc_replogic_order_quote oq INNER JOIN '+db+'.oc_customer cs ON cs.customer_id=oq.customer_id INNER JOIN '+db+'.oc_customer_contact cc ON cc.customer_con_id=oq.customer_contact_id WHERE oq.status IN (0,2) AND oq.salesrep_id='+r_id+' '+query,
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+
+                                    var response = {
+                                        status: 200,
+                                        order_quotes: results
+                                    };
+
+                                    reply(response);
+                                }
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
                     }
-                    if (filter.date_added !== undefined) {
-                        // filter by date added
-                        query += ' AND DATE(oq.date_added) = STR_TO_DATE("'+filter.date_added+'", "%Y-%m-%d")';
-                    }
-                    if (filter.customer_name !== undefined) {
-                        // filter by date added
-                        query += ' AND (cs.firstname="'+filter.customer_name+'" OR cs.lastname="'+filter.customer_name+'")';
-                    }
-
-                    // query database
-                    connection.query('SELECT oq.quote_id,oq.status,oq.date_added,cs.firstname AS customer_name,CONCAT(cc.first_name, " ", cc.last_name) AS contact_name FROM '+db+'.oc_replogic_order_quote oq INNER JOIN '+db+'.oc_customer cs ON cs.customer_id=oq.customer_id INNER JOIN '+db+'.oc_customer_contact cc ON cc.customer_con_id=oq.customer_contact_id WHERE oq.salesrep_id='+r_id+' '+query,
-                        function (error, results, fields) {
-                            if (error) {
-                                throw error;
-                            } else {
-
-                                var response = {
-                                    status: 200,
-                                    order_quotes: results
-                                };
-
-                                reply(response);
-                            }
-                        });
-
                 }
             });
     },
@@ -562,25 +624,34 @@ server.route({
                     throw error;
                 } else {
 
-                    var db = results[0].companydb;
+                    if (results.length > 0) {
 
-                    connection.query('SELECT oq.quote_id,oq.status,oq.date_added,oq.cart,cs.email,cs.telephone,CONCAT(ca.address_1," ",ca.address_2," ",ca.city," ",postcode) AS address,cs.firstname AS customer_name,CONCAT(cc.first_name, " ", cc.last_name) AS contact_name FROM '+db+'.oc_replogic_order_quote oq INNER JOIN '+db+'.oc_customer cs ON cs.customer_id=oq.customer_id INNER JOIN '+db+'.oc_customer_contact cc ON cc.customer_con_id=oq.customer_contact_id INNER JOIN '+db+'.oc_address ca ON ca.customer_id=cs.customer_id WHERE oq.quote_id='+quote_id,
-                        function (error, results, fields) {
-                            if (error) {
-                                throw error;
-                            } else {
+                        var db = results[0].companydb;
 
-                                results[0].cart = parser.parse(results[0].cart);
+                        connection.query('SELECT oq.quote_id,oq.status,oq.date_added,oq.cart,cs.email,cs.telephone,CONCAT(ca.address_1," ",ca.address_2," ",ca.city," ",postcode) AS address,cs.firstname AS customer_name,CONCAT(cc.first_name, " ", cc.last_name) AS contact_name FROM '+db+'.oc_replogic_order_quote oq INNER JOIN '+db+'.oc_customer cs ON cs.customer_id=oq.customer_id INNER JOIN '+db+'.oc_customer_contact cc ON cc.customer_con_id=oq.customer_contact_id INNER JOIN '+db+'.oc_address ca ON ca.customer_id=cs.customer_id WHERE oq.quote_id='+quote_id,
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
 
-                                var response = {
-                                    status: 200,
-                                    order_quotes: results
-                                };
+                                    results[0].cart = parser.parse(results[0].cart);
 
-                                reply(response);
-                            }
-                        });
+                                    var response = {
+                                        status: 200,
+                                        order_quotes: results
+                                    };
 
+                                    reply(response);
+                                }
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
             });
     },
@@ -588,6 +659,124 @@ server.route({
         validate: {
             params: {
                 quote_id: Joi.number().integer().required(),
+                c_id: Joi.number().integer().required()
+            }
+        }
+    }
+});
+
+
+
+/**
+ *
+ * Route to retrieve number of quotes awaiting approval
+ *
+ */
+server.route({
+    method: 'GET',
+    path: '/api/v1/orders/{r_id}/{c_id}/quotes/count/pending',
+    handler: function (request, reply) {
+        const r_id = request.params.r_id;
+        const c_id = request.params.c_id;
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = ' + c_id,
+            function (error, results, fields) {
+                if (error) {
+                    throw error;
+                } else {
+
+                    if (results.length > 0) {
+
+                        var db = results[0].companydb;
+
+                        // quotes awaiting approval
+                        connection.query('SELECT COUNT(oq.quote_id) AS qty FROM '+db+'.oc_replogic_order_quote oq WHERE oq.status=0 AND oq.salesrep_id='+r_id+' AND DATE_FORMAT(oq.date_added,"%Y-%m") = DATE_FORMAT(NOW(),"%Y-%m")',
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+
+                                    var response = {
+                                        status: 200,
+                                        count: results[0].qty
+                                    };
+                                    reply(response);
+                                }
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
+                }
+            });
+    },
+    config: {
+        validate: {
+            params: {
+                r_id: Joi.number().integer().required(),
+                c_id: Joi.number().integer().required()
+            }
+        }
+    }
+});
+
+
+
+/**
+ *
+ * Route to retrieve number of approved quotes
+ *
+ */
+server.route({
+    method: 'GET',
+    path: '/api/v1/orders/{r_id}/{c_id}/quotes/count/approved',
+    handler: function (request, reply) {
+        const r_id = request.params.r_id;
+        const c_id = request.params.c_id;
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = ' + c_id,
+            function (error, results, fields) {
+                if (error) {
+                    throw error;
+                } else {
+
+                    if (results.length > 0) {
+
+                        var db = results[0].companydb;
+
+                        // quotes awaiting approval
+                        connection.query('SELECT COUNT(oq.quote_id) AS qty FROM '+db+'.oc_replogic_order_quote oq WHERE oq.status=1 AND oq.salesrep_id='+r_id+' AND DATE_FORMAT(oq.date_added,"%Y-%m") = DATE_FORMAT(NOW(),"%Y-%m")',
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+
+                                    var response = {
+                                        status: 200,
+                                        count: results[0].qty
+                                    };
+                                    reply(response);
+                                }
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
+                }
+            });
+    },
+    config: {
+        validate: {
+            params: {
+                r_id: Joi.number().integer().required(),
                 c_id: Joi.number().integer().required()
             }
         }
@@ -611,14 +800,26 @@ server.route({
             function (error, results, fields) {
                 if (error){
                     throw error;
-                } else{
-                    var db = results[0].companydb;
-                    connection.query('SELECT od.order_id,od.customer_id,od.total,od.date_added FROM '+db+'.oc_order od inner join '+db+'.oc_customer cs on cs.customer_id = od.customer_id WHERE cs.salesrep_id = '+r_id+' AND DATE_FORMAT(od.date_added,"%Y-%m") = DATE_FORMAT(NOW(),"%Y-%m")',
-                        function (error, results, fields) {
-                            if (error) throw error;
-                            // console.log(fields);
-                            reply(results);
-                        });
+                } else {
+
+                    if (results.length > 0) {
+
+                        var db = results[0].companydb;
+
+                        connection.query('SELECT od.order_id,od.customer_id,od.total,od.date_added FROM '+db+'.oc_order od inner join '+db+'.oc_customer cs on cs.customer_id = od.customer_id WHERE cs.salesrep_id = '+r_id+' AND DATE_FORMAT(od.date_added,"%Y-%m") = DATE_FORMAT(NOW(),"%Y-%m")',
+                            function (error, results, fields) {
+                                if (error) throw error;
+                                // console.log(fields);
+                                reply(results);
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
 
             });
@@ -651,14 +852,26 @@ server.route({
             function (error, results, fields) {
                 if (error){
                     throw error;
-                } else{
-                    var db = results[0].companydb;
-                    connection.query('SELECT od.order_id,od.customer_id,od.total,od.date_added FROM '+db+'.oc_order od inner join '+db+'.oc_customer cs on cs.customer_id = od.customer_id WHERE cs.salesrep_id = '+r_id+' AND DATE_FORMAT(od.date_added,"%Y-%m") = DATE_FORMAT(NOW(),"%Y-%m") AND od.order_status_id = 1',
-                        function (error, results, fields) {
-                            if (error) throw error;
-                            // console.log(fields);
-                            reply(results);
-                        });
+                } else {
+
+                    if (results.length > 0) {
+
+                        var db = results[0].companydb;
+
+                        connection.query('SELECT od.order_id,od.customer_id,od.total,od.date_added FROM '+db+'.oc_order od inner join '+db+'.oc_customer cs on cs.customer_id = od.customer_id WHERE cs.salesrep_id = '+r_id+' AND DATE_FORMAT(od.date_added,"%Y-%m") = DATE_FORMAT(NOW(),"%Y-%m") AND od.order_status_id = 1',
+                            function (error, results, fields) {
+                                if (error) throw error;
+
+                                reply(results);
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
 
 
@@ -692,18 +905,26 @@ server.route({
             function (error, results, fields) {
                 if (error){
                     throw error;
-                } else{
-                    var db = results[0].companydb;
-                    connection.query('SELECT od.order_id,od.customer_id,od.total,od.date_added FROM '+db+'.oc_order od inner join '+db+'.oc_customer cs on cs.customer_id = od.customer_id WHERE cs.salesrep_id = '+r_id+' AND DATE_FORMAT(od.date_added,"%Y-%m") = DATE_FORMAT(NOW(),"%Y-%m") AND od.order_status_id = 15',
-                        function (error, results, fields) {
-                            if (error) throw error;
-                            // console.log(fields);
-                            reply(results);
-                        });
+                } else {
+
+                    if (results.length > 0) {
+
+                        var db = results[0].companydb;
+                        connection.query('SELECT od.order_id,od.customer_id,od.total,od.date_added FROM '+db+'.oc_order od inner join '+db+'.oc_customer cs on cs.customer_id = od.customer_id WHERE cs.salesrep_id = '+r_id+' AND DATE_FORMAT(od.date_added,"%Y-%m") = DATE_FORMAT(NOW(),"%Y-%m") AND od.order_status_id = 15',
+                            function (error, results, fields) {
+                                if (error) throw error;
+
+                                reply(results);
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
-
-
-
             });
 
     },
@@ -734,18 +955,30 @@ server.route({
             function (error, results, fields) {
                 if (error){
                     throw error;
-                } else{
-                    var db = results[0].companydb;
-                    connection.query('SELECT od.order_id, od.order_status_id, cs.salesrep_id FROM '+db+'.oc_order od INNER JOIN '+db+'.oc_customer cs ON cs.customer_id = od.customer_id WHERE cs.salesrep_id = '+r_id+' AND od.isReplogic=1',
-                        function (error, results, fields) {
-                            if (error) throw error;
+                } else {
 
-                            var response = {
-                                'status': 200,
-                                'orders': results
-                            }
-                            reply(response);
-                        });
+                    if (results.length > 0) {
+
+                        var db = results[0].companydb;
+
+                        connection.query('SELECT od.order_id, od.order_status_id, cs.salesrep_id FROM '+db+'.oc_order od INNER JOIN '+db+'.oc_customer cs ON cs.customer_id = od.customer_id WHERE cs.salesrep_id = '+r_id+' AND od.isReplogic=1',
+                            function (error, results, fields) {
+                                if (error) throw error;
+
+                                var response = {
+                                    'status': 200,
+                                    'orders': results
+                                };
+                                reply(response);
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
 
             });
@@ -781,31 +1014,41 @@ server.route({
                     throw error;
                 } else {
 
-                    var db = results[0].companydb;
+                    if (results.length > 0) {
 
-                    // get order details
-                    connection.query('SELECT * FROM '+db+'.oc_order od WHERE od.order_id='+order_id,
-                        function (error, results, fields) {
-                            if (error) {
-                                throw error;
-                            } else {
+                        var db = results[0].companydb;
 
-                                const orderDetails = results;
+                        // get order details
+                        connection.query('SELECT * FROM '+db+'.oc_order od WHERE od.order_id='+order_id,
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
 
-                                // get order products
-                                connection.query('SELECT op.product_id,op.name,op.model,op.quantity,op.price,op.total,op.tax FROM '+db+'.oc_order_product op WHERE op.order_id='+order_id,
-                                    function (error, results, fields) {
-                                        if (error) throw error;
+                                    const orderDetails = results;
 
-                                        var response = {
-                                            'status': 200,
-                                            'orders': orderDetails,
-                                            'order_lines': results
-                                        }
-                                        reply(response);
-                                    });
-                            }
-                        });
+                                    // get order products
+                                    connection.query('SELECT op.product_id,op.name,op.model,op.quantity,op.price,op.total,op.tax FROM '+db+'.oc_order_product op WHERE op.order_id='+order_id,
+                                        function (error, results, fields) {
+                                            if (error) throw error;
+
+                                            var response = {
+                                                'status': 200,
+                                                'orders': orderDetails,
+                                                'order_lines': results
+                                            }
+                                            reply(response);
+                                        });
+                                }
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
             });
     },
@@ -888,57 +1131,67 @@ server.route({
                     throw error;
                 } else {
 
-                    const db = results[0].companydb;
+                    if (results.length > 0) {
 
-                    // insert into the customer table
-                    connection.query('INSERT INTO ' + db + '.oc_customer (customer_group_id,salesrep_id,store_id,language_id,firstname,lastname,email,telephone,fax,password,salt,newsletter,address_id,custom_field,ip,status,approved,safe,token,code,date_added) VALUES (' + customer_group_id + ',' + rep_id + ',' + store_id + ',' + language_id + ',"' + firstname + '","' + lastname + '","' + email + '","' + telephone + '","' + fax + '","' + encryptedPassword + '","' + salt + '",' + newsletter + ',' + address_id + ',"' + custom_field + '","' + ip + '",' + status + ',' + approved + ',' + safe + ',"' + token + '","' + code + '", NOW())',
-                        function (error, results, fields) {
-                            if (error) {
-                                throw error;
-                            } else {
+                        const db = results[0].companydb;
 
-                                // hard-coded and dynamic fields/values
-                                const customer_id = results.insertId;
-                                const address_custom_field = "";
+                        // insert into the customer table
+                        connection.query('INSERT INTO ' + db + '.oc_customer (customer_group_id,salesrep_id,store_id,language_id,firstname,lastname,email,telephone,fax,password,salt,newsletter,address_id,custom_field,ip,status,approved,safe,token,code,date_added) VALUES (' + customer_group_id + ',' + rep_id + ',' + store_id + ',' + language_id + ',"' + firstname + '","' + lastname + '","' + email + '","' + telephone + '","' + fax + '","' + encryptedPassword + '","' + salt + '",' + newsletter + ',' + address_id + ',"' + custom_field + '","' + ip + '",' + status + ',' + approved + ',' + safe + ',"' + token + '","' + code + '", NOW())',
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
 
-                                // get GPS coordinates for the address specified
-                                geonoder.toCoordinates(address, geonoder.providers.google, function(lat, long) {
+                                    // hard-coded and dynamic fields/values
+                                    const customer_id = results.insertId;
+                                    const address_custom_field = "";
 
-                                    // insert into the customer address table
-                                    connection.query('INSERT INTO ' + db + '.oc_address (customer_id,firstname,lastname,company,address_1,address_2,city,postcode,country_id,zone_id,custom_field,latitude,longitude) VALUES (' + customer_id + ',"' + firstname + '","' + lastname + '","' + company_name + '","' + address_1 + '","' + address_2 + '","' + city + '","' + postcode + '",' + country_id + ',' + zone_id + ',"' + address_custom_field + '","'+lat+'","'+long+'")',
-                                        function (error, results, fields) {
-                                            if (error) {
-                                                throw error;
-                                            } else {
+                                    // get GPS coordinates for the address specified
+                                    geonoder.toCoordinates(address, geonoder.providers.google, function(lat, long) {
 
-                                                var address_id = results.insertId;
+                                        // insert into the customer address table
+                                        connection.query('INSERT INTO ' + db + '.oc_address (customer_id,firstname,lastname,company,address_1,address_2,city,postcode,country_id,zone_id,custom_field,latitude,longitude) VALUES (' + customer_id + ',"' + firstname + '","' + lastname + '","' + company_name + '","' + address_1 + '","' + address_2 + '","' + city + '","' + postcode + '",' + country_id + ',' + zone_id + ',"' + address_custom_field + '","'+lat+'","'+long+'")',
+                                            function (error, results, fields) {
+                                                if (error) {
+                                                    throw error;
+                                                } else {
 
-                                                // update customer table with the address id
-                                                connection.query('UPDATE ' + db + '.oc_customer SET address_id=' + address_id + ' WHERE customer_id=' + customer_id,
-                                                    function (error, results, fields) {
-                                                        if (error) throw error;
+                                                    var address_id = results.insertId;
 
-                                                        /**
-                                                         * @TODO:
-                                                         * if successful customer insert, send email to company admin
-                                                         * to notify about the customer that needs approval
-                                                         */
-                                                        if (results) {
-                                                            var response = {
-                                                                'status': 200,
-                                                                'message': 'customer created successfully',
-                                                                'customer_id': customer_id,
-                                                                'customer_address_id': address_id
-                                                            };
-                                                            reply(response);
-                                                        }
-                                                    });
-                                            }
-                                        });
-                                });
+                                                    // update customer table with the address id
+                                                    connection.query('UPDATE ' + db + '.oc_customer SET address_id=' + address_id + ' WHERE customer_id=' + customer_id,
+                                                        function (error, results, fields) {
+                                                            if (error) throw error;
 
-                            }
-                        });
+                                                            /**
+                                                             * @TODO:
+                                                             * if successful customer insert, send email to company admin
+                                                             * to notify about the customer that needs approval
+                                                             */
+                                                            if (results) {
+                                                                var response = {
+                                                                    'status': 200,
+                                                                    'message': 'customer created successfully',
+                                                                    'customer_id': customer_id,
+                                                                    'customer_address_id': address_id
+                                                                };
+                                                                reply(response);
+                                                            }
+                                                        });
+                                                }
+                                            });
+                                    });
+
+                                }
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
             });
     },
@@ -989,24 +1242,34 @@ server.route({
                     throw error;
                 } else {
 
-                    var db = results[0].companydb;
+                    if (results.length > 0) {
 
-                    // insert into the customer contact table
-                    connection.query('INSERT INTO ' + db + '.oc_customer_contact (first_name,last_name,email,telephone_number,cellphone_number,customer_id,role) VALUES ("' + firstname + '", "' + surname + '", "' + email + '", "' + telephone + '", "' + mobile_number + '", "' + customer_id + '", "' + role + '")',
-                        function (error, results, fields) {
-                            if (error) {
-                                throw error;
-                            } else {
+                        var db = results[0].companydb;
 
-                                var response = {
-                                    'status': 200,
-                                    'message': 'customer contact created successfully',
-                                    'customer_contact_id': results.insertId
+                        // insert into the customer contact table
+                        connection.query('INSERT INTO ' + db + '.oc_customer_contact (first_name,last_name,email,telephone_number,cellphone_number,customer_id,role) VALUES ("' + firstname + '", "' + surname + '", "' + email + '", "' + telephone + '", "' + mobile_number + '", "' + customer_id + '", "' + role + '")',
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
 
+                                    var response = {
+                                        'status': 200,
+                                        'message': 'customer contact created successfully',
+                                        'customer_contact_id': results.insertId
+
+                                    };
+                                    reply(response);
                                 }
-                                reply(response);
-                            }
-                        });
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
             });
     },
@@ -1055,41 +1318,52 @@ server.route({
             function (error, results, fields) {
                 if (error){
                     throw error;
-                } else{
-                    var db = results[0].companydb;
-                    var duration = duration_hours+":"+duration_minutes;
+                } else {
 
-                    connection.query('SELECT ap.* FROM '+db+'.oc_appointment ap WHERE ap.appointment_date>="'+appointmentdate+'" AND ap.appointment_date<=DATE_ADD("2017-12-06 18:18:31", INTERVAL "'+duration+'" HOUR_MINUTE)',
-                        function (error, results, fields) {
-                            if (error) {
-                                throw error;
-                            } else {
+                    if (results.length > 0) {
 
-                                if (results[0]) {
-                                    // matching appointment is found at the same datetime
-                                    var response = {
-                                        status: 400,
-                                        message: "Can't have multiple appointments for the same time"
-                                    };
-                                    reply(response);
+                        var db = results[0].companydb;
+                        var duration = duration_hours+":"+duration_minutes;
+
+                        connection.query('SELECT ap.* FROM '+db+'.oc_appointment ap WHERE ap.appointment_date>="'+appointmentdate+'" AND ap.appointment_date<=DATE_ADD("2017-12-06 18:18:31", INTERVAL "'+duration+'" HOUR_MINUTE)',
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
                                 } else {
 
-                                    connection.query('INSERT INTO '+db+'.oc_appointment (appointment_name,appointment_description,appointment_date,duration_hours,duration_minutes,salesrep_id,customer_id) VALUES ("' + title + '","' + description + '","' + appointmentdate + '",' + duration_hours + ',' + duration_minutes + ',' + r_id + ',' + customer_id + ')',
-                                        function (error, results, fields) {
-                                            if (error) {
-                                                throw error;
-                                            } else {
-                                                var response = {
-                                                    status: 'success',
-                                                    appointment_id: results.insertId,
-                                                    message: 'appointment created successfully'
-                                                };
-                                                reply(response);
-                                            }
-                                        });
+                                    if (results[0]) {
+                                        // matching appointment is found at the same datetime
+                                        var response = {
+                                            status: 400,
+                                            message: "Can't have multiple appointments for the same time"
+                                        };
+                                        reply(response);
+                                    } else {
+
+                                        connection.query('INSERT INTO '+db+'.oc_appointment (appointment_name,appointment_description,appointment_date,duration_hours,duration_minutes,salesrep_id,customer_id) VALUES ("' + title + '","' + description + '","' + appointmentdate + '",' + duration_hours + ',' + duration_minutes + ',' + r_id + ',' + customer_id + ')',
+                                            function (error, results, fields) {
+                                                if (error) {
+                                                    throw error;
+                                                } else {
+                                                    var response = {
+                                                        status: 'success',
+                                                        appointment_id: results.insertId,
+                                                        message: 'appointment created successfully'
+                                                    };
+                                                    reply(response);
+                                                }
+                                            });
+                                    }
                                 }
-                            }
-                        });
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
             });
     }
@@ -1125,15 +1399,26 @@ server.route({
             function (error, results, fields) {
                 if (error){
                     throw error;
-                } else{
-                    console.log(results);
-                    var db = results[0].companydb;
-                    connection.query('SELECT ap.appointment_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content FROM '+db+'.oc_appointment ap left join '+db+'.oc_customer cs on cs.customer_id = ap.customer_id left join '+db+'.oc_address ad on ad.address_id = cs.address_id left join '+db+'.oc_notes nt on nt.appointment_id = ap.appointment_id WHERE ap.salesrep_id = '+r_id+' AND DATE_FORMAT(ap.appointment_date,"%Y-%m-%d") = DATE_FORMAT(NOW(),"%Y-%m-%d")',
-                        function (error, results, fields) {
-                            if (error) throw error;
+                } else {
 
-                            reply(results);
-                        });
+                    if (results.length > 0) {
+
+                        var db = results[0].companydb;
+
+                        connection.query('SELECT ap.appointment_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content FROM '+db+'.oc_appointment ap left join '+db+'.oc_customer cs on cs.customer_id = ap.customer_id left join '+db+'.oc_address ad on ad.address_id = cs.address_id left join '+db+'.oc_notes nt on nt.appointment_id = ap.appointment_id WHERE ap.salesrep_id = '+r_id+' AND DATE_FORMAT(ap.appointment_date,"%Y-%m-%d") = DATE_FORMAT(NOW(),"%Y-%m-%d")',
+                            function (error, results, fields) {
+                                if (error) throw error;
+
+                                reply(results);
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
             });
 
@@ -1165,19 +1450,30 @@ server.route({
             function (error, results, fields) {
                 if (error){
                     throw error;
-                } else{
+                } else {
 
-                    var db = results[0].companydb;
-                    connection.query('SELECT ap.appointment_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs ON cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad ON ad.address_id = cs.address_id LEFT JOIN '+db+'.oc_notes nt ON nt.appointment_id = ap.appointment_id WHERE ap.salesrep_id = '+r_id+' AND YEARWEEK(ap.appointment_date) = YEARWEEK(CURDATE()) ORDER BY ap.appointment_date',
-                        function (error, results, fields) {
-                            if (error) throw error;
+                    if (results.length > 0) {
 
-                            var response = {
-                                status: 200,
-                                appointments: results
-                            };
-                            reply(response);
-                        });
+                        var db = results[0].companydb;
+
+                        connection.query('SELECT ap.appointment_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs ON cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad ON ad.address_id = cs.address_id LEFT JOIN '+db+'.oc_notes nt ON nt.appointment_id = ap.appointment_id WHERE ap.salesrep_id = '+r_id+' AND YEARWEEK(ap.appointment_date) = YEARWEEK(CURDATE()) ORDER BY ap.appointment_date',
+                            function (error, results, fields) {
+                                if (error) throw error;
+
+                                var response = {
+                                    status: 200,
+                                    appointments: results
+                                };
+                                reply(response);
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
             });
 
@@ -1209,19 +1505,30 @@ server.route({
             function (error, results, fields) {
                 if (error){
                     throw error;
-                } else{
+                } else {
 
-                    var db = results[0].companydb;
-                    connection.query('SELECT ap.appointment_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs on cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad on ad.address_id = cs.address_id LEFT JOIN '+db+'.oc_notes nt on nt.appointment_id = ap.appointment_id WHERE ap.salesrep_id = '+r_id+' AND YEAR(ap.appointment_date) = YEAR(CURDATE()) AND MONTH(ap.appointment_date)=MONTH(CURDATE()) ORDER BY ap.appointment_date',
-                        function (error, results, fields) {
-                            if (error) throw error;
+                    if (results.length > 0) {
 
-                            var response = {
-                                status: 200,
-                                appointments: results
-                            };
-                            reply(response);
-                        });
+                        var db = results[0].companydb;
+
+                        connection.query('SELECT ap.appointment_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs on cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad on ad.address_id = cs.address_id LEFT JOIN '+db+'.oc_notes nt on nt.appointment_id = ap.appointment_id WHERE ap.salesrep_id = '+r_id+' AND YEAR(ap.appointment_date) = YEAR(CURDATE()) AND MONTH(ap.appointment_date)=MONTH(CURDATE()) ORDER BY ap.appointment_date',
+                            function (error, results, fields) {
+                                if (error) throw error;
+
+                                var response = {
+                                    status: 200,
+                                    appointments: results
+                                };
+                                reply(response);
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
             });
 
@@ -1258,19 +1565,30 @@ server.route({
                     throw error;
                 } else {
 
-                    var db = results[0].companydb;
-                    connection.query('SELECT ap.appointment_id,cs.customer_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs ON cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad ON ad.address_id = cs.address_id LEFT JOIN '+db+'.oc_notes nt ON nt.appointment_id = ap.appointment_id WHERE ap.salesrep_id ='+r_id,
-                        function (error, results, fields) {
-                            if (error) {
-                                throw error;
-                            } else {
-                                var response = {
-                                    'status': 200,
-                                    'appointments': results
-                                };
-                                reply(response);
-                            }
-                        });
+                    if (results.length > 0) {
+
+                        var db = results[0].companydb;
+
+                        connection.query('SELECT ap.appointment_id,cs.customer_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs ON cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad ON ad.address_id = cs.address_id LEFT JOIN '+db+'.oc_notes nt ON nt.appointment_id = ap.appointment_id WHERE ap.salesrep_id ='+r_id,
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+                                    var response = {
+                                        'status': 200,
+                                        'appointments': results
+                                    };
+                                    reply(response);
+                                }
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
             });
     },
@@ -1304,21 +1622,31 @@ server.route({
                     throw error;
                 } else {
 
-                    var db = results[0].companydb;
+                    if (results.length > 0) {
 
-                    // get appointment details
-                    connection.query('SELECT ap.appointment_id,cs.customer_id,cs.firstname as customer_name,ap.appointment_date,ap.duration_hours,ap.duration_minutes,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs ON cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad ON ad.address_id = cs.address_id LEFT JOIN '+db+'.oc_notes nt ON nt.appointment_id = ap.appointment_id WHERE ap.appointment_id ='+appointmentId,
-                        function (error, results, fields) {
-                            if (error) {
-                                throw error;
-                            } else {
-                                var response = {
-                                    'status': 200,
-                                    'appointments': results
-                                };
-                                reply(response);
-                            }
-                        });
+                        var db = results[0].companydb;
+
+                        // get appointment details
+                        connection.query('SELECT ap.appointment_id,cs.customer_id,cs.firstname as customer_name,ap.appointment_date,ap.duration_hours,ap.duration_minutes,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs ON cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad ON ad.address_id = cs.address_id LEFT JOIN '+db+'.oc_notes nt ON nt.appointment_id = ap.appointment_id WHERE ap.appointment_id ='+appointmentId,
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+                                    var response = {
+                                        'status': 200,
+                                        'appointments': results
+                                    };
+                                    reply(response);
+                                }
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
             });
     },
@@ -1355,20 +1683,30 @@ server.route({
                     throw error;
                 } else {
 
-                    var db = results[0].companydb;
+                    if (results.length > 0) {
 
-                    // insert appointment note into database
-                    connection.query('INSERT INTO '+db+'.oc_notes (note_title,note_content,appointment_id,salesrep_id) VALUES ("' + title + '", "' + content + '", ' + appointment_id + ', ' + r_id + ')',
-                        function (error, results, fields) {
-                            if (error) throw error;
+                        var db = results[0].companydb;
 
-                            var response = {
-                                'status': 200,
-                                'note_id': results.insertId,
-                                'message': 'appointment note created successfully'
-                            }
-                            reply(response);
-                        });
+                        // insert appointment note into database
+                        connection.query('INSERT INTO '+db+'.oc_notes (note_title,note_content,appointment_id,salesrep_id) VALUES ("' + title + '", "' + content + '", ' + appointment_id + ', ' + r_id + ')',
+                            function (error, results, fields) {
+                                if (error) throw error;
+
+                                var response = {
+                                    'status': 200,
+                                    'note_id': results.insertId,
+                                    'message': 'appointment note created successfully'
+                                }
+                                reply(response);
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
             });
     },
@@ -1407,22 +1745,32 @@ server.route({
                     throw error;
                 } else {
 
-                    var db = results[0].companydb;
+                    if (results.length > 0) {
 
-                    // update appointment note
-                    connection.query('UPDATE '+db+'.oc_notes SET note_title="'+title+'", note_content="'+content+'" WHERE note_id='+ note_id,
-                        function (error, results, fields) {
-                            if (error) {
-                                throw error;
-                            } else {
+                        var db = results[0].companydb;
 
-                                var response = {
-                                    'status': 200,
-                                    'message': 'appointment note updated successfully'
-                                };
-                                reply(response);
-                            }
-                        });
+                        // update appointment note
+                        connection.query('UPDATE '+db+'.oc_notes SET note_title="'+title+'", note_content="'+content+'" WHERE note_id='+ note_id,
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+
+                                    var response = {
+                                        'status': 200,
+                                        'message': 'appointment note updated successfully'
+                                    };
+                                    reply(response);
+                                }
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
             });
     },
@@ -1733,30 +2081,40 @@ server.route({
                     throw error;
                 } else {
 
-                    var db = results[0].companydb;
+                    if (results.length > 0) {
 
-                    // update sales rep database table
-                    connection.query("UPDATE "+db+".oc_salesrep SET salesrep_name='"+firstName+"', salesrep_lastname='"+lastName+"', cell='"+cell+"', tel='"+tel+"', email='"+email+"', sales_team_id="+teamId+" WHERE salesrep_id="+r_id,
-                        function (error, results, fields) {
-                            if (error) {
-                                throw error;
-                            } else {
+                        var db = results[0].companydb;
 
-                                // update super user database table
-                                connection.query("UPDATE super.user SET username='"+email+"', email='"+email+"' WHERE realId="+r_id+" AND companyId="+c_id,
-                                    function (error, results, fields) {
-                                        if (error) {
-                                            throw error;
-                                        } else {
-                                            var response = {
-                                                status: 200,
-                                                message: 'Sales rep details successfully updated'
-                                            };
-                                            reply(response);
-                                        }
-                                    });
-                            }
-                        });
+                        // update sales rep database table
+                        connection.query("UPDATE "+db+".oc_salesrep SET salesrep_name='"+firstName+"', salesrep_lastname='"+lastName+"', cell='"+cell+"', tel='"+tel+"', email='"+email+"', sales_team_id="+teamId+" WHERE salesrep_id="+r_id,
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+
+                                    // update super user database table
+                                    connection.query("UPDATE super.user SET username='"+email+"', email='"+email+"' WHERE realId="+r_id+" AND companyId="+c_id,
+                                        function (error, results, fields) {
+                                            if (error) {
+                                                throw error;
+                                            } else {
+                                                var response = {
+                                                    status: 200,
+                                                    message: 'Sales rep details successfully updated'
+                                                };
+                                                reply(response);
+                                            }
+                                        });
+                                }
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
             });
     },
@@ -1804,27 +2162,37 @@ server.route({
                     throw error;
                 } else {
 
-                    var db = results[0].companydb;
+                    if (results.length > 0) {
 
-                    // get gps coordinates for the address specified
-                    geonoder.toCoordinates(checkInLocation, geonoder.providers.google, function(lat, long) {
+                        var db = results[0].companydb;
 
-                        // record sales rep check-in
-                        connection.query("INSERT INTO " + db + ".oc_salesrep_checkins (salesrep_id,customer_id,appointment_id,location,start,end,checkin,checkin_location,latitude,longitude) VALUES (" + repId + "," + customerId + "," + appointmentId + ", '" + location + "','" + start + "','" + end + "','" + checkIn + "','" + checkInLocation + "', '"+lat+"', '"+long+"')",
-                            function (error, results, fields) {
-                                if (error) {
-                                    throw error;
-                                } else {
+                        // get gps coordinates for the address specified
+                        geonoder.toCoordinates(checkInLocation, geonoder.providers.google, function(lat, long) {
 
-                                    var response = {
-                                        status: 200,
-                                        checkin_id: results.insertId,
-                                        message: 'Successfully checked in'
-                                    };
-                                    reply(response);
-                                }
-                            });
-                    });
+                            // record sales rep check-in
+                            connection.query("INSERT INTO " + db + ".oc_salesrep_checkins (salesrep_id,customer_id,appointment_id,location,start,end,checkin,checkin_location,latitude,longitude) VALUES (" + repId + "," + customerId + "," + appointmentId + ", '" + location + "','" + start + "','" + end + "','" + checkIn + "','" + checkInLocation + "', '"+lat+"', '"+long+"')",
+                                function (error, results, fields) {
+                                    if (error) {
+                                        throw error;
+                                    } else {
+
+                                        var response = {
+                                            status: 200,
+                                            checkin_id: results.insertId,
+                                            message: 'Successfully checked in'
+                                        };
+                                        reply(response);
+                                    }
+                                });
+                        });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
             });
     },
@@ -1868,21 +2236,31 @@ server.route({
                     throw error;
                 } else {
 
-                    var db = results[0].companydb;
+                    if (results.length > 0) {
 
-                    connection.query("UPDATE "+db+".oc_salesrep_checkins SET checkout='"+checkOut+"', remarks='"+remarks+"' WHERE checkin_id="+checkInId,
-                        function (error, results, fields) {
-                            if (error) {
-                                throw error;
-                            } else {
+                        var db = results[0].companydb;
 
-                                var response = {
-                                    status: 200,
-                                    message: 'Successfully checked out'
-                                };
-                                reply(response);
-                            }
-                        });
+                        connection.query("UPDATE "+db+".oc_salesrep_checkins SET checkout='"+checkOut+"', remarks='"+remarks+"' WHERE checkin_id="+checkInId,
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+
+                                    var response = {
+                                        status: 200,
+                                        message: 'Successfully checked out'
+                                    };
+                                    reply(response);
+                                }
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
             });
     },
@@ -1907,10 +2285,11 @@ server.route({
  */
 server.route({
     method: 'GET',
-    path: '/api/v1/salesrep/{r_id}/{c_id}/visits',
+    path: '/api/v1/salesrep/{r_id}/{c_id}/{customer_id}/visits',
     handler: function (request, reply) {
         const companyId = request.params.c_id;
         const repId = request.params.r_id;
+        const customerId = request.params.customer_id;
 
         // get company db
         connection.query("SELECT companydb FROM super.companies WHERE company_id="+companyId,
@@ -1919,22 +2298,32 @@ server.route({
                     throw error;
                 } else {
 
-                    var db = results[0].companydb;
+                    if (results.length > 0) {
 
-                    // get sales rep visits
-                    connection.query("SELECT rc.checkin_id,rc.start,rc.end,rc.checkin,rc.checkout,rc.location,rc.checkin_location,rc.remarks,cs.customer_id,cs.firstname AS customer_firstname,cs.lastname AS customer_lastname FROM "+db+".oc_salesrep_checkins rc INNER JOIN "+db+".oc_customer cs ON cs.customer_id=rc.customer_id WHERE rc.salesrep_id="+repId,
-                        function (error, results, fields) {
-                            if (error) {
-                                throw error;
-                            } else {
+                        var db = results[0].companydb;
 
-                                var response = {
-                                    status: 200,
-                                    visits: results
-                                };
-                                reply(response);
-                            }
-                        });
+                        // get sales rep visits
+                        connection.query("SELECT rc.checkin_id,rc.start,rc.end,rc.checkin,rc.checkout,rc.location,rc.checkin_location,rc.remarks,rc.latitude,rc.longitude FROM "+db+".oc_salesrep_checkins rc INNER JOIN "+db+".oc_customer cs ON cs.customer_id=rc.customer_id WHERE rc.salesrep_id="+repId+" AND cs.customer_id="+customerId,
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+
+                                    var response = {
+                                        status: 200,
+                                        visits: results
+                                    };
+                                    reply(response);
+                                }
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
             });
     },
@@ -1942,7 +2331,8 @@ server.route({
         validate: {
             params: {
                 c_id: Joi.number().integer().required(),
-                r_id: Joi.number().integer().required()
+                r_id: Joi.number().integer().required(),
+                customer_id: Joi.number().integer().required()
             }
         }
     }
@@ -1970,21 +2360,31 @@ server.route({
                     throw error;
                 } else {
 
-                    var db = results[0].companydb;
+                    if (results.length > 0) {
 
-                    connection.query("SELECT rc.checkin_id,rc.start,rc.end,rc.checkin,rc.checkout,rc.location,rc.checkin_location,rc.remarks,cs.customer_id,cs.firstname AS customer_firstname,cs.lastname AS customer_lastname FROM "+db+".oc_salesrep_checkins rc INNER JOIN "+db+".oc_customer cs ON cs.customer_id=rc.customer_id WHERE rc.salesrep_id="+repId+" AND rc.customer_id="+customerId,
-                        function (error, results, fields) {
-                            if (error) {
-                                throw error;
-                            } else {
+                        var db = results[0].companydb;
 
-                                var response = {
-                                    status: 200,
-                                    visits: results
-                                };
-                                reply(response);
-                            }
-                        });
+                        connection.query("SELECT rc.checkin_id,rc.start,rc.end,rc.checkin,rc.checkout,rc.location,rc.checkin_location,rc.remarks,cs.customer_id,cs.firstname AS customer_firstname,cs.lastname AS customer_lastname FROM "+db+".oc_salesrep_checkins rc INNER JOIN "+db+".oc_customer cs ON cs.customer_id=rc.customer_id WHERE rc.salesrep_id="+repId+" AND rc.customer_id="+customerId,
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+
+                                    var response = {
+                                        status: 200,
+                                        visits: results
+                                    };
+                                    reply(response);
+                                }
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
             });
     },
@@ -2040,10 +2440,65 @@ server.route({
 
 
 /**
- * Route to list all products by category
  *
- * @method POST
- * @path /api/v1/products/{c_id}/{category_id}
+ * Route to list all active products
+ *
+ */
+server.route({
+    method: 'GET',
+    path: '/api/v1/products/{c_id}',
+    handler: function (request, reply) {
+        const c_id = request.params.c_id;
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = "' + c_id + '"',
+            function (error, results, fields) {
+                if (error){
+                    throw error;
+                } else {
+
+                    if (results.length > 0) {
+
+                        var db = results[0].companydb;
+
+                        // get all active products
+                        connection.query('SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,pr.price,pi.product_image_id,IF(pi.image="","",CONCAT(st.value,"image/",pi.image)) AS product_image_src FROM '+db+'.oc_setting st, '+db+'.oc_product pr LEFT JOIN '+db+'.oc_product_image pi ON pi.product_id=pr.product_id INNER JOIN '+db+'.oc_product_description pd ON pd.product_id=pr.product_id INNER JOIN '+db+'.oc_product_to_customer_group pc ON pc.product_id=pr.product_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_group_id=pc.customer_group_id WHERE pr.status=1 AND st.key="config_url" GROUP BY pr.product_id',
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+
+                                    var response = {
+                                        'status': 200,
+                                        'products': results
+                                    };
+                                    reply(response);
+                                }
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
+                }
+            });
+    },
+    config: {
+        validate: {
+            params: {
+                c_id: Joi.number().integer().required()
+            }
+        }
+    }
+});
+
+
+/**
+ *
+ * Route to list active products by category
+ *
  */
 server.route({
     method: 'GET',
@@ -2056,19 +2511,31 @@ server.route({
             function (error, results, fields) {
                 if (error){
                     throw error;
-                } else{
+                } else {
 
-                    var db = results[0].companydb;
-                    connection.query('SELECT pr.product_id, pd.name, pr.price FROM '+db+'.oc_product pr INNER JOIN '+db+'.oc_product_description pd ON pd.product_id=pr.product_id INNER JOIN '+db+'.oc_product_to_customer_group pc ON pc.product_id=pr.product_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_group_id=pc.customer_group_id INNER JOIN '+db+'.oc_product_to_category ct ON ct.product_id=pr.product_id WHERE ct.category_id='+category_id+' AND pr.status=1 GROUP BY pr.product_id',
-                        function (error, results, fields) {
-                            if (error) throw error;
+                    if (results.length > 0) {
 
-                            var response = {
-                                'status': 200,
-                                'products': results
-                            };
-                            reply(response);
-                        });
+                        var db = results[0].companydb;
+
+                        // get active products by specified category
+                        connection.query('SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,pr.price,pi.product_image_id,IF(pi.image="","",CONCAT(st.value,"image/",pi.image)) AS product_image_src FROM '+db+'.oc_setting st, '+db+'.oc_product pr LEFT JOIN '+db+'.oc_product_image pi ON pi.product_id=pr.product_id INNER JOIN '+db+'.oc_product_description pd ON pd.product_id=pr.product_id INNER JOIN '+db+'.oc_product_to_customer_group pc ON pc.product_id=pr.product_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_group_id=pc.customer_group_id INNER JOIN '+db+'.oc_product_to_category ct ON ct.product_id=pr.product_id WHERE ct.category_id='+category_id+' AND pr.status=1 AND st.key="config_url" GROUP BY pr.product_id',
+                            function (error, results, fields) {
+                                if (error) throw error;
+
+                                var response = {
+                                    'status': 200,
+                                    'products': results
+                                };
+                                reply(response);
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
             });
     },
@@ -2084,10 +2551,9 @@ server.route({
 
 
 /**
+ *
  * Route to list all product categories
  *
- * @method POST
- * @path /api/v1/products/{c_id}/categories
  */
 server.route({
     method: 'GET',
@@ -2101,17 +2567,27 @@ server.route({
                     throw error;
                 } else{
 
-                    var db = results[0].companydb;
-                    connection.query('SELECT ct.category_id, cd.name, ct.parent_id FROM '+db+'.oc_category ct INNER JOIN '+db+'.oc_category_description cd ON cd.category_id=ct.category_id INNER JOIN '+db+'.oc_category_to_customer_group cc ON cc.category_id=ct.category_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_group_id=cc.customer_group_id GROUP BY ct.category_id',
-                        function (error, results, fields) {
-                            if (error) throw error;
+                    if (results.length > 0) {
 
-                            var response = {
-                                'status': 200,
-                                'categories': results
-                            };
-                            reply(response);
-                        });
+                        var db = results[0].companydb;
+                        connection.query('SELECT ct.category_id, cd.name, ct.parent_id FROM '+db+'.oc_category ct INNER JOIN '+db+'.oc_category_description cd ON cd.category_id=ct.category_id INNER JOIN '+db+'.oc_category_to_customer_group cc ON cc.category_id=ct.category_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_group_id=cc.customer_group_id GROUP BY ct.category_id',
+                            function (error, results, fields) {
+                                if (error) throw error;
+
+                                var response = {
+                                    'status': 200,
+                                    'categories': results
+                                };
+                                reply(response);
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
                 }
             });
     },
@@ -2119,6 +2595,64 @@ server.route({
         validate: {
             params: {
                 c_id: Joi.number().integer().required()
+            }
+        }
+    }
+});
+
+
+/**
+ *
+ * Route to get product by id
+ *
+ */
+server.route({
+    method: 'GET',
+    path: '/api/v1/product/{product_id}/{c_id}',
+    handler: function (request, reply) {
+        const c_id = request.params.c_id;
+        const product_id = request.params.product_id;
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = "' + c_id + '"',
+            function (error, results, fields) {
+                if (error){
+                    throw error;
+                } else {
+
+                    if (results.length > 0) {
+
+                        var db = results[0].companydb;
+
+                        // get all active products
+                        connection.query('SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,pr.price,pi.product_image_id,IF(pi.image="","",CONCAT(st.value,"image/",pi.image)) AS product_image_src FROM '+db+'.oc_setting st, '+db+'.oc_product pr LEFT JOIN '+db+'.oc_product_image pi ON pi.product_id=pr.product_id INNER JOIN '+db+'.oc_product_description pd ON pd.product_id=pr.product_id INNER JOIN '+db+'.oc_product_to_customer_group pc ON pc.product_id=pr.product_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_group_id=pc.customer_group_id WHERE pr.product_id='+product_id+' AND st.key="config_url" GROUP BY pr.product_id',
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+
+                                    var response = {
+                                        'status': 200,
+                                        'product': results
+                                    };
+                                    reply(response);
+                                }
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
+                }
+            });
+    },
+    config: {
+        validate: {
+            params: {
+                c_id: Joi.number().integer().required(),
+                product_id: Joi.number().integer().required()
             }
         }
     }

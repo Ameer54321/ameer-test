@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e09817e7-0ca7-4e25-a103-adc717cfdf15" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/Rest.iml" afterPath="$PROJECT_DIR$/.idea/Rest.iml" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/server.js" afterPath="$PROJECT_DIR$/server.js" />
       <change beforePath="$PROJECT_DIR$/../../Scripts/ionic-googlemaps-quickdemo/config.xml" afterPath="$PROJECT_DIR$/../../Scripts/ionic-googlemaps-quickdemo/config.xml" />
@@ -24,12 +22,12 @@
     <favorites_list name="Rest" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file leaf-file-name="server.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/server.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="257">
-              <caret line="297" column="24" lean-forward="false" selection-start-line="297" selection-start-column="24" selection-end-line="297" selection-end-column="24" />
+            <state relative-caret-position="-686">
+              <caret line="2559" column="47" lean-forward="true" selection-start-line="2559" selection-start-column="47" selection-end-line="2559" selection-end-column="47" />
               <folding />
             </state>
           </provider>
@@ -39,19 +37,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>print_</find>
-      <find>echo $</find>
-      <find>create</find>
-      <find>api</find>
-      <find>map</find>
-      <find>geo.</find>
-      <find>emailC</find>
-      <find>geoC</find>
-      <find>customers/cre</find>
-      <find>customers/crea</find>
-      <find>get gps coordinates for the</find>
-      <find>customer_id}</find>
-      <find>/quotes/</find>
       <find>quotes/</find>
       <find>{customer_id}</find>
       <find>appoint</find>
@@ -69,12 +54,26 @@
       <find>status=0</find>
       <find>update customer</find>
       <find>payload</find>
+      <find>get image</find>
+      <find>Invalida</find>
+      <find>menu</find>
+      <find>sendc</find>
+      <find>PUT</find>
+      <find>miningc</find>
+      <find>send</find>
+      <find>com</find>
+      <find>company_id</find>
+      <find>comp</find>
+      <find>/quotes</find>
+      <find>parser</find>
+      <find>image</find>
     </findStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$/../../Scripts/dashboard</dir>
       <dir>$PROJECT_DIR$/../../Scripts/dashboard/src/app</dir>
       <dir>$PROJECT_DIR$/../ReplogicExtension/admin</dir>
       <dir>/Applications/XAMPP/htdocs/btcv/btcv/www</dir>
+      <dir>/Applications/XAMPP/htdocs/btcv/btcv</dir>
     </dirStrings>
   </component>
   <component name="FindManager">
@@ -100,9 +99,6 @@
         <option value="$PROJECT_DIR$/../../Scripts/dashboard/src/app/pages/authNavigation/authNavigation.html" />
         <option value="$PROJECT_DIR$/geo-functions.js" />
         <option value="$PROJECT_DIR$/package.json" />
-        <option value="$PROJECT_DIR$/comm-functions.js" />
-        <option value="/Applications/XAMPP/htdocs/btcv/btcv/www/templates/elements/menu.html" />
-        <option value="/Applications/XAMPP/htdocs/btcv/btcv/www/translations/en.json" />
         <option value="/Applications/XAMPP/htdocs/btcv/btcv/www/templates/home/index.html" />
         <option value="/Applications/XAMPP/htdocs/btcv/btcv/www/templates/member_zone/index.html" />
         <option value="/Applications/XAMPP/htdocs/btcv/btcv/www/templates/member_zone/team.html" />
@@ -112,10 +108,23 @@
         <option value="/Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers/commission.js" />
         <option value="/Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers/genealogy.js" />
         <option value="/Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers/team.js" />
-        <option value="/Applications/XAMPP/htdocs/btcv/btcv/www/js/app.js" />
-        <option value="/Applications/XAMPP/htdocs/btcv/btcv/www/index.html" />
         <option value="/Applications/XAMPP/htdocs/btcv/btcv/www/js/services/settings.js" />
         <option value="/Applications/XAMPP/htdocs/btcv/btcv/www/templates/promotions/code.html" />
+        <option value="$PROJECT_DIR$/comm-functions.js" />
+        <option value="/Applications/XAMPP/htdocs/btcv/btcv/www/index.html" />
+        <option value="/Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers/mining.js" />
+        <option value="/Applications/XAMPP/htdocs/btcv/btcv/www/templates/mining/index.html" />
+        <option value="/Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers/crypto_mining.js" />
+        <option value="/Applications/XAMPP/htdocs/btcv/btcv/www/templates/crypto_mining/index.html" />
+        <option value="/Applications/XAMPP/htdocs/btcv/btcv/www/translations/en.json" />
+        <option value="/Applications/XAMPP/htdocs/btcv/btcv/www/js/app.js" />
+        <option value="$PROJECT_DIR$/../../Scripts/teller-wallet-ionic/www/js/services/accounts.js" />
+        <option value="/Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers/accounts.js" />
+        <option value="/Applications/XAMPP/htdocs/btcv/btcv/www/templates/accounts/forgot.html" />
+        <option value="/Applications/XAMPP/htdocs/btcv/btcv/www/templates/accounts/signup.html" />
+        <option value="/Applications/XAMPP/htdocs/btcv/btcv/www/templates/accounts/login.html" />
+        <option value="/Applications/XAMPP/htdocs/btcv/btcv/www/js/services/accounts.js" />
+        <option value="/Applications/XAMPP/htdocs/btcv/btcv/www/templates/elements/menu.html" />
         <option value="$PROJECT_DIR$/server.js" />
       </list>
     </option>
@@ -176,7 +185,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -188,6 +196,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scratches" />
       <pane id="Scope" />
     </panes>
   </component>
@@ -260,12 +269,15 @@
       <workItem from="1513881242810" duration="155000" />
       <workItem from="1514356420841" duration="2642000" />
       <workItem from="1514439965169" duration="7064000" />
-      <workItem from="1514526390850" duration="5719000" />
+      <workItem from="1514526390850" duration="9478000" />
+      <workItem from="1514879127401" duration="808000" />
+      <workItem from="1514881212590" duration="8255000" />
+      <workItem from="1514962387347" duration="5259000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="69015000" />
+    <option name="totallyTimeSpent" value="87096000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="805" extended-state="0" />
@@ -278,7 +290,7 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2197183" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21530758" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22389127" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1449121" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -291,7 +303,7 @@
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="TypeScript" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32957748" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
@@ -329,103 +341,11 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="3" />
+      <option name="time" value="4" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/../../Scripts/SHOPin/app/src/app/app.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../Scripts/SHOPin/app/src/pages/add-item/add-item.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="19" column="10" lean-forward="false" selection-start-line="19" selection-start-column="2" selection-end-line="19" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../Scripts/SHOPin/app/src/pages/add-item/add-item.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="18" column="0" lean-forward="true" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../Scripts/SHOPin/app/src/pages/home/home.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="13" lean-forward="false" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../Scripts/SHOPin/app/src/pages/item-detail/item-detail.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="14" column="14" lean-forward="false" selection-start-line="14" selection-start-column="14" selection-end-line="14" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../Scripts/SHOPin/app/src/pages/item-detail/item-detail.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="19" column="3" lean-forward="false" selection-start-line="19" selection-start-column="3" selection-end-line="19" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../Scripts/SHOPin/app/src/pages/home/home.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
-          <caret line="38" column="18" lean-forward="false" selection-start-line="38" selection-start-column="18" selection-end-line="38" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../Scripts/SHOPin/app/src/app/app.component.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../Scripts/ionic-googlemaps-quickdemo/config.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="427">
-          <caret line="84" column="87" lean-forward="false" selection-start-line="84" selection-start-column="87" selection-end-line="84" selection-end-column="87" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../Scripts/dashboard-angular/production.yaml" />
-    <entry file="file://$PROJECT_DIR$/../../Scripts/dashboard/src/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="205">
-          <caret line="19" column="0" lean-forward="true" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../Scripts/dashboard/src/reg.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="385">
-          <caret line="29" column="8" lean-forward="false" selection-start-line="29" selection-start-column="8" selection-end-line="29" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../Scripts/dashboard/src/auth.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="450">
-          <caret line="30" column="60" lean-forward="false" selection-start-line="30" selection-start-column="60" selection-end-line="30" selection-end-column="60" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../Scripts/dashboard/src/app/pages/authNavigation/authNavigation.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="10" lean-forward="false" selection-start-line="0" selection-start-column="4" selection-end-line="9" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../Scripts/dashboard/src/app/pages/login/login.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="180">
@@ -437,13 +357,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="207">
           <caret line="201" column="105" lean-forward="false" selection-start-line="201" selection-start-column="99" selection-end-line="201" selection-end-column="105" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/email_client.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="393">
-          <caret line="30" column="28" lean-forward="false" selection-start-line="30" selection-start-column="12" selection-end-line="30" selection-end-column="28" />
         </state>
       </provider>
     </entry>
@@ -482,32 +395,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/package.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="16" column="28" lean-forward="false" selection-start-line="16" selection-start-column="28" selection-end-line="16" selection-end-column="28" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/comm-functions.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="222">
-          <caret line="37" column="21" lean-forward="true" selection-start-line="37" selection-start-column="21" selection-end-line="37" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/templates/about/index.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="26" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers/about.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="13" selection-end-column="7" />
         </state>
       </provider>
     </entry>
@@ -518,24 +409,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/templates/elements/menu.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="437">
-          <caret line="55" column="57" lean-forward="true" selection-start-line="55" selection-start-column="57" selection-end-line="55" selection-end-column="57" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers/help.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="5" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -595,20 +472,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="6" column="33" lean-forward="true" selection-start-line="6" selection-start-column="33" selection-end-line="6" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers/member_zone.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="54" lean-forward="false" selection-start-line="0" selection-start-column="54" selection-end-line="0" selection-end-column="54" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers/team.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -627,13 +490,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="53" lean-forward="false" selection-start-line="0" selection-start-column="53" selection-end-line="0" selection-end-column="53" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/app.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="480">
-          <caret line="32" column="41" lean-forward="false" selection-start-line="32" selection-start-column="41" selection-end-line="32" selection-end-column="41" />
         </state>
       </provider>
     </entry>
@@ -658,13 +514,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/translations/en.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="207">
-          <caret line="155" column="68" lean-forward="false" selection-start-line="155" selection-start-column="55" selection-end-line="155" selection-end-column="68" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/geo-functions.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="285">
@@ -676,129 +525,184 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-558">
           <caret line="352" column="0" lean-forward="true" selection-start-line="352" selection-start-column="0" selection-end-line="352" selection-end-column="0" />
-          <folding>
-            <marker date="1512548201997" expanded="true" signature="105:1254" ph="INSERT INTO ${DB_PREFIX}product... " />
-            <marker date="1512548201997" expanded="true" signature="1584:2095" ph="INSERT INTO ${DB_PREFIX}product_description... " />
-            <marker date="1512548201997" expanded="true" signature="2216:2342" ph="INSERT INTO ${DB_PREFIX}product_to_store... " />
-            <marker date="1512548201997" expanded="true" signature="2559:2720" ph="DELETE FROM ${DB_PREFIX}product_attribute... " />
-            <marker date="1512548201997" expanded="true" signature="2868:3075" ph="DELETE FROM ${DB_PREFIX}product_attribute... " />
-            <marker date="1512548201997" expanded="true" signature="3104:3380" ph="INSERT INTO ${DB_PREFIX}product_attribute... " />
-            <marker date="1512548201997" expanded="true" signature="3752:3951" ph="INSERT INTO ${DB_PREFIX}product_option... " />
-            <marker date="1512548201997" expanded="true" signature="4116:4944" ph="INSERT INTO ${DB_PREFIX}product_option_value... " />
-            <marker date="1512548201997" expanded="true" signature="4999:5261" ph="INSERT INTO ${DB_PREFIX}product_option... " />
-            <marker date="1512548201997" expanded="true" signature="5407:5884" ph="INSERT INTO ${DB_PREFIX}product_discount... " />
-            <marker date="1512548201997" expanded="true" signature="6021:6435" ph="INSERT INTO ${DB_PREFIX}product_special... " />
-            <marker date="1512548201997" expanded="true" signature="6566:6772" ph="INSERT INTO ${DB_PREFIX}product_image... " />
-            <marker date="1512548201997" expanded="true" signature="6907:7042" ph="INSERT INTO ${DB_PREFIX}product_to_download... " />
-            <marker date="1512548201997" expanded="true" signature="7177:7312" ph="INSERT INTO ${DB_PREFIX}product_to_category... " />
-            <marker date="1512548201997" expanded="true" signature="7441:7567" ph="INSERT INTO ${DB_PREFIX}product_filter... " />
-            <marker date="1512548201997" expanded="true" signature="7699:7833" ph="DELETE FROM ${DB_PREFIX}product_related... " />
-            <marker date="1512548201997" expanded="true" signature="7859:7988" ph="INSERT INTO ${DB_PREFIX}product_related... " />
-            <marker date="1512548201997" expanded="true" signature="8014:8148" ph="DELETE FROM ${DB_PREFIX}product_related... " />
-            <marker date="1512548201997" expanded="true" signature="8174:8303" ph="INSERT INTO ${DB_PREFIX}product_related... " />
-            <marker date="1512548201997" expanded="true" signature="8506:8699" ph="INSERT INTO ${DB_PREFIX}product_reward... " />
-            <marker date="1512548201997" expanded="true" signature="8847:9013" ph="INSERT INTO ${DB_PREFIX}product_to_layout... " />
-            <marker date="1512548201997" expanded="true" signature="9074:9219" ph="INSERT INTO ${DB_PREFIX}url_alias... " />
-            <marker date="1512548201997" expanded="true" signature="9349:9526" ph="INSERT INTO `${DB_PREFIX}product_recurring`... " />
-            <marker date="1512548201997" expanded="true" signature="11119:11213" ph="DELETE FROM ${DB_PREFIX}product_description... " />
-            <marker date="1512548201997" expanded="true" signature="11308:11819" ph="INSERT INTO ${DB_PREFIX}product_description... " />
-            <marker date="1512548201997" expanded="true" signature="11848:11939" ph="DELETE FROM ${DB_PREFIX}product_to_store... " />
-            <marker date="1512548201997" expanded="true" signature="12056:12182" ph="INSERT INTO ${DB_PREFIX}product_to_store... " />
-            <marker date="1512548201997" expanded="true" signature="12216:12308" ph="DELETE FROM ${DB_PREFIX}product_attribute... " />
-            <marker date="1512548201997" expanded="true" signature="12517:12678" ph="DELETE FROM ${DB_PREFIX}product_attribute... " />
-            <marker date="1512548201997" expanded="true" signature="12826:13102" ph="INSERT INTO ${DB_PREFIX}product_attribute... " />
-            <marker date="1512548201997" expanded="true" signature="13149:13238" ph="DELETE FROM ${DB_PREFIX}product_option... " />
-            <marker date="1512548201997" expanded="true" signature="13262:13357" ph="DELETE FROM ${DB_PREFIX}product_option_value... " />
-            <marker date="1512548201997" expanded="true" signature="13707:13979" ph="INSERT INTO ${DB_PREFIX}product_option... " />
-            <marker date="1512548201997" expanded="true" signature="14144:15063" ph="INSERT INTO ${DB_PREFIX}product_option_value... " />
-            <marker date="1512548201997" expanded="true" signature="15118:15453" ph="INSERT INTO ${DB_PREFIX}product_option... " />
-            <marker date="1512548201997" expanded="true" signature="15493:15584" ph="DELETE FROM ${DB_PREFIX}product_discount... " />
-            <marker date="1512548201997" expanded="true" signature="15715:16192" ph="INSERT INTO ${DB_PREFIX}product_discount... " />
-            <marker date="1512548201997" expanded="true" signature="16226:16316" ph="DELETE FROM ${DB_PREFIX}product_special... " />
-            <marker date="1512548201997" expanded="true" signature="16444:16858" ph="INSERT INTO ${DB_PREFIX}product_special... " />
-            <marker date="1512548201997" expanded="true" signature="16892:16980" ph="DELETE FROM ${DB_PREFIX}product_image... " />
-            <marker date="1512548201997" expanded="true" signature="17102:17308" ph="INSERT INTO ${DB_PREFIX}product_image... " />
-            <marker date="1512548201997" expanded="true" signature="17342:17436" ph="DELETE FROM ${DB_PREFIX}product_to_download... " />
-            <marker date="1512548201997" expanded="true" signature="17562:17697" ph="INSERT INTO ${DB_PREFIX}product_to_download... " />
-            <marker date="1512548201997" expanded="true" signature="17731:17825" ph="DELETE FROM ${DB_PREFIX}product_to_category... " />
-            <marker date="1512548201997" expanded="true" signature="17951:18086" ph="INSERT INTO ${DB_PREFIX}product_to_category... " />
-            <marker date="1512548201997" expanded="true" signature="18120:18209" ph="DELETE FROM ${DB_PREFIX}product_filter... " />
-            <marker date="1512548201997" expanded="true" signature="18329:18455" ph="INSERT INTO ${DB_PREFIX}product_filter... " />
-            <marker date="1512548201997" expanded="true" signature="18489:18579" ph="DELETE FROM ${DB_PREFIX}product_related... " />
-            <marker date="1512548201997" expanded="true" signature="18603:18693" ph="DELETE FROM ${DB_PREFIX}product_related... " />
-            <marker date="1512548201997" expanded="true" signature="18816:18950" ph="DELETE FROM ${DB_PREFIX}product_related... " />
-            <marker date="1512548201997" expanded="true" signature="18976:19105" ph="INSERT INTO ${DB_PREFIX}product_related... " />
-            <marker date="1512548201997" expanded="true" signature="19131:19265" ph="DELETE FROM ${DB_PREFIX}product_related... " />
-            <marker date="1512548201997" expanded="true" signature="19291:19420" ph="INSERT INTO ${DB_PREFIX}product_related... " />
-            <marker date="1512548201997" expanded="true" signature="19454:19543" ph="DELETE FROM ${DB_PREFIX}product_reward... " />
-            <marker date="1512548201997" expanded="true" signature="19719:19903" ph="INSERT INTO ${DB_PREFIX}product_reward... " />
-            <marker date="1512548201997" expanded="true" signature="19943:20035" ph="DELETE FROM ${DB_PREFIX}product_to_layout... " />
-            <marker date="1512548201997" expanded="true" signature="20168:20334" ph="INSERT INTO ${DB_PREFIX}product_to_layout... " />
-            <marker date="1512548201997" expanded="true" signature="20368:20458" ph="DELETE FROM ${DB_PREFIX}url_alias... " />
-            <marker date="1512548201997" expanded="true" signature="20510:20655" ph="INSERT INTO ${DB_PREFIX}url_alias... " />
-            <marker date="1512548201997" expanded="true" signature="20684:20752" ph="DELETE FROM `${DB_PREFIX}product_recurring`... " />
-            <marker date="1512548201997" expanded="true" signature="20905:21090" ph="INSERT INTO `${DB_PREFIX}product_recurring`... " />
-            <marker date="1512548201997" expanded="true" signature="21258:21355" ph="SELECT DISTI... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="22618:22700" ph="DELETE FROM ${DB_PREFIX}product... " />
-            <marker date="1512548201997" expanded="true" signature="22724:22816" ph="DELETE FROM ${DB_PREFIX}product_attribute... " />
-            <marker date="1512548201997" expanded="true" signature="22840:22934" ph="DELETE FROM ${DB_PREFIX}product_description... " />
-            <marker date="1512548201997" expanded="true" signature="22958:23049" ph="DELETE FROM ${DB_PREFIX}product_discount... " />
-            <marker date="1512548201997" expanded="true" signature="23073:23162" ph="DELETE FROM ${DB_PREFIX}product_filter... " />
-            <marker date="1512548201997" expanded="true" signature="23186:23274" ph="DELETE FROM ${DB_PREFIX}product_image... " />
-            <marker date="1512548201997" expanded="true" signature="23298:23387" ph="DELETE FROM ${DB_PREFIX}product_option... " />
-            <marker date="1512548201997" expanded="true" signature="23411:23506" ph="DELETE FROM ${DB_PREFIX}product_option_value... " />
-            <marker date="1512548201997" expanded="true" signature="23530:23620" ph="DELETE FROM ${DB_PREFIX}product_related... " />
-            <marker date="1512548201997" expanded="true" signature="23644:23734" ph="DELETE FROM ${DB_PREFIX}product_related... " />
-            <marker date="1512548201997" expanded="true" signature="23758:23847" ph="DELETE FROM ${DB_PREFIX}product_reward... " />
-            <marker date="1512548201997" expanded="true" signature="23871:23961" ph="DELETE FROM ${DB_PREFIX}product_special... " />
-            <marker date="1512548201997" expanded="true" signature="23985:24079" ph="DELETE FROM ${DB_PREFIX}product_to_category... " />
-            <marker date="1512548201997" expanded="true" signature="24103:24197" ph="DELETE FROM ${DB_PREFIX}product_to_download... " />
-            <marker date="1512548201997" expanded="true" signature="24221:24313" ph="DELETE FROM ${DB_PREFIX}product_to_layout... " />
-            <marker date="1512548201997" expanded="true" signature="24337:24428" ph="DELETE FROM ${DB_PREFIX}product_to_store... " />
-            <marker date="1512548201997" expanded="true" signature="24452:24518" ph="DELETE FROM ${DB_PREFIX}product_recurring... " />
-            <marker date="1512548201997" expanded="true" signature="24561:24642" ph="DELETE FROM ${DB_PREFIX}review... " />
-            <marker date="1512548201997" expanded="true" signature="24666:24756" ph="DELETE FROM ${DB_PREFIX}url_alias... " />
-            <marker date="1512548201997" expanded="true" signature="24780:24869" ph="DELETE FROM ${DB_PREFIX}coupon_product... " />
-            <marker date="1512548201997" expanded="true" signature="24985:25356" ph="SELECT DISTI... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="25005:25103" ph="SELECT keywo... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="25445:25648" ph="SELECT * FRO... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="27508:27868" ph="SELECT * FRO... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="28024:28120" ph="SELECT * FRO... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="28684:28780" ph="SELECT * FRO... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="29033:29124" ph="SELECT * FRO... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="29395:29522" ph="SELECT attri... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="29705:29868" ph="SELECT * FRO... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="30483:30812" ph="SELECT * FRO... ${DB_PREFIX}product_option" />
-            <marker date="1512548201997" expanded="true" signature="30971:31223" ph="SELECT * FRO... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="32675:33270" ph="SELECT pov.o... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="33379:33493" ph="SELECT * FRO... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="33606:33734" ph="SELECT * FRO... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="33846:33963" ph="SELECT * FRO... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="34109:34200" ph="SELECT * FRO... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="34495:34591" ph="SELECT * FRO... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="34842:34935" ph="SELECT * FRO... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="35179:35273" ph="SELECT * FRO... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="35540:35632" ph="SELECT * FRO... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="35843:35939" ph="SELECT * FRO... ${DB_PREFIX}product_recurring" />
-            <marker date="1512548201997" expanded="true" signature="36034:36194" ph="SELECT COUNT... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="37479:37583" ph="SELECT COUNT... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="37721:37831" ph="SELECT COUNT... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="37969:38079" ph="SELECT COUNT... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="38217:38327" ph="SELECT COUNT... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="38458:38572" ph="SELECT COUNT... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="38711:38821" ph="SELECT COUNT... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="38954:39068" ph="SELECT COUNT... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="39195:39300" ph="SELECT COUNT... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="39431:39545" ph="SELECT COUNT... ${DB_PREFIX}" />
-            <marker date="1512548201997" expanded="true" signature="39672:39780" ph="SELECT COUNT... ${DB_PREFIX}" />
-          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/comm-functions.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="419">
+          <caret line="57" column="28" lean-forward="true" selection-start-line="57" selection-start-column="28" selection-end-line="57" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/email_client.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="415">
+          <caret line="30" column="28" lean-forward="false" selection-start-line="30" selection-start-column="12" selection-end-line="30" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="16" column="28" lean-forward="false" selection-start-line="16" selection-start-column="28" selection-end-line="16" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../Scripts/stargazer/bower_components/ionic/demos/directive/sideMenus/navWithMenu/index.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="787">
+          <caret line="55" column="12" lean-forward="false" selection-start-line="55" selection-start-column="12" selection-end-line="55" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/css/ionic.app.min.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="0" column="1024" lean-forward="false" selection-start-line="0" selection-start-column="1024" selection-end-line="0" selection-end-column="1024" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/css/ionic.app.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-150311">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers/about.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="13" column="7" lean-forward="true" selection-start-line="13" selection-start-column="7" selection-end-line="13" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers/notifications.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="205">
+          <caret line="75" column="41" lean-forward="true" selection-start-line="75" selection-start-column="41" selection-end-line="75" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers/member_zone.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="53" lean-forward="true" selection-start-line="2" selection-start-column="53" selection-end-line="2" selection-end-column="53" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/templates/crypto_mining/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="8" column="64" lean-forward="false" selection-start-line="8" selection-start-column="58" selection-end-line="8" selection-end-column="64" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers/send.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="22" column="44" lean-forward="true" selection-start-line="22" selection-start-column="44" selection-end-line="22" selection-end-column="44" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers/crypto_mining.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="16" column="10" lean-forward="false" selection-start-line="16" selection-start-column="10" selection-end-line="16" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/translations/en.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="394">
+          <caret line="207" column="37" lean-forward="true" selection-start-line="207" selection-start-column="37" selection-end-line="207" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../Scripts/teller-wallet-ionic/www/js/services/accounts.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="212">
+          <caret line="129" column="26" lean-forward="false" selection-start-line="129" selection-start-column="16" selection-end-line="129" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/templates/accounts/forgot.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="19" column="24" lean-forward="false" selection-start-line="19" selection-start-column="24" selection-end-line="19" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/templates/accounts/signup.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="107">
+          <caret line="40" column="24" lean-forward="false" selection-start-line="40" selection-start-column="24" selection-end-line="40" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/services/accounts.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="182">
+          <caret line="123" column="29" lean-forward="true" selection-start-line="123" selection-start-column="29" selection-end-line="123" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers/accounts.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="16" column="39" lean-forward="true" selection-start-line="16" selection-start-column="39" selection-end-line="16" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/app.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="436">
+          <caret line="112" column="0" lean-forward="true" selection-start-line="112" selection-start-column="0" selection-end-line="112" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/templates/accounts/login.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="28" lean-forward="false" selection-start-line="15" selection-start-column="28" selection-end-line="15" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/templates/elements/loading.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/templates/elements/menu.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="124">
+          <caret line="51" column="148" lean-forward="false" selection-start-line="51" selection-start-column="148" selection-end-line="51" selection-end-column="148" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/server.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="257">
-          <caret line="297" column="24" lean-forward="false" selection-start-line="297" selection-start-column="24" selection-end-line="297" selection-end-column="24" />
+        <state relative-caret-position="-686">
+          <caret line="2559" column="47" lean-forward="true" selection-start-line="2559" selection-start-column="47" selection-end-line="2559" selection-end-column="47" />
           <folding />
         </state>
       </provider>
