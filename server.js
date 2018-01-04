@@ -1280,8 +1280,8 @@ server.route({
                 customer_id: Joi.number().integer().required(),
                 firstname: Joi.string().required(),
                 surname: Joi.string().required(),
-                mobile_number: Joi.string().required(),
-                telephone: Joi.string().required(),
+                mobile_number: Joi.string(),
+                telephone: Joi.string(),
                 email: Joi.string().email().required(),
                 role: Joi.string()
             }
@@ -2570,7 +2570,7 @@ server.route({
                     if (results.length > 0) {
 
                         var db = results[0].companydb;
-                        connection.query('SELECT ct.category_id, cd.name, ct.parent_id FROM '+db+'.oc_category ct INNER JOIN '+db+'.oc_category_description cd ON cd.category_id=ct.category_id INNER JOIN '+db+'.oc_category_to_customer_group cc ON cc.category_id=ct.category_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_group_id=cc.customer_group_id GROUP BY ct.category_id',
+                        connection.query('SELECT ct.category_id,cd.name,ct.parent_id FROM '+db+'.oc_category ct INNER JOIN '+db+'.oc_category_description cd ON cd.category_id=ct.category_id INNER JOIN '+db+'.oc_category_to_customer_group cc ON cc.category_id=ct.category_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_group_id=cc.customer_group_id GROUP BY ct.category_id',
                             function (error, results, fields) {
                                 if (error) throw error;
 
@@ -2630,11 +2630,32 @@ server.route({
                                     throw error;
                                 } else {
 
-                                    var response = {
-                                        'status': 200,
-                                        'product': results
-                                    };
-                                    reply(response);
+                                    if (results.length > 0) {
+
+                                        const productDetails = results[0];
+
+                                        // get product attributes
+                                        connection.query('SELECT at.attribute_id,ad.name AS attribute_name,pa.text AS attribute_value,at.sort_order FROM '+db+'.oc_product_attribute pa INNER JOIN '+db+'.oc_attribute at ON at.attribute_id=pa.attribute_id INNER JOIN '+db+'.oc_attribute_description ad ON ad.attribute_id=at.attribute_id WHERE pa.product_id='+product_id,
+                                            function (error, results, fields) {
+                                                if (error) {
+                                                    throw error;
+                                                } else {
+                                                    var response = {
+                                                        'status': 200,
+                                                        'product': productDetails,
+                                                        'product_attributes': results
+                                                    };
+                                                    reply(response);
+                                                }
+                                            });
+                                    } else {
+                                        var response = {
+                                            'status': 200,
+                                            'product': {},
+                                            'product_attributes': []
+                                        };
+                                        reply(response);
+                                    }
                                 }
                             });
 
