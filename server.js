@@ -1280,10 +1280,10 @@ server.route({
                 customer_id: Joi.number().integer().required(),
                 firstname: Joi.string().required(),
                 surname: Joi.string().required(),
-                mobile_number: Joi.string(),
-                telephone: Joi.string(),
+                mobile_number: Joi.string().min(0).allow('').allow(null),
+                telephone: Joi.string().min(0).allow('').allow(null),
                 email: Joi.string().email().required(),
-                role: Joi.string()
+                role: Joi.string().min(0).allow('').allow(null)
             }
         }
     }
