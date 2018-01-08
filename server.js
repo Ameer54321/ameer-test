@@ -728,6 +728,71 @@ server.route({
 
 /**
  *
+ * Route to retrieve total of quotes awaiting approval
+ *
+ */
+server.route({
+    method: 'GET',
+    path: '/api/v1/orders/{r_id}/{c_id}/quotes/total/pending',
+    handler: function (request, reply) {
+        const r_id = request.params.r_id;
+        const c_id = request.params.c_id;
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = ' + c_id,
+            function (error, results, fields) {
+                if (error) {
+                    throw error;
+                } else {
+
+                    if (results.length > 0) {
+
+                        var db = results[0].companydb;
+
+                        // quotes awaiting approval
+                        connection.query('SELECT cart FROM '+db+'.oc_replogic_order_quote oq WHERE oq.status=0 AND oq.salesrep_id='+r_id+' AND DATE_FORMAT(oq.date_added,"%Y-%m") = DATE_FORMAT(NOW(),"%Y-%m")',
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+
+                                    var total = 0;
+
+                                    for (var i=0; i<results.length; i++) {
+                                        var cart = parser.parse(results[i].cart);
+                                        total += cart.cart_total_price;
+                                    }
+                                    var response = {
+                                        status: 200,
+                                        total: total
+                                    };
+                                    reply(response);
+                                }
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
+                }
+            });
+    },
+    config: {
+        validate: {
+            params: {
+                r_id: Joi.number().integer().required(),
+                c_id: Joi.number().integer().required()
+            }
+        }
+    }
+});
+
+
+
+/**
+ *
  * Route to retrieve number of approved quotes
  *
  */
@@ -1405,7 +1470,7 @@ server.route({
 
                         var db = results[0].companydb;
 
-                        connection.query('SELECT ap.appointment_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content FROM '+db+'.oc_appointment ap left join '+db+'.oc_customer cs on cs.customer_id = ap.customer_id left join '+db+'.oc_address ad on ad.address_id = cs.address_id left join '+db+'.oc_notes nt on nt.appointment_id = ap.appointment_id WHERE ap.salesrep_id = '+r_id+' AND DATE_FORMAT(ap.appointment_date,"%Y-%m-%d") = DATE_FORMAT(NOW(),"%Y-%m-%d")',
+                        connection.query('SELECT ap.appointment_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content,sc.checkin_id,sc.checkin,sc.checkout FROM '+db+'.oc_appointment ap left join '+db+'.oc_customer cs on cs.customer_id = ap.customer_id left join '+db+'.oc_address ad on ad.address_id = cs.address_id left join '+db+'.oc_notes nt on nt.appointment_id = ap.appointment_id LEFT JOIN '+db+'.oc_salesrep_checkins sc on sc.appointment_id=ap.appointment_id WHERE ap.salesrep_id = '+r_id+' AND DATE_FORMAT(ap.appointment_date,"%Y-%m-%d") = DATE_FORMAT(NOW(),"%Y-%m-%d")',
                             function (error, results, fields) {
                                 if (error) throw error;
 
@@ -1456,7 +1521,7 @@ server.route({
 
                         var db = results[0].companydb;
 
-                        connection.query('SELECT ap.appointment_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs ON cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad ON ad.address_id = cs.address_id LEFT JOIN '+db+'.oc_notes nt ON nt.appointment_id = ap.appointment_id WHERE ap.salesrep_id = '+r_id+' AND YEARWEEK(ap.appointment_date) = YEARWEEK(CURDATE()) ORDER BY ap.appointment_date',
+                        connection.query('SELECT ap.appointment_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content,sc.checkin_id,sc.checkin,sc.checkout FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs ON cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad ON ad.address_id = cs.address_id LEFT JOIN '+db+'.oc_notes nt ON nt.appointment_id = ap.appointment_id LEFT JOIN '+db+'.oc_salesrep_checkins sc ON sc.appointment_id = ap.appointment_id WHERE ap.salesrep_id = '+r_id+' AND YEARWEEK(ap.appointment_date) = YEARWEEK(CURDATE()) ORDER BY ap.appointment_date',
                             function (error, results, fields) {
                                 if (error) throw error;
 
@@ -1511,7 +1576,7 @@ server.route({
 
                         var db = results[0].companydb;
 
-                        connection.query('SELECT ap.appointment_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs on cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad on ad.address_id = cs.address_id LEFT JOIN '+db+'.oc_notes nt on nt.appointment_id = ap.appointment_id WHERE ap.salesrep_id = '+r_id+' AND YEAR(ap.appointment_date) = YEAR(CURDATE()) AND MONTH(ap.appointment_date)=MONTH(CURDATE()) ORDER BY ap.appointment_date',
+                        connection.query('SELECT ap.appointment_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content,sc.checkin_id,sc.checkin,sc.checkout FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs on cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad on ad.address_id = cs.address_id LEFT JOIN '+db+'.oc_notes nt on nt.appointment_id = ap.appointment_id LEFT JOIN '+db+'.oc_salesrep_checkins sc on sc.appointment_id = ap.appointment_id WHERE ap.salesrep_id = '+r_id+' AND YEAR(ap.appointment_date) = YEAR(CURDATE()) AND MONTH(ap.appointment_date)=MONTH(CURDATE()) ORDER BY ap.appointment_date',
                             function (error, results, fields) {
                                 if (error) throw error;
 
@@ -1569,7 +1634,7 @@ server.route({
 
                         var db = results[0].companydb;
 
-                        connection.query('SELECT ap.appointment_id,cs.customer_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs ON cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad ON ad.address_id = cs.address_id LEFT JOIN '+db+'.oc_notes nt ON nt.appointment_id = ap.appointment_id WHERE ap.salesrep_id ='+r_id,
+                        connection.query('SELECT ap.appointment_id,cs.customer_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content,sc.checkin_id,sc.checkin,sc.checkout FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs ON cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad ON ad.address_id = cs.address_id LEFT JOIN '+db+'.oc_notes nt ON nt.appointment_id = ap.appointment_id LEFT JOIN '+db+'.oc_salesrep_checkins sc ON sc.appointment_id = ap.appointment_id WHERE ap.salesrep_id ='+r_id,
                             function (error, results, fields) {
                                 if (error) {
                                     throw error;
@@ -1627,7 +1692,7 @@ server.route({
                         var db = results[0].companydb;
 
                         // get appointment details
-                        connection.query('SELECT ap.appointment_id,cs.customer_id,cs.firstname as customer_name,ap.appointment_date,ap.duration_hours,ap.duration_minutes,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs ON cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad ON ad.address_id = cs.address_id LEFT JOIN '+db+'.oc_notes nt ON nt.appointment_id = ap.appointment_id WHERE ap.appointment_id ='+appointmentId,
+                        connection.query('SELECT ap.appointment_id,cs.customer_id,cs.firstname as customer_name,ap.appointment_date,ap.duration_hours,ap.duration_minutes,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content,sc.checkin_id,sc.checkin,sc.checkout FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs ON cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad ON ad.address_id = cs.address_id LEFT JOIN '+db+'.oc_notes nt ON nt.appointment_id = ap.appointment_id LEFT JOIN '+db+'.oc_salesrep_checkins sc ON sc.appointment_id = ap.appointment_id WHERE ap.appointment_id ='+appointmentId,
                             function (error, results, fields) {
                                 if (error) {
                                     throw error;
