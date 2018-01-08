@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e09817e7-0ca7-4e25-a103-adc717cfdf15" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/server.js" afterPath="$PROJECT_DIR$/server.js" />
       <change beforePath="$PROJECT_DIR$/../../Scripts/ionic-googlemaps-quickdemo/config.xml" afterPath="$PROJECT_DIR$/../../Scripts/ionic-googlemaps-quickdemo/config.xml" />
     </list>
     <ignored path="Rest.iws" />
@@ -26,8 +24,38 @@
       <file leaf-file-name="server.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/server.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="398">
-              <caret line="1282" column="72" lean-forward="false" selection-start-line="1282" selection-start-column="72" selection-end-line="1282" selection-end-column="72" />
+            <state relative-caret-position="135">
+              <caret line="9" column="46" lean-forward="true" selection-start-line="9" selection-start-column="46" selection-end-line="9" selection-end-column="46" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="home.php" pinned="false" current-in-tab="false">
+        <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/pages/home.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="207">
+              <caret line="270" column="104" lean-forward="false" selection-start-line="270" selection-start-column="104" selection-end-line="270" selection-end-column="104" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.php" pinned="false" current-in-tab="false">
+        <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/help-center/index.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="244">
+              <caret line="58" column="15" lean-forward="false" selection-start-line="58" selection-start-column="15" selection-end-line="58" selection-end-column="15" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="constants.php" pinned="false" current-in-tab="false">
+        <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/help-center/inc/constants.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="255">
+              <caret line="83" column="41" lean-forward="false" selection-start-line="83" selection-start-column="41" selection-end-line="83" selection-end-column="41" />
               <folding />
             </state>
           </provider>
@@ -37,21 +65,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>referral</find>
-      <find>referral_code</find>
-      <find>customer/</find>
-      <find>status</find>
-      <find>SELECT</find>
-      <find>status=0</find>
-      <find>update customer</find>
-      <find>payload</find>
-      <find>get image</find>
-      <find>Invalida</find>
-      <find>menu</find>
-      <find>sendc</find>
-      <find>PUT</find>
-      <find>miningc</find>
-      <find>send</find>
       <find>com</find>
       <find>company_id</find>
       <find>comp</find>
@@ -67,6 +80,21 @@
       <find>bitcoin v</find>
       <find>sign u</find>
       <find>contacts/</find>
+      <find>contact/c</find>
+      <find>members/</find>
+      <find>sponsor</find>
+      <find>profile</find>
+      <find>&lt;a href=&quot;&lt;?</find>
+      <find>settings</find>
+      <find>/create</find>
+      <find>/quote</find>
+      <find>pg-sett</find>
+      <find>pg-settings_</find>
+      <find>show</find>
+      <find>card-icon card-icon-refresh</find>
+      <find>logo.</find>
+      <find>help-</find>
+      <find>ers/create</find>
     </findStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$/../../Scripts/dashboard</dir>
@@ -87,16 +115,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/../../Scripts/SHOPin/app/src/pages/home/home.html" />
-        <option value="$PROJECT_DIR$/../../Scripts/SHOPin/app/src/pages/add-item/add-item.html" />
-        <option value="$PROJECT_DIR$/../../Scripts/SHOPin/app/src/pages/add-item/add-item.ts" />
-        <option value="$PROJECT_DIR$/../../Scripts/SHOPin/app/src/app/app.component.ts" />
-        <option value="$PROJECT_DIR$/../../Scripts/SHOPin/app/src/pages/item-detail/item-detail.html" />
-        <option value="$PROJECT_DIR$/../../Scripts/SHOPin/app/src/pages/item-detail/item-detail.ts" />
-        <option value="$PROJECT_DIR$/../../Scripts/SHOPin/app/src/pages/home/home.ts" />
-        <option value="$PROJECT_DIR$/../../Scripts/ionic-googlemaps-quickdemo/config.xml" />
-        <option value="$PROJECT_DIR$/../../Scripts/dashboard/src/index.html" />
-        <option value="$PROJECT_DIR$/../../Scripts/dashboard/src/app/pages/authNavigation/authNavigation.html" />
         <option value="$PROJECT_DIR$/geo-functions.js" />
         <option value="$PROJECT_DIR$/package.json" />
         <option value="/Applications/XAMPP/htdocs/btcv/btcv/www/templates/home/index.html" />
@@ -130,12 +148,24 @@
         <option value="/Applications/XAMPP/htdocs/btcvirtue/wallet/rss.php" />
         <option value="/Applications/XAMPP/htdocs/btcvirtue/inc/constants.php" />
         <option value="/Applications/XAMPP/htdocs/btcvirtue/inc/common.inc" />
-        <option value="/Applications/XAMPP/htdocs/btcvirtue/wallet/index.php" />
-        <option value="/Applications/XAMPP/htdocs/btcvirtue/wallet/code/code.global.php" />
-        <option value="/Applications/XAMPP/htdocs/btcvirtue/wallet/inc/constants.php" />
         <option value="/Applications/XAMPP/htdocs/btcvirtue/wallet/pages/login.php" />
-        <option value="/Applications/XAMPP/htdocs/btcvirtue/wallet/pages/header.php" />
         <option value="$PROJECT_DIR$/server.js" />
+        <option value="/Applications/XAMPP/htdocs/btcvirtue/wallet/code/code.global.php" />
+        <option value="/Applications/XAMPP/htdocs/btcvirtue/api/dbqueries/members.js" />
+        <option value="/Applications/XAMPP/htdocs/btcvirtue/api/server.js" />
+        <option value="/Applications/XAMPP/htdocs/btcvirtue/wallet/pages/signup/personal.php" />
+        <option value="/Applications/XAMPP/htdocs/btcvirtue/wallet/code/code.home.php" />
+        <option value="/Applications/XAMPP/htdocs/btcvirtue/wallet/pages/security-center.php" />
+        <option value="/Applications/XAMPP/htdocs/btcvirtue/wallet/code/code.security-center.php" />
+        <option value="/Applications/XAMPP/htdocs/btcvirtue/inc/classes/wallet/rehive.api.class.php" />
+        <option value="/Applications/XAMPP/htdocs/btcvirtue/wallet/code/code.profile.php" />
+        <option value="/Applications/XAMPP/htdocs/btcvirtue/wallet/pages/profile.php" />
+        <option value="/Applications/XAMPP/htdocs/btcvirtue/wallet/index.php" />
+        <option value="/Applications/XAMPP/htdocs/btcvirtue/wallet/pages/header.php" />
+        <option value="/Applications/XAMPP/htdocs/btcvirtue/wallet/inc/constants.php" />
+        <option value="/Applications/XAMPP/htdocs/btcvirtue/wallet/pages/home.php" />
+        <option value="/Applications/XAMPP/htdocs/btcvirtue/help-center/index.php" />
+        <option value="/Applications/XAMPP/htdocs/btcvirtue/help-center/inc/constants.php" />
       </list>
     </option>
   </component>
@@ -215,6 +245,12 @@
               <item name="Rest" type="b2602c69:ProjectViewProjectNode" />
               <item name="htdocs" type="2a2b976b:PhpTreeStructureProvider$1" />
               <item name="btcvirtue" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="help-center" type="2a2b976b:PhpTreeStructureProvider$1" />
+            </path>
+            <path>
+              <item name="Rest" type="b2602c69:ProjectViewProjectNode" />
+              <item name="htdocs" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="btcvirtue" type="2a2b976b:PhpTreeStructureProvider$1" />
               <item name="wallet" type="2a2b976b:PhpTreeStructureProvider$1" />
             </path>
             <path>
@@ -222,7 +258,7 @@
               <item name="htdocs" type="2a2b976b:PhpTreeStructureProvider$1" />
               <item name="btcvirtue" type="2a2b976b:PhpTreeStructureProvider$1" />
               <item name="wallet" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="pages" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="inc" type="2a2b976b:PhpTreeStructureProvider$1" />
             </path>
           </expand>
           <select />
@@ -306,12 +342,12 @@
       <workItem from="1514881212590" duration="8255000" />
       <workItem from="1514962387347" duration="7284000" />
       <workItem from="1515059473935" duration="5791000" />
-      <workItem from="1515134677883" duration="3482000" />
+      <workItem from="1515134677883" duration="13055000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="98394000" />
+    <option name="totallyTimeSpent" value="107967000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="805" extended-state="0" />
@@ -375,215 +411,11 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="4" />
+      <option name="time" value="5" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/templates/member_zone/team.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="8" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers/team.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="47" lean-forward="false" selection-start-line="0" selection-start-column="43" selection-end-line="0" selection-end-column="47" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers/genealogy.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="52" lean-forward="false" selection-start-line="0" selection-start-column="52" selection-end-line="0" selection-end-column="52" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers/commission.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="53" lean-forward="false" selection-start-line="0" selection-start-column="53" selection-end-line="0" selection-end-column="53" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers/promotions.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/templates/promotions/code.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="8" column="71" lean-forward="false" selection-start-line="8" selection-start-column="71" selection-end-line="8" selection-end-column="71" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/geo-functions.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="19" column="11" lean-forward="false" selection-start-line="13" selection-start-column="8" selection-end-line="19" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../ReplogicExtension/admin/model/catalog/product.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-558">
-          <caret line="352" column="0" lean-forward="true" selection-start-line="352" selection-start-column="0" selection-end-line="352" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/comm-functions.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="419">
-          <caret line="57" column="28" lean-forward="true" selection-start-line="57" selection-start-column="28" selection-end-line="57" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/email_client.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="415">
-          <caret line="30" column="28" lean-forward="false" selection-start-line="30" selection-start-column="12" selection-end-line="30" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/package.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="16" column="28" lean-forward="false" selection-start-line="16" selection-start-column="28" selection-end-line="16" selection-end-column="28" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../Scripts/stargazer/bower_components/ionic/demos/directive/sideMenus/navWithMenu/index.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="787">
-          <caret line="55" column="12" lean-forward="false" selection-start-line="55" selection-start-column="12" selection-end-line="55" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/css/ionic.app.min.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="0" column="1024" lean-forward="false" selection-start-line="0" selection-start-column="1024" selection-end-line="0" selection-end-column="1024" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/css/ionic.app.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-150311">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers/about.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="13" column="7" lean-forward="true" selection-start-line="13" selection-start-column="7" selection-end-line="13" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers/notifications.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers/member_zone.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="53" lean-forward="true" selection-start-line="2" selection-start-column="53" selection-end-line="2" selection-end-column="53" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/templates/crypto_mining/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="8" column="64" lean-forward="false" selection-start-line="8" selection-start-column="58" selection-end-line="8" selection-end-column="64" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers/send.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="22" column="44" lean-forward="true" selection-start-line="22" selection-start-column="44" selection-end-line="22" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers/crypto_mining.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="16" column="10" lean-forward="false" selection-start-line="16" selection-start-column="10" selection-end-line="16" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/templates/accounts/forgot.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="19" column="24" lean-forward="false" selection-start-line="19" selection-start-column="24" selection-end-line="19" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/templates/elements/loading.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/templates/elements/menu.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="124">
-          <caret line="51" column="148" lean-forward="false" selection-start-line="51" selection-start-column="148" selection-end-line="51" selection-end-column="148" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/services.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/services/settings.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1920">
-          <caret line="128" column="49" lean-forward="false" selection-start-line="128" selection-start-column="49" selection-end-line="128" selection-end-column="49" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/services/transactions.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/app.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="604">
-          <caret line="318" column="17" lean-forward="false" selection-start-line="318" selection-start-column="17" selection-end-line="318" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../Scripts/teller-wallet-ionic/www/js/services/accounts.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="260">
-          <caret line="131" column="49" lean-forward="true" selection-start-line="131" selection-start-column="49" selection-end-line="131" selection-end-column="49" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///Applications/XAMPP/htdocs/btcv/btcv/www/js/controllers/currency_accounts.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-521">
@@ -654,29 +486,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/ajax/ajax.global.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-60">
-          <caret line="139" column="21" lean-forward="true" selection-start-line="139" selection-start-column="21" selection-end-line="139" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/inc/constants.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="181">
-          <caret line="115" column="0" lean-forward="true" selection-start-line="115" selection-start-column="0" selection-end-line="115" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/code/code.home.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/code/code.global.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -693,26 +502,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/inc/constants.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="212">
-          <caret line="113" column="54" lean-forward="false" selection-start-line="113" selection-start-column="45" selection-end-line="113" selection-end-column="54" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/pages/login.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="234">
           <caret line="17" column="67" lean-forward="false" selection-start-line="17" selection-start-column="67" selection-end-line="17" selection-end-column="67" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/pages/header.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="10" column="33" lean-forward="true" selection-start-line="10" selection-start-column="33" selection-end-line="10" selection-end-column="33" />
           <folding />
         </state>
       </provider>
@@ -725,26 +518,322 @@
         </state>
       </provider>
     </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/code/code.wallet.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/api/dbqueries/authentication.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/api/dbqueries/members.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="73">
+          <caret line="44" column="59" lean-forward="false" selection-start-line="44" selection-start-column="59" selection-end-line="44" selection-end-column="59" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/code/code.signup.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="315">
+          <caret line="21" column="20" lean-forward="true" selection-start-line="21" selection-start-column="20" selection-end-line="21" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/api/server.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="401">
+          <caret line="1143" column="42" lean-forward="false" selection-start-line="1143" selection-start-column="42" selection-end-line="1143" selection-end-column="42" />
+          <folding>
+            <element signature="e#940#2875#0" expanded="false" />
+            <element signature="e#2915#4966#0" expanded="false" />
+            <element signature="e#5038#6910#0" expanded="false" />
+            <element signature="e#6952#8716#0" expanded="false" />
+            <element signature="e#8953#10203#0" expanded="false" />
+            <element signature="e#10245#10541#0" expanded="false" />
+            <element signature="e#10592#11018#0" expanded="false" />
+            <element signature="e#11067#11374#0" expanded="false" />
+            <element signature="e#11416#11882#0" expanded="false" />
+            <element signature="e#12125#15502#0" expanded="false" />
+            <element signature="e#15546#15928#0" expanded="false" />
+            <element signature="e#15979#16354#0" expanded="false" />
+            <element signature="e#16426#16754#0" expanded="false" />
+            <element signature="e#16818#17270#0" expanded="false" />
+            <element signature="e#17323#17883#0" expanded="false" />
+            <element signature="e#17937#18500#0" expanded="false" />
+            <element signature="e#18559#28866#0" expanded="false" />
+            <element signature="e#28922#29356#0" expanded="false" />
+            <element signature="e#29413#29998#0" expanded="false" />
+            <element signature="e#30075#30807#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/pages/signup/sponsor.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/pages/signup/personal.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="22" column="64" lean-forward="false" selection-start-line="22" selection-start-column="64" selection-end-line="22" selection-end-column="64" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/code/code.home.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="4" lean-forward="true" selection-start-line="5" selection-start-column="4" selection-end-line="6" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/code/code.settings.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="6" column="4" lean-forward="true" selection-start-line="6" selection-start-column="4" selection-end-line="8" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/pages/security-center.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="173">
+          <caret line="63" column="77" lean-forward="false" selection-start-line="63" selection-start-column="77" selection-end-line="63" selection-end-column="77" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/code/code.security-center.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="12" column="29" lean-forward="false" selection-start-line="12" selection-start-column="29" selection-end-line="12" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/inc/classes/wallet/rehive.api.class.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="528">
+          <caret line="263" column="40" lean-forward="true" selection-start-line="263" selection-start-column="40" selection-end-line="263" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/code/code.profile.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="13" column="18" lean-forward="false" selection-start-line="13" selection-start-column="11" selection-end-line="13" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/pages/profile.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="555">
+          <caret line="37" column="52" lean-forward="true" selection-start-line="37" selection-start-column="52" selection-end-line="37" selection-end-column="52" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/comm-functions.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2355">
+          <caret line="157" column="28" lean-forward="true" selection-start-line="157" selection-start-column="28" selection-end-line="157" selection-end-column="28" />
+          <folding>
+            <marker date="1514543618237" expanded="true" signature="600:615" ph="..." />
+            <marker date="1514543618237" expanded="true" signature="4205:4220" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/css/pages.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/css/pages-icons.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="215" lean-forward="false" selection-start-line="0" selection-start-column="214" selection-end-line="0" selection-end-column="215" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/ajax/ajax.global.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="261">
+          <caret line="80" column="108" lean-forward="true" selection-start-line="80" selection-start-column="43" selection-end-line="80" selection-end-column="108" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/code/code.global.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="19" column="8" lean-forward="false" selection-start-line="19" selection-start-column="8" selection-end-line="19" selection-end-column="8" />
+        <state relative-caret-position="240">
+          <caret line="16" column="8" lean-forward="true" selection-start-line="16" selection-start-column="8" selection-end-line="16" selection-end-column="14" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/index.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="528">
-          <caret line="99" column="4" lean-forward="false" selection-start-line="99" selection-start-column="4" selection-end-line="99" selection-end-column="32" />
+        <state relative-caret-position="475">
+          <caret line="65" column="54" lean-forward="true" selection-start-line="65" selection-start-column="54" selection-end-line="65" selection-end-column="54" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/pages/accounts/main.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/pages/accounts/crypto.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/pages/accounts/bank.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/pages/beneficiaries/team.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/pages/beneficiaries/genealogy.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/pages/transactions/commission.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/pages/transactions/send.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/pages/transactions/receive.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/pages/transactions/withdraw.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/pages/transactions/history.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/pages/header.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="234">
+          <caret line="93" column="14" lean-forward="false" selection-start-line="93" selection-start-column="14" selection-end-line="93" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/inc/constants.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1680">
+          <caret line="115" column="0" lean-forward="true" selection-start-line="115" selection-start-column="0" selection-end-line="115" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/pages/home.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="207">
+          <caret line="270" column="104" lean-forward="false" selection-start-line="270" selection-start-column="104" selection-end-line="270" selection-end-column="104" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/wallet/inc/constants.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="375">
+          <caret line="101" column="37" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="184" selection-end-column="99" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/help-center/index.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="244">
+          <caret line="58" column="15" lean-forward="false" selection-start-line="58" selection-start-column="15" selection-end-line="58" selection-end-column="15" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Applications/XAMPP/htdocs/btcvirtue/help-center/inc/constants.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="83" column="41" lean-forward="false" selection-start-line="83" selection-start-column="41" selection-end-line="83" selection-end-column="41" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/server.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="398">
-          <caret line="1282" column="72" lean-forward="false" selection-start-line="1282" selection-start-column="72" selection-end-line="1282" selection-end-column="72" />
+        <state relative-caret-position="135">
+          <caret line="9" column="46" lean-forward="true" selection-start-line="9" selection-start-column="46" selection-end-line="9" selection-end-column="46" />
           <folding />
         </state>
       </provider>
