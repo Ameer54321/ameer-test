@@ -2407,6 +2407,189 @@ server.route({
 
 /**
  *
+ * Route to retrieve sales rep customer visits for today
+ *
+ */
+server.route({
+    method: 'GET',
+    path: '/api/v1/salesrep/{r_id}/{c_id}/{customer_id}/visits/today',
+    handler: function (request, reply) {
+        const companyId = request.params.c_id;
+        const repId = request.params.r_id;
+        const customerId = request.params.customer_id;
+
+        // get company db
+        connection.query("SELECT companydb FROM super.companies WHERE company_id="+companyId,
+            function (error, results, fields) {
+                if (error) {
+                    throw error;
+                } else {
+
+                    if (results.length > 0) {
+
+                        var db = results[0].companydb;
+
+                        // get sales rep visits
+                        connection.query('SELECT rc.checkin_id,rc.start,rc.end,rc.checkin,rc.checkout,rc.location,rc.checkin_location,rc.remarks,rc.latitude,rc.longitude FROM '+db+'.oc_salesrep_checkins rc INNER JOIN '+db+'.oc_customer cs ON cs.customer_id=rc.customer_id WHERE rc.salesrep_id='+repId+' AND cs.customer_id='+customerId+' AND DATE_FORMAT(rc.checkin,"%Y-%m-%d") = DATE_FORMAT(NOW(),"%Y-%m-%d")',
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+                                    var response = {
+                                        status: 200,
+                                        visits: results
+                                    };
+                                    reply(response);
+                                }
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
+                }
+            });
+    },
+    config: {
+        validate: {
+            params: {
+                c_id: Joi.number().integer().required(),
+                r_id: Joi.number().integer().required(),
+                customer_id: Joi.number().integer().required()
+            }
+        }
+    }
+});
+
+
+
+/**
+ *
+ * Route to retrieve sales rep customer visits for this week
+ *
+ */
+server.route({
+    method: 'GET',
+    path: '/api/v1/salesrep/{r_id}/{c_id}/{customer_id}/visits/week',
+    handler: function (request, reply) {
+        const companyId = request.params.c_id;
+        const repId = request.params.r_id;
+        const customerId = request.params.customer_id;
+
+        // get company db
+        connection.query("SELECT companydb FROM super.companies WHERE company_id="+companyId,
+            function (error, results, fields) {
+                if (error) {
+                    throw error;
+                } else {
+
+                    if (results.length > 0) {
+
+                        var db = results[0].companydb;
+
+                        // get sales rep visits
+                        connection.query('SELECT rc.checkin_id,rc.start,rc.end,rc.checkin,rc.checkout,rc.location,rc.checkin_location,rc.remarks,rc.latitude,rc.longitude FROM '+db+'.oc_salesrep_checkins rc INNER JOIN '+db+'.oc_customer cs ON cs.customer_id=rc.customer_id WHERE rc.salesrep_id='+repId+' AND cs.customer_id='+customerId+' AND YEARWEEK(rc.checkin) = YEARWEEK(CURDATE())',
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+                                    var response = {
+                                        status: 200,
+                                        visits: results
+                                    };
+                                    reply(response);
+                                }
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
+                }
+            });
+    },
+    config: {
+        validate: {
+            params: {
+                c_id: Joi.number().integer().required(),
+                r_id: Joi.number().integer().required(),
+                customer_id: Joi.number().integer().required()
+            }
+        }
+    }
+});
+
+
+
+/**
+ *
+ * Route to retrieve sales rep customer visits for this month
+ *
+ */
+server.route({
+    method: 'GET',
+    path: '/api/v1/salesrep/{r_id}/{c_id}/{customer_id}/visits/month',
+    handler: function (request, reply) {
+        const companyId = request.params.c_id;
+        const repId = request.params.r_id;
+        const customerId = request.params.customer_id;
+
+        // get company db
+        connection.query("SELECT companydb FROM super.companies WHERE company_id="+companyId,
+            function (error, results, fields) {
+                if (error) {
+                    throw error;
+                } else {
+
+                    if (results.length > 0) {
+
+                        var db = results[0].companydb;
+
+                        // get sales rep visits
+                        connection.query('SELECT rc.checkin_id,rc.start,rc.end,rc.checkin,rc.checkout,rc.location,rc.checkin_location,rc.remarks,rc.latitude,rc.longitude FROM '+db+'.oc_salesrep_checkins rc INNER JOIN '+db+'.oc_customer cs ON cs.customer_id=rc.customer_id WHERE rc.salesrep_id='+repId+' AND cs.customer_id='+customerId+' AND YEAR(rc.checkin) = YEAR(CURDATE()) AND MONTH(rc.checkin)=MONTH(CURDATE())',
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+                                    var response = {
+                                        status: 200,
+                                        visits: results
+                                    };
+                                    reply(response);
+                                }
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
+                }
+            });
+    },
+    config: {
+        validate: {
+            params: {
+                c_id: Joi.number().integer().required(),
+                r_id: Joi.number().integer().required(),
+                customer_id: Joi.number().integer().required()
+            }
+        }
+    }
+});
+
+
+
+/**
+ *
  * Route to retrieve sales rep visits to a specific customer
  *
  */
