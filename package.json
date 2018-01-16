@@ -13,11 +13,13 @@
     "geonoder": "0.1.0",
     "hapi": "^16.6.2",
     "hapi-cors-headers": "^1.0.3",
+    "html-pdf": "^2.2.0",
     "joi": "^11.3.4",
     "json-parser": "^1.1.5",
     "mandrill-api": "1.0.45",
     "mysql": "^2.15.0",
     "nodemon": "^1.12.1",
-    "password-generator": "2.2.0"
+    "password-generator": "2.2.0",
+    "request": "^2.83.0"
   }
 }

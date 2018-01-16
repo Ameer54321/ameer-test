@@ -1,5 +1,6 @@
 const emailClient = require('./email_client');
 const generatePdf = require('./generate-pdf');
+const request = require('request').defaults({ encoding: null });
 const fs = require('fs');
 module.exports = function() {
 
@@ -15,13 +16,23 @@ module.exports = function() {
             if (error) {
                 reply(error);
             } else {
-                sendQuoteEmailToCustomer(customer, manager, company, rep, quote, reply, result.filename);
+                request.get("http://localhost/api-logicsuite/quote.pdf", function (error, response, body) {
+                    if (!error && response.statusCode == 200) {
+                        var attachments = [{
+                            type: response.headers["content-type"],
+                            name: "Quote-"+quote.number+".pdf",
+                            content: new Buffer(body).toString('base64')
+                        }]
+                        sendQuoteEmailToCustomer(customer, manager, company, rep, quote, reply, attachments);
+                    } else {
+                        reply({status:400});
+                    }
+                });
             }
         });
     };
 
-    function sendQuoteEmailToCustomer(customer, manager, company, rep, quote, reply, attachment) {
-        var bitmap = fs.readFileSync(attachment, 'utf8');
+    function sendQuoteEmailToCustomer(customer, manager, company, rep, quote, reply, attachments) {
         var params = {
             template_name: 'customer-quote-template',
             template_content: [],
@@ -31,11 +42,7 @@ module.exports = function() {
                     email: customer.email,
                     type: 'to'
                 }],
-                attachments: [{
-                    type: "application/pdf",
-                    name: attachment,
-                    content: new Buffer(bitmap).toString('base64')
-                }],
+                attachments: attachments,
                 global_merge_vars: [{
                     name: 'CUST_NAME',
                     content: customer.name
@@ -85,9 +92,9 @@ module.exports = function() {
 
         // send email to customer
         emailClient.sendTemplate(params, function (res) {
-            sendQuoteEmailToRep(customer, manager, company, rep, quote, reply, attachment);
+            sendQuoteEmailToRep(customer, manager, company, rep, quote, reply, attachments);
         }, function (error) {
-            sendQuoteEmailToRep(customer, manager, company, rep, quote, reply, attachment);
+            sendQuoteEmailToRep(customer, manager, company, rep, quote, reply, attachments);
         });
     };
 
@@ -98,8 +105,7 @@ module.exports = function() {
      * @param data
      * @param quote_number
      */
-    function sendQuoteEmailToRep(customer, manager, company, rep, quote, reply, attachment) {
-        var bitmap = fs.readFileSync(attachment, 'utf8');
+    function sendQuoteEmailToRep(customer, manager, company, rep, quote, reply, attachments) {
         var params = {
             template_name: 'rep-quote-template',
             template_content: [],
@@ -109,11 +115,7 @@ module.exports = function() {
                     email: rep.email,
                     type: 'to'
                 }],
-                attachments: [{
-                    type: "application/pdf",
-                    name: attachment,
-                    content: new Buffer(bitmap).toString('base64')
-                }],
+                attachments: attachments,
                 global_merge_vars: [{
                     name: 'CUST_NAME',
                     content: customer.name
@@ -163,9 +165,9 @@ module.exports = function() {
 
         // send email to sales rep
         emailClient.sendTemplate(params, function (res) {
-            sendQuoteEmailToSalesManager(customer, manager, company, rep, quote, reply, attachment);
+            sendQuoteEmailToSalesManager(customer, manager, company, rep, quote, reply, attachments);
         }, function(error) {
-            sendQuoteEmailToSalesManager(customer, manager, company, rep, quote, reply, attachment);
+            sendQuoteEmailToSalesManager(customer, manager, company, rep, quote, reply, attachments);
         });
     };
 
@@ -176,8 +178,7 @@ module.exports = function() {
      * @param data
      * @param quote_number
      */
-    function sendQuoteEmailToSalesManager(customer, manager, company, rep, quote, reply, attachment) {
-        var bitmap = fs.readFileSync(attachment, 'utf8');
+    function sendQuoteEmailToSalesManager(customer, manager, company, rep, quote, reply, attachments) {
         var params = {
             template_name: 'manager-quote-template',
             template_content: [],
@@ -187,11 +188,7 @@ module.exports = function() {
                     email: manager.email,
                     type: 'to'
                 }],
-                attachments: [{
-                    type: "application/pdf",
-                    name: attachment,
-                    content: new Buffer(bitmap).toString('base64')
-                }],
+                attachments: attachments,
                 global_merge_vars: [{
                     name: 'CUST_NAME',
                     content: customer.name
