@@ -11,6 +11,7 @@ const emailClient = require('./email_client');
 const comms = require('./comm-functions');
 const geonoder = require('geonoder');
 const parser = require('json-parser');
+// const generatePdf = require('./generate-pdf');
 
 // Create a server with a host and port
 const server = new Hapi.Server();
@@ -319,6 +320,69 @@ server.route({
 
 
 /**
+ *  Route to get all customer quotes
+ *
+ * @method GET
+ * @path /api/v1/customer/quotes/{customer_id}/{c_id}
+ *
+ */
+server.route({
+    method: 'GET',
+    path: '/api/v1/customer/quotes/{customer_id}/{c_id}',
+    handler: function (request, reply) {
+        const customer_id = request.params.customer_id;
+        const c_id = request.params.c_id;
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = "' + c_id + '"',
+            function (error, results, fields) {
+                if (error){
+                    throw error;
+                } else{
+
+                    if (results.length > 0) {
+
+                        var db = results[0].companydb;
+
+                        connection.query('SELECT oq.quote_id,oq.status,oq.date_added,oq.cart,cs.firstname AS customer_name,CONCAT(cc.first_name, " ", cc.last_name) AS contact_name FROM '+db+'.oc_replogic_order_quote oq INNER JOIN '+db+'.oc_customer cs ON cs.customer_id=oq.customer_id INNER JOIN '+db+'.oc_customer_contact cc ON cc.customer_con_id=oq.customer_contact_id WHERE oq.status IN (0,2) AND cs.customer_id='+customer_id,
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+
+                                    for (var i=0; i<results.length; i++) {
+                                        results[i].cart = parser.parse(results[i].cart);
+                                    }
+                                    var response = {
+                                        'status': 200,
+                                        'quotes': results
+                                    };
+                                    reply(response);
+                                }
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
+                }
+            });
+    },
+    config: {
+        validate: {
+            params: {
+                customer_id: Joi.number().integer().required(),
+                c_id: Joi.number().integer().required()
+            }
+        }
+    }
+});
+
+
+
+/**
  *
  *  Route to get single customer details
  *
@@ -470,7 +534,7 @@ server.route({
         const contact_id = request.payload.contact_id;
         const cart = request.payload.cart;
 
-        connection.query('SELECT companydb FROM super.companies WHERE company_id = "' + c_id + '"',
+        connection.query('SELECT companydb, companyname FROM super.companies WHERE company_id = "' + c_id + '"',
             function (error, results, fields) {
                 if (error) {
                     throw error;
@@ -478,6 +542,7 @@ server.route({
 
                     if (results.length > 0) {
 
+                        const companyName = results[0].companyname;
                         var db = results[0].companydb;
                         var cartJson = JSON.stringify(cart);
 
@@ -489,16 +554,73 @@ server.route({
                                 } else {
 
                                     var quote_id = results.insertId;
+                                    var query = "";
+
+                                    // build select query
+                                    query += "SELECT qt.quote_id,qt.cart,DATE_FORMAT(qt.date_added, '%M %d, %Y') AS quote_date,";
+                                    query += "CONCAT(rp.salesrep_name, ' ',rp.salesrep_lastname) AS rep_name,rp.email AS rep_email,";
+                                    query += "cs.firstname AS customer_name,cs.email AS customer_email,CONCAT(cc.first_name, ' ',cc.last_name) AS cust_contact_name,ca.address_1,";
+                                    query += "ca.address_2,ca.city,'South Africa' AS country,ca.postcode,rm.email AS manager_email ";
+                                    query += "FROM "+db+".oc_replogic_order_quote qt ";
+                                    query += "INNER JOIN "+db+".oc_salesrep rp ON rp.salesrep_id=qt.salesrep_id ";
+                                    query += "INNER JOIN "+db+".oc_customer cs ON cs.customer_id=qt.customer_id ";
+                                    query += "INNER JOIN "+db+".oc_customer_contact cc ON cc.customer_con_id=qt.customer_contact_id ";
+                                    query += "INNER JOIN "+db+".oc_address ca ON ca.address_id=cs.address_id ";
+                                    query += "INNER JOIN "+db+".oc_team rt ON rt.team_id=rp.sales_team_id ";
+                                    query += "INNER JOIN "+db+".oc_user rm ON rm.user_id=rt.sales_manager ";
+                                    query += "WHERE qt.quote_id="+quote_id;
 
                                     // get customer email from database to send order confirmation
-                                    connection.query('SELECT cs.email AS customer_email,cc.email AS cust_contact_email,rs.email AS comp_admin_email FROM '+db+'.oc_customer cs INNER JOIN '+db+'.oc_customer_contact cc ON cc.customer_id=cs.customer_id INNER JOIN '+db+'.oc_rep_settings rs ON rs.company_id='+c_id+' WHERE cs.customer_id='+customer_id+' AND cc.customer_con_id='+contact_id,
+                                    connection.query(query,
                                         function (error, results, fields) {
                                             if (error) {
                                                 throw error;
                                             } else {
-                                                if (results[0]) {
-                                                    comms.orderConfirmationToAdmin(results[0].comp_admin_email, cart, quote_id);
-                                                    comms.orderConfirmationToCustomer(results[0], cart, quote_id, reply);
+                                                if (results.length > 0) {
+                                                    var customer = {
+                                                        name: results[0].customer_name,
+                                                        email: results[0].customer_email,
+                                                        contact: {
+                                                            name: results[0].cust_contact_name
+                                                        },
+                                                        address: {
+                                                            line1: results[0].address_1,
+                                                            line2: results[0].address_2,
+                                                            city: results[0].city,
+                                                            country: results[0].country,
+                                                            postcode: results[0].postcode
+                                                        }
+                                                    };
+                                                    var cart = parser.parse(results[0].cart);
+                                                    var rep = {name: results[0].rep_name, email:results[0].rep_email};
+                                                    var company = {
+                                                        name: companyName,
+                                                        address: {
+                                                            line1: "",
+                                                            line2: "",
+                                                            city: "",
+                                                            country: "",
+                                                            postcode: ""
+                                                        }
+                                                    };
+                                                    var quote = {
+                                                        number: results[0].quote_id, 
+                                                        total: cart.cart_total_price.toFixed(2), 
+                                                        url: 'http://quoteurl/'+quote_id, 
+                                                        date: results[0].quote_date,
+                                                        products: cart.cart_items,
+                                                        total_excl_vat: cart.cart_total_price.toFixed(2),
+                                                        vat: "0.00"
+                                                    };
+                                                    var manager = {email: results[0].manager_email};
+                                                    comms.sendQuoteEmails(customer, manager, company, rep, quote, reply);
+                                                } else {
+                                                    var response = {
+                                                        status: 200,
+                                                        quote_id: quote_id,
+                                                        message: 'Emails could not be sent!'
+                                                    }
+                                                    reply(response);
                                                 }
                                             }
                                         });
@@ -569,17 +691,19 @@ server.route({
                         }
 
                         // query database
-                        connection.query('SELECT oq.quote_id,oq.status,oq.date_added,cs.firstname AS customer_name,CONCAT(cc.first_name, " ", cc.last_name) AS contact_name FROM '+db+'.oc_replogic_order_quote oq INNER JOIN '+db+'.oc_customer cs ON cs.customer_id=oq.customer_id INNER JOIN '+db+'.oc_customer_contact cc ON cc.customer_con_id=oq.customer_contact_id WHERE oq.status IN (0,2) AND oq.salesrep_id='+r_id+' '+query,
+                        connection.query('SELECT oq.quote_id,oq.status,oq.cart,oq.date_added,cs.firstname AS customer_name,CONCAT(cc.first_name, " ", cc.last_name) AS contact_name FROM '+db+'.oc_replogic_order_quote oq INNER JOIN '+db+'.oc_customer cs ON cs.customer_id=oq.customer_id INNER JOIN '+db+'.oc_customer_contact cc ON cc.customer_con_id=oq.customer_contact_id WHERE oq.status IN (0,2) AND oq.salesrep_id='+r_id+' '+query,
                             function (error, results, fields) {
                                 if (error) {
                                     throw error;
                                 } else {
 
+                                    for (var i=0; i<results.length; i++) {
+                                        results[i].cart = parser.parse(results[i].cart);
+                                    }
                                     var response = {
                                         status: 200,
                                         order_quotes: results
                                     };
-
                                     reply(response);
                                 }
                             });
@@ -1035,6 +1159,64 @@ server.route({
                                     'orders': results
                                 };
                                 reply(response);
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
+                }
+
+            });
+
+    },
+    config: {
+        validate: {
+            params: {
+                r_id: Joi.number().integer(),
+                c_id: Joi.number().integer()
+            }
+        }
+    }
+});
+
+
+/**
+ *
+ * Route to count all processed orders
+ *
+ */
+server.route({
+    method: 'GET',
+    path: '/api/v1/orders/{r_id}/{c_id}/count/processed',
+    handler: function (request, reply) {
+        const r_id = request.params.r_id;
+        const c_id = request.params.c_id;
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = "' + c_id + '"',
+            function (error, results, fields) {
+                if (error){
+                    throw error;
+                } else {
+
+                    if (results.length > 0) {
+
+                        var db = results[0].companydb;
+
+                        connection.query('SELECT COUNT(od.order_id) AS qty FROM '+db+'.oc_order od INNER JOIN '+db+'.oc_customer cs ON cs.customer_id = od.customer_id WHERE cs.salesrep_id = '+r_id+' AND od.isReplogic=1 AND DATE_FORMAT(od.date_added,"%Y-%m") = DATE_FORMAT(NOW(),"%Y-%m") AND od.order_status_id = 15',
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+                                    var response = {
+                                        'status': 200,
+                                        'count': results[0].qty
+                                    };
+                                    reply(response);
+                                }
                             });
 
                     } else {
@@ -1956,10 +2138,12 @@ server.route({
                     throw error;
                 } else {
 
-                    if (results[0]) {
+                    if (results.length > 0) {
 
                         // auto-generate new password
                         const newPassword = generatePassword(6, false);
+                        const db = results[0].companydb;
+                        const repId = results[0].realId;
 
                         // encryption
                         var salt = Bcrypt.genSaltSync();
@@ -1970,7 +2154,36 @@ server.route({
                                 if (error) {
                                     throw error;
                                 } else {
-                                    comms.resetPassword(email, newPassword, reply);
+
+                                    if (results) {
+
+                                        connection.query("SELECT rm.email AS manager_email FROM "+db+".oc_salesrep sr INNER JOIN "+db+".oc_team rt ON rt.team_id=sr.sales_team_id INNER JOIN "+db+".oc_user rm ON rm.user_id=rt.sales_manager WHERE sr.salesrep_id="+repId, 
+                                            function (error, results, fields) {
+                                                if (error) {
+                                                    throw error;
+                                                } else {
+
+                                                    if (results.length > 0) {
+                                                        var support_desk = {contact: "support@cloudlogic.co.za"};
+                                                        var manager = {email: results[0].manager_email};
+                                                        comms.sendResetPassword(email, newPassword, support_desk, manager, reply);
+                                                    } else {
+                                                        var response = {
+                                                            status: 400,
+                                                            message: 'An unexpected error has occurred!'
+                                                        };
+                                                        reply(response);
+                                                    }
+                                                }
+                                            });
+                                        
+                                    } else {
+                                        var response = {
+                                            status: 400,
+                                            message: 'An unexpected error has occurred!'
+                                        };
+                                        reply(response);
+                                    }
                                 }
                             });
 
@@ -2059,52 +2272,60 @@ server.route({
         var salt = Bcrypt.genSaltSync();
         var encryptedPassword = Bcrypt.hashSync(password, salt);
 
-        connection.query('INSERT INTO super.user (username,email,password,salt, companyId, realId) VALUES ("' + username + '","' + email + '","' + encryptedPassword + '","' + salt + '", "' + companyId + '", "' + realId + '")',
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = '+companyId,
             function (error, results, fields) {
-                if (error) throw error;
+                if (error) {
+                    throw error;
+                } else {
 
-                // if successful database insert, send email to sales rep
-                if (results) {
+                    if (results.length > 0) {
 
-                    // build email message object for the email to be sent to sales rep
-                    var data = {
-                        "html": "<h1>Welcome to Dashlogic!</h1><p>Your new password: " + password + "</p>",
-                        "text": "Welcome to Dashlogic! Your new password: " + password,
-                        "subject": "Welcome to Dashlogic",
-                        "sender": "info@dashlogic.co.za",
-                        "recipient": email
-                    };
+                        const db = results[0].companydb;
 
-                    // send email to sales rep
-                    emailClient.send(emailSettings.api_key, data, function(res) {
-                        // email successfully sent
+                        connection.query('INSERT INTO super.user (username,email,password,salt, companyId, realId) VALUES ("' + username + '","' + email + '","' + encryptedPassword + '","' + salt + '", "' + companyId + '", "' + realId + '")',
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+
+                                    if (results) {
+
+                                        connection.query("SELECT rm.email AS manager_email FROM "+db+".oc_salesrep sr INNER JOIN "+db+".oc_team rt ON rt.team_id=sr.sales_team_id INNER JOIN "+db+".oc_user rm ON rm.user_id=rt.sales_manager WHERE sr.salesrep_id="+realId, 
+                                            function (error, results, fields) {
+                                                if (error) {
+                                                    throw error;
+                                                } else {
+
+                                                    if (results.length > 0) {
+                                                        var support_desk = {contact: "support@cloudlogic.co.za"};
+                                                        var manager = {email: results[0].manager_email};
+                                                        comms.sendWelcomeEmail(email, password, support_desk, manager, reply);
+                                                    } else {
+                                                        var response = {
+                                                            status: 400,
+                                                            message: 'An unexpected error has occurred!'
+                                                        };
+                                                        reply(response);
+                                                    }
+                                                }
+                                            });
+                                        
+                                    } else {
+                                        var response = {
+                                            status: 400,
+                                            message: 'An unexpected error has occurred!'
+                                        };
+                                        reply(response);
+                                    }
+                                }
+                            });
+                    } else {
                         var response = {
-                            "status": 200,
-                            "user_id": results.insertId,
-                            "message": "user created and email sent successfully",
-                            "email_results": {
-                                "status": res[0].status,
-                                "id": res[0]._id,
-                                "recipient": res[0].email,
-                                "error": res[0].reject_reason
-                            }
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
                         };
                         reply(response);
-                    }, function(error) {
-                        // email failed to send
-                        var response = {
-                            "status": 203,
-                            "user_id": results.insertId,
-                            "message": "user created but email failed to send",
-                            "email_results": {
-                                "status": "error",
-                                "id": null,
-                                "recipient": null,
-                                "error": error.name + ': ' + error.message
-                            }
-                        };
-                        reply(response);
-                    });
+                    }
                 }
             });
     },
@@ -2286,7 +2507,7 @@ server.route({
  *
  */
 server.route({
-    method: 'PUT',
+    method: 'POST',
     path: '/api/v1/salesrep/checkout',
     handler: function (request, reply) {
         const companyId = request.payload.c_id;
@@ -2709,7 +2930,7 @@ server.route({
                         var db = results[0].companydb;
 
                         // get all active products
-                        connection.query('SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,pr.price,pi.product_image_id,IF(pi.image="","",CONCAT(st.value,"image/",pi.image)) AS product_image_src FROM '+db+'.oc_setting st, '+db+'.oc_product pr LEFT JOIN '+db+'.oc_product_image pi ON pi.product_id=pr.product_id INNER JOIN '+db+'.oc_product_description pd ON pd.product_id=pr.product_id INNER JOIN '+db+'.oc_product_to_customer_group pc ON pc.product_id=pr.product_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_group_id=pc.customer_group_id WHERE pr.status=1 AND st.key="config_url" GROUP BY pr.product_id',
+                        connection.query('SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,pr.price,IF(pr.image="","",CONCAT(st.value,"image/",pr.image)) AS product_image_src FROM '+db+'.oc_setting st, '+db+'.oc_product pr INNER JOIN '+db+'.oc_product_description pd ON pd.product_id=pr.product_id INNER JOIN '+db+'.oc_product_to_customer_group pc ON pc.product_id=pr.product_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_group_id=pc.customer_group_id WHERE pr.status=1 AND st.key="config_url" GROUP BY pr.product_id',
                             function (error, results, fields) {
                                 if (error) {
                                     throw error;
@@ -2766,7 +2987,7 @@ server.route({
                         var db = results[0].companydb;
 
                         // get active products by specified category
-                        connection.query('SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,pr.price,pi.product_image_id,IF(pi.image="","",CONCAT(st.value,"image/",pi.image)) AS product_image_src FROM '+db+'.oc_setting st, '+db+'.oc_product pr LEFT JOIN '+db+'.oc_product_image pi ON pi.product_id=pr.product_id INNER JOIN '+db+'.oc_product_description pd ON pd.product_id=pr.product_id INNER JOIN '+db+'.oc_product_to_customer_group pc ON pc.product_id=pr.product_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_group_id=pc.customer_group_id INNER JOIN '+db+'.oc_product_to_category ct ON ct.product_id=pr.product_id WHERE ct.category_id='+category_id+' AND pr.status=1 AND st.key="config_url" GROUP BY pr.product_id',
+                        connection.query('SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,pr.price,IF(pr.image="","",CONCAT(st.value,"image/",pr.image)) AS product_image_src FROM '+db+'.oc_setting st, '+db+'.oc_product pr INNER JOIN '+db+'.oc_product_description pd ON pd.product_id=pr.product_id INNER JOIN '+db+'.oc_product_to_customer_group pc ON pc.product_id=pr.product_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_group_id=pc.customer_group_id INNER JOIN '+db+'.oc_product_to_category ct ON ct.product_id=pr.product_id WHERE ct.category_id='+category_id+' AND pr.status=1 AND st.key="config_url" GROUP BY pr.product_id',
                             function (error, results, fields) {
                                 if (error) throw error;
 
@@ -2872,7 +3093,7 @@ server.route({
                         var db = results[0].companydb;
 
                         // get all active products
-                        connection.query('SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,pr.price,pi.product_image_id,IF(pi.image="","",CONCAT(st.value,"image/",pi.image)) AS product_image_src FROM '+db+'.oc_setting st, '+db+'.oc_product pr LEFT JOIN '+db+'.oc_product_image pi ON pi.product_id=pr.product_id INNER JOIN '+db+'.oc_product_description pd ON pd.product_id=pr.product_id INNER JOIN '+db+'.oc_product_to_customer_group pc ON pc.product_id=pr.product_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_group_id=pc.customer_group_id WHERE pr.product_id='+product_id+' AND st.key="config_url" GROUP BY pr.product_id',
+                        connection.query('SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,pr.price,IF(pr.image="","",CONCAT(st.value,"image/",pr.image)) AS product_image_src FROM '+db+'.oc_setting st, '+db+'.oc_product pr INNER JOIN '+db+'.oc_product_description pd ON pd.product_id=pr.product_id INNER JOIN '+db+'.oc_product_to_customer_group pc ON pc.product_id=pr.product_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_group_id=pc.customer_group_id WHERE pr.product_id='+product_id+' AND st.key="config_url" GROUP BY pr.product_id',
                             function (error, results, fields) {
                                 if (error) {
                                     throw error;
@@ -2926,6 +3147,8 @@ server.route({
         }
     }
 });
+
+
 
 server.ext('onPreResponse', corsHeaders);
 server.start(function(err){
