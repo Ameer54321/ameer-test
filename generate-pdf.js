@@ -39,11 +39,7 @@ exports.generateQuotePdf = function(customer, manager, company, rep, quote, call
 		{name: '{{COMP_TO_COUNTRY}}', content: customer.address.country},
 		{name: '{{COMP_TO_POSTCODE}}', content: customer.address.postcode},
 		{name: '{{COMP_FROM_NAME}}', content: company.name},
-		{name: '{{COMP_FROM_ADDR_1}}', content: company.address.line1},
-		{name: '{{COMP_FROM_ADDR_2}}', content: company.address.line2},
-		{name: '{{COMP_FROM_CITY}}', content: company.address.city},
-		{name: '{{COMP_FROM_COUNTRY}}', content: company.address.country},
-		{name: '{{COMP_FROM_POSTCODE}}', content: company.address.postcode},
+		{name: '{{COMP_FROM_ADDRESS}}', content: company.address},
 		{name: '{{QUOTE_DATE}}', content: quote.date},
 		{name: '{{QUOTE_NUMBER}}', content: quote.number},
 		{name: '{{QUOTE_TOTAL_EXCL_VAT}}', content: quote.total_excl_vat},
@@ -57,7 +53,7 @@ exports.generateQuotePdf = function(customer, manager, company, rep, quote, call
 	for (var i=0; i<data.length; i++) {
 		templateHtml = templateHtml.replace(data[i].name, data[i].content);
 	}
-	 
+
 	pdf.create(templateHtml, options).toFile('./quote.pdf', function(err, res) {
 	  	callback(err, res);
 	});
