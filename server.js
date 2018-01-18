@@ -615,13 +615,13 @@ server.route({
                                                           var rep = {name: results[0].rep_name, email:results[0].rep_email};
                                                           var quote = {
                                                               number: results[0].quote_id,
-                                                              total: cart.cart_total_incl_vat.toFixed(2),
+                                                              total: (cart.cart_total_incl_vat !== undefined) ? cart.cart_total_incl_vat.toFixed(2) : cart.cart_total_price.toFixed(2),
                                                               url: 'http://dashbundle.co.za/emails/quote-online.html?id='+quote_id+'&cid='+c_id,
                                                               date: results[0].quote_date,
                                                               products: cart.cart_items,
                                                               total_excl_vat: cart.cart_total_price.toFixed(2),
-                                                              total_incl_vat: cart.cart_total_incl_vat.toFixed(2),
-                                                              vat: cart.cart_total_vat.toFixed(2)
+                                                              total_incl_vat: (cart.cart_total_incl_vat !== undefined) ? cart.cart_total_incl_vat.toFixed(2) : cart.cart_total_price.toFixed(2),
+                                                              vat: (cart.cart_total_vat !== undefined) ? cart.cart_total_vat.toFixed(2) : 0.00.toFixed(2)
                                                           };
                                                           var manager = {email: results[0].manager_email};
                                                           comms.sendQuoteEmails(customer, manager, company, rep, quote, reply);
