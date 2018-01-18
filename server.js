@@ -543,8 +543,8 @@ server.route({
                     if (results.length > 0) {
 
                         const companyName = results[0].companyname;
-                        var db = results[0].companydb;
-                        var cartJson = JSON.stringify(cart);
+                        const db = results[0].companydb;
+                        const cartJson = JSON.stringify(cart);
 
                         // insert order quote information
                         connection.query("INSERT INTO "+db+".oc_replogic_order_quote (salesrep_id, customer_id, customer_contact_id, cart, date_added) VALUES ("+r_id+", "+customer_id+", "+contact_id+", '"+cartJson+"', NOW())",
@@ -553,77 +553,90 @@ server.route({
                                     throw error;
                                 } else {
 
-                                    var quote_id = results.insertId;
-                                    var query = "";
+                                  // get newly inserted quote id
+                                  const quote_id = results.insertId;
 
-                                    // build select query
-                                    query += "SELECT qt.quote_id,qt.cart,DATE_FORMAT(qt.date_added, '%M %d, %Y') AS quote_date,";
-                                    query += "CONCAT(rp.salesrep_name, ' ',rp.salesrep_lastname) AS rep_name,rp.email AS rep_email,";
-                                    query += "cs.firstname AS customer_name,cs.email AS customer_email,CONCAT(cc.first_name, ' ',cc.last_name) AS cust_contact_name,ca.address_1,";
-                                    query += "ca.address_2,ca.city,'South Africa' AS country,ca.postcode,rm.email AS manager_email ";
-                                    query += "FROM "+db+".oc_replogic_order_quote qt ";
-                                    query += "INNER JOIN "+db+".oc_salesrep rp ON rp.salesrep_id=qt.salesrep_id ";
-                                    query += "INNER JOIN "+db+".oc_customer cs ON cs.customer_id=qt.customer_id ";
-                                    query += "INNER JOIN "+db+".oc_customer_contact cc ON cc.customer_con_id=qt.customer_contact_id ";
-                                    query += "INNER JOIN "+db+".oc_address ca ON ca.address_id=cs.address_id ";
-                                    query += "INNER JOIN "+db+".oc_team rt ON rt.team_id=rp.sales_team_id ";
-                                    query += "INNER JOIN "+db+".oc_user rm ON rm.user_id=rt.sales_manager ";
-                                    query += "WHERE qt.quote_id="+quote_id;
+                                  // get company config settings [address, email, logo, name]
+                                  connection.query('SELECT st.key, st.value FROM '+db+'.oc_setting st WHERE st.key="config_address" OR st.key="config_email" OR st.key="config_image" OR st.key="config_name"',
+                                  function (error, results, fields) {
+                                      if (error) {
+                                          throw error;
+                                      } else {
 
-                                    // get customer email from database to send order confirmation
-                                    connection.query(query,
-                                        function (error, results, fields) {
-                                            if (error) {
-                                                throw error;
-                                            } else {
-                                                if (results.length > 0) {
-                                                    var customer = {
-                                                        name: results[0].customer_name,
-                                                        email: results[0].customer_email,
-                                                        contact: {
-                                                            name: results[0].cust_contact_name
-                                                        },
-                                                        address: {
-                                                            line1: results[0].address_1,
-                                                            line2: results[0].address_2,
-                                                            city: results[0].city,
-                                                            country: results[0].country,
-                                                            postcode: results[0].postcode
-                                                        }
-                                                    };
-                                                    var cart = parser.parse(results[0].cart);
-                                                    var rep = {name: results[0].rep_name, email:results[0].rep_email};
-                                                    var company = {
-                                                        name: companyName,
-                                                        address: {
-                                                            line1: "",
-                                                            line2: "",
-                                                            city: "",
-                                                            country: "",
-                                                            postcode: ""
-                                                        }
-                                                    };
-                                                    var quote = {
-                                                        number: results[0].quote_id, 
-                                                        total: cart.cart_total_price.toFixed(2), 
-                                                        url: 'http://quoteurl/'+quote_id, 
-                                                        date: results[0].quote_date,
-                                                        products: cart.cart_items,
-                                                        total_excl_vat: cart.cart_total_price.toFixed(2),
-                                                        vat: "0.00"
-                                                    };
-                                                    var manager = {email: results[0].manager_email};
-                                                    comms.sendQuoteEmails(customer, manager, company, rep, quote, reply);
-                                                } else {
-                                                    var response = {
-                                                        status: 200,
-                                                        quote_id: quote_id,
-                                                        message: 'Emails could not be sent!'
-                                                    }
-                                                    reply(response);
-                                                }
-                                            }
-                                        });
+                                          // company details
+                                          const company = {};
+                                          for (var i=0; i<results.length; i++) {
+                                              if (results[i].value.length > 0) {
+                                                  var key = results[i].key.replace('config_', '');
+                                                  company[key] = results[i].value;
+                                              }
+                                          }
+
+                                          // build select query
+                                          var query = "";
+                                          query += "SELECT qt.quote_id,qt.cart,DATE_FORMAT(qt.date_added, '%M %d, %Y') AS quote_date,";
+                                          query += "CONCAT(rp.salesrep_name, ' ',rp.salesrep_lastname) AS rep_name,rp.email AS rep_email,";
+                                          query += "cs.firstname AS customer_name,cs.email AS customer_email,CONCAT(cc.first_name, ' ',cc.last_name) AS cust_contact_name,ca.address_1,";
+                                          query += "ca.address_2,ca.city,'South Africa' AS country,ca.postcode,rm.email AS manager_email ";
+                                          query += "FROM "+db+".oc_replogic_order_quote qt ";
+                                          query += "INNER JOIN "+db+".oc_salesrep rp ON rp.salesrep_id=qt.salesrep_id ";
+                                          query += "INNER JOIN "+db+".oc_customer cs ON cs.customer_id=qt.customer_id ";
+                                          query += "INNER JOIN "+db+".oc_customer_contact cc ON cc.customer_con_id=qt.customer_contact_id ";
+                                          query += "INNER JOIN "+db+".oc_address ca ON ca.address_id=cs.address_id ";
+                                          query += "INNER JOIN "+db+".oc_team rt ON rt.team_id=rp.sales_team_id ";
+                                          query += "INNER JOIN "+db+".oc_user rm ON rm.user_id=rt.sales_manager ";
+                                          query += "WHERE qt.quote_id="+quote_id;
+
+                                          console.log();
+                                          // get customer email from database to send order confirmation
+                                          connection.query(query,
+                                              function (error, results, fields) {
+                                                  if (error) {
+                                                      throw error;
+                                                  } else {
+                                                      if (results.length > 0) {
+
+                                                          // customer
+                                                          var customer = {
+                                                              name: results[0].customer_name,
+                                                              email: results[0].customer_email,
+                                                              contact: {
+                                                                  name: results[0].cust_contact_name
+                                                              },
+                                                              address: {
+                                                                  line1: results[0].address_1,
+                                                                  line2: results[0].address_2,
+                                                                  city: results[0].city,
+                                                                  country: results[0].country,
+                                                                  postcode: results[0].postcode
+                                                              }
+                                                          };
+                                                          var cart = parser.parse(results[0].cart);
+                                                          var rep = {name: results[0].rep_name, email:results[0].rep_email};
+                                                          var quote = {
+                                                              number: results[0].quote_id,
+                                                              total: cart.cart_total_incl_vat.toFixed(2),
+                                                              url: 'http://dashbundle.co.za/emails/quote-online.html?id='+quote_id+'&cid='+c_id,
+                                                              date: results[0].quote_date,
+                                                              products: cart.cart_items,
+                                                              total_excl_vat: cart.cart_total_price.toFixed(2),
+                                                              total_incl_vat: cart.cart_total_incl_vat.toFixed(2),
+                                                              vat: cart.cart_total_vat.toFixed(2)
+                                                          };
+                                                          var manager = {email: results[0].manager_email};
+                                                          comms.sendQuoteEmails(customer, manager, company, rep, quote, reply);
+                                                      } else {
+                                                          var response = {
+                                                              status: 200,
+                                                              quote_id: quote_id,
+                                                              message: 'Emails could not be sent!'
+                                                          }
+                                                          reply(response);
+                                                      }
+                                                  }
+                                              });
+                                          }
+                                      });
                                 }
                             });
 
@@ -750,24 +763,47 @@ server.route({
 
                     if (results.length > 0) {
 
-                        var db = results[0].companydb;
+                        const db = results[0].companydb;
 
-                        connection.query('SELECT oq.quote_id,oq.status,oq.date_added,oq.cart,cs.email,cs.telephone,CONCAT(ca.address_1," ",ca.address_2," ",ca.city," ",postcode) AS address,cs.firstname AS customer_name,CONCAT(cc.first_name, " ", cc.last_name) AS contact_name FROM '+db+'.oc_replogic_order_quote oq INNER JOIN '+db+'.oc_customer cs ON cs.customer_id=oq.customer_id INNER JOIN '+db+'.oc_customer_contact cc ON cc.customer_con_id=oq.customer_contact_id INNER JOIN '+db+'.oc_address ca ON ca.customer_id=cs.customer_id WHERE oq.quote_id='+quote_id,
-                            function (error, results, fields) {
-                                if (error) {
-                                    throw error;
-                                } else {
+                        connection.query('SELECT st.key, st.value FROM '+db+'.oc_setting st WHERE st.key="config_address" OR st.key="config_email" OR st.key="config_image" OR st.key="config_name"', function (error, results, fields) {
+                            if (error) {
+                                throw error;
+                            } else {
 
-                                    results[0].cart = parser.parse(results[0].cart);
-
-                                    var response = {
-                                        status: 200,
-                                        order_quotes: results
-                                    };
-
-                                    reply(response);
+                                const company = {};
+                                for (var i=0; i<results.length; i++) {
+                                    if (results[i].value.length > 0) {
+                                        var key = results[i].key.replace('config_', '');
+                                        company[key] = results[i].value;
+                                    }
                                 }
-                            });
+                                var query = '';
+                                query += 'SELECT oq.quote_id,oq.status,oq.date_added,oq.cart,cs.email,cs.telephone,CONCAT(ca.address_1," ",ca.address_2," ",ca.city," ",postcode) AS customer_address,';
+                                query += 'cs.firstname AS customer_name,CONCAT(cc.first_name, " ", cc.last_name) AS contact_name,ca.address_1 AS customer_addr1,ca.address_2 AS customer_addr2,';
+                                query += 'IF(ca.country_id=193, "South Africa","") AS customer_country,ca.city AS customer_city,ca.postcode  AS customer_postcode,CONCAT(sr.salesrep_name," ",sr.salesrep_lastname) AS rep_name ';
+                                query += 'FROM '+db+'.oc_replogic_order_quote oq ';
+                                query += 'INNER JOIN '+db+'.oc_salesrep sr ON sr.salesrep_id=oq.salesrep_id ';
+                                query += 'INNER JOIN '+db+'.oc_customer cs ON cs.customer_id=oq.customer_id ';
+                                query += 'INNER JOIN '+db+'.oc_customer_contact cc ON cc.customer_con_id=oq.customer_contact_id ';
+                                query += 'INNER JOIN '+db+'.oc_address ca ON ca.customer_id=cs.customer_id ';
+                                query += 'INNER JOIN '+db+'.oc_rep_settings rs ON rs.company_id='+c_id+' ';
+                                query += 'WHERE oq.quote_id='+quote_id;
+                                connection.query(query,
+                                    function (error, results, fields) {
+                                        if (error) {
+                                            throw error;
+                                        } else {
+                                            results[0].cart = parser.parse(results[0].cart);
+                                            var response = {
+                                                status: 200,
+                                                order_quotes: results,
+                                                company: company
+                                            };
+                                            reply(response);
+                                        }
+                                    });
+                            }
+                        });
 
                     } else {
                         var response = {
@@ -2084,7 +2120,9 @@ server.route({
                     const repId = results[0].realId;
                     const userId = results[0].uid;
 
-                    connection.query('SELECT salesrep_name FROM '+db+'.oc_salesrep WHERE salesrep_id='+repId,
+                    /**
+                     * @include tax (or VAT) details on login */
+                    connection.query('SELECT st.key, st.value, tr.name, tr.rate, sr.salesrep_name FROM '+db+'.oc_setting st, '+db+'.oc_tax_rate tr, '+db+'.oc_salesrep sr WHERE st.key="tax_status" AND sr.salesrep_id='+repId,
                         function (error, results, fields) {
 
                             if (error) {
@@ -2098,7 +2136,10 @@ server.route({
                                     'uid' : userId,
                                     'r_id': repId,
                                     'company_name': companyName,
-                                    'rep_name': results[0].salesrep_name
+                                    'rep_name': results[0].salesrep_name,
+                                    'tax_status': results[0].value,
+                                    'tax_name': results[0].name,
+                                    'tax_rate': results[0].rate.toFixed(2)
                                 };
                                 reply(response);
 
@@ -2157,7 +2198,7 @@ server.route({
 
                                     if (results) {
 
-                                        connection.query("SELECT rm.email AS manager_email FROM "+db+".oc_salesrep sr INNER JOIN "+db+".oc_team rt ON rt.team_id=sr.sales_team_id INNER JOIN "+db+".oc_user rm ON rm.user_id=rt.sales_manager WHERE sr.salesrep_id="+repId, 
+                                        connection.query("SELECT rm.email AS manager_email FROM "+db+".oc_salesrep sr INNER JOIN "+db+".oc_team rt ON rt.team_id=sr.sales_team_id INNER JOIN "+db+".oc_user rm ON rm.user_id=rt.sales_manager WHERE sr.salesrep_id="+repId,
                                             function (error, results, fields) {
                                                 if (error) {
                                                     throw error;
@@ -2176,7 +2217,7 @@ server.route({
                                                     }
                                                 }
                                             });
-                                        
+
                                     } else {
                                         var response = {
                                             status: 400,
@@ -2290,7 +2331,7 @@ server.route({
 
                                     if (results) {
 
-                                        connection.query("SELECT rm.email AS manager_email FROM "+db+".oc_salesrep sr INNER JOIN "+db+".oc_team rt ON rt.team_id=sr.sales_team_id INNER JOIN "+db+".oc_user rm ON rm.user_id=rt.sales_manager WHERE sr.salesrep_id="+realId, 
+                                        connection.query("SELECT rm.email AS manager_email FROM "+db+".oc_salesrep sr INNER JOIN "+db+".oc_team rt ON rt.team_id=sr.sales_team_id INNER JOIN "+db+".oc_user rm ON rm.user_id=rt.sales_manager WHERE sr.salesrep_id="+realId,
                                             function (error, results, fields) {
                                                 if (error) {
                                                     throw error;
@@ -2309,7 +2350,7 @@ server.route({
                                                     }
                                                 }
                                             });
-                                        
+
                                     } else {
                                         var response = {
                                             status: 400,
