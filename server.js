@@ -287,7 +287,7 @@ server.route({
 
                         var db = results[0].companydb;
 
-                        connection.query('SELECT od.order_id, od.order_status_id, cs.salesrep_id FROM '+db+'.oc_order od INNER JOIN '+db+'.oc_customer cs ON cs.customer_id = od.customer_id WHERE cs.customer_id = '+customer_id+' AND od.isReplogic=1',
+                        connection.query('SELECT od.order_id,od.order_status_id,cs.salesrep_id,od.date_added,FORMAT(od.total,2) AS order_total,cs.firstname AS customer_name,CONCAT(cc.first_name," ",cc.last_name) AS contact_name FROM '+db+'.oc_order od INNER JOIN '+db+'.oc_customer cs ON cs.customer_id=od.customer_id LEFT JOIN '+db+'.oc_replogic_order_quote oq ON oq.order_id=od.order_id LEFT JOIN '+db+'.oc_customer_contact cc ON cc.customer_con_id=oq.customer_contact_id WHERE cs.customer_id='+customer_id+' AND od.isReplogic=1',
                             function (error, results, fields) {
                                 if (error) throw error;
                                 var response = {
@@ -1186,7 +1186,7 @@ server.route({
 
                         var db = results[0].companydb;
 
-                        connection.query('SELECT od.order_id, od.order_status_id, cs.salesrep_id FROM '+db+'.oc_order od INNER JOIN '+db+'.oc_customer cs ON cs.customer_id = od.customer_id WHERE cs.salesrep_id = '+r_id+' AND od.isReplogic=1',
+                        connection.query('SELECT od.order_id,od.order_status_id,cs.salesrep_id,od.date_added,FORMAT(od.total,2) AS order_total,cs.firstname AS customer_name,CONCAT(cc.first_name," ",cc.last_name) AS contact_name FROM '+db+'.oc_order od INNER JOIN '+db+'.oc_customer cs ON cs.customer_id=od.customer_id LEFT JOIN '+db+'.oc_replogic_order_quote oq ON oq.order_id=od.order_id LEFT JOIN '+db+'.oc_customer_contact cc ON cc.customer_con_id=oq.customer_contact_id WHERE cs.salesrep_id='+r_id+' AND od.isReplogic=1',
                             function (error, results, fields) {
                                 if (error) throw error;
 
@@ -1311,16 +1311,18 @@ server.route({
                                     const orderDetails = results;
 
                                     // get order products
-                                    connection.query('SELECT op.product_id,op.name,op.model,op.quantity,op.price,op.total,op.tax FROM '+db+'.oc_order_product op WHERE op.order_id='+order_id,
+                                    connection.query('SELECT op.product_id,op.name,op.model,op.quantity,op.price,op.total,op.tax, CONCAT(st.value, "image/",pr.image) AS product_image_src FROM '+db+'.oc_setting st, '+db+'.oc_order_product op INNER JOIN '+db+'.oc_product pr ON pr.product_id=op.product_id WHERE op.order_id='+order_id+' AND st.key="config_url"',
                                         function (error, results, fields) {
-                                            if (error) throw error;
-
-                                            var response = {
-                                                'status': 200,
-                                                'orders': orderDetails,
-                                                'order_lines': results
+                                            if (error) {
+                                                throw error;
+                                            } else {
+                                                var response = {
+                                                    'status': 200,
+                                                    'orders': orderDetails,
+                                                    'order_lines': results
+                                                }
+                                                reply(response);
                                             }
-                                            reply(response);
                                         });
                                 }
                             });
@@ -2313,7 +2315,7 @@ server.route({
         var salt = Bcrypt.genSaltSync();
         var encryptedPassword = Bcrypt.hashSync(password, salt);
 
-        connection.query('SELECT companydb FROM super.companies WHERE company_id = '+companyId,
+        connection.query('SELECT companydb FROM super.companies WHERE company_id='+companyId,
             function (error, results, fields) {
                 if (error) {
                     throw error;
@@ -2323,24 +2325,49 @@ server.route({
 
                         const db = results[0].companydb;
 
-                        connection.query('INSERT INTO super.user (username,email,password,salt, companyId, realId) VALUES ("' + username + '","' + email + '","' + encryptedPassword + '","' + salt + '", "' + companyId + '", "' + realId + '")',
+                        /*
+                         * Validate User by Email Address
+                         * - check if email address already exists under the same company
+                         */
+                         connection.query('SELECT * FROM super.user WHERE email="'+email+'"',
                             function (error, results, fields) {
                                 if (error) {
                                     throw error;
                                 } else {
-
-                                    if (results) {
-
-                                        connection.query("SELECT rm.email AS manager_email FROM "+db+".oc_salesrep sr INNER JOIN "+db+".oc_team rt ON rt.team_id=sr.sales_team_id INNER JOIN "+db+".oc_user rm ON rm.user_id=rt.sales_manager WHERE sr.salesrep_id="+realId,
+                                    if (results.length > 0) {
+                                        var response = {
+                                            status: 400,
+                                            message: 'Email address specified already exists!'
+                                        };
+                                        reply(response);
+                                    } else {
+                                        // Do database insert for new user into super.user
+                                        connection.query('INSERT INTO super.user (username,email,password,salt, companyId, realId) VALUES ("' + username + '","' + email + '","' + encryptedPassword + '","' + salt + '", "' + companyId + '", "' + realId + '")',
                                             function (error, results, fields) {
                                                 if (error) {
                                                     throw error;
                                                 } else {
+                                                    if (results) {
+                                                        connection.query("SELECT rm.email AS manager_email FROM "+db+".oc_salesrep sr INNER JOIN "+db+".oc_team rt ON rt.team_id=sr.sales_team_id INNER JOIN "+db+".oc_user rm ON rm.user_id=rt.sales_manager WHERE sr.salesrep_id="+realId,
+                                                            function (error, results, fields) {
+                                                                if (error) {
+                                                                    throw error;
+                                                                } else {
 
-                                                    if (results.length > 0) {
-                                                        var support_desk = {contact: "support@cloudlogic.co.za"};
-                                                        var manager = {email: results[0].manager_email};
-                                                        comms.sendWelcomeEmail(email, password, support_desk, manager, reply);
+                                                                    if (results.length > 0) {
+                                                                        var support_desk = {contact: "support@cloudlogic.co.za"};
+                                                                        var manager = {email: results[0].manager_email};
+                                                                        comms.sendWelcomeEmail(email, password, support_desk, manager, reply);
+                                                                    } else {
+                                                                        var response = {
+                                                                            status: 400,
+                                                                            message: 'An unexpected error has occurred!'
+                                                                        };
+                                                                        reply(response);
+                                                                    }
+                                                                }
+                                                            });
+
                                                     } else {
                                                         var response = {
                                                             status: 400,
@@ -2350,13 +2377,6 @@ server.route({
                                                     }
                                                 }
                                             });
-
-                                    } else {
-                                        var response = {
-                                            status: 400,
-                                            message: 'An unexpected error has occurred!'
-                                        };
-                                        reply(response);
                                     }
                                 }
                             });
