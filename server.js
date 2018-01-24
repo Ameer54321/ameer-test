@@ -1302,23 +1302,58 @@ server.route({
                         var db = results[0].companydb;
 
                         // get order details
-                        connection.query('SELECT * FROM '+db+'.oc_order od WHERE od.order_id='+order_id,
+                        var query = '';
+                        query += 'SELECT od.order_id,od.order_status_id,od.customer_id,';
+                        query += 'cs.firstname AS customer,cs.email,cs.telephone,CONCAT(ca.address_1," ",ca.address_2,", ",ca.city," ",ca.postcode) AS address,';
+                        query += 'CONCAT(od.shipping_firstname," ",od.shipping_lastname) AS shipping_contact,';
+                        query += 'CONCAT(od.shipping_address_1," ",od.shipping_address_2,", ",od.shipping_city," ",od.shipping_postcode) AS shipping_address,od.total,od.date_added,ot.code,ot.value ';
+                        query += 'FROM '+db+'.oc_order_total ot, '+db+'.oc_order od ';
+                        query += 'LEFT JOIN '+db+'.oc_customer cs ON cs.customer_id=od.customer_id ';
+                        query += 'LEFT JOIN '+db+'.oc_address ca ON ca.address_id=cs.address_id ';
+                        query += 'WHERE od.order_id='+order_id+' AND ot.order_id='+order_id;
+                        connection.query(query,
                             function (error, results, fields) {
                                 if (error) {
                                     throw error;
                                 } else {
 
-                                    const orderDetails = results;
+                                    const orders = [];
+
+                                    if (results.length > 0) {
+                                        var orderDetails = {};
+                                        orderDetails.order_id = results[0].order_id;
+                                        orderDetails.order_status_id = results[0].order_status_id;
+                                        orderDetails.customer_id = results[0].customer_id;
+                                        orderDetails.customer = results[0].customer;
+                                        orderDetails.date_added = results[0].date_added;
+                                        orderDetails.email = results[0].email;
+                                        orderDetails.telephone = results[0].telephone;
+                                        orderDetails.address = results[0].address;
+                                        orderDetails.shipping_contact = results[0].shipping_contact;
+                                        orderDetails.shipping_address = results[0].shipping_address;
+                                        for (var i=0; i<results.length; i++) {
+                                            if (results[i].code !== "shipping") {
+                                                if (results[i].code === "tax") {
+                                                    orderDetails.vat = results[i].value;
+                                                } else {
+                                                    orderDetails[results[i].code] = results[i].value;
+                                                }
+                                            } else orderDetails.shipping_rate = results[i].value;
+                                        }
+                                        orderDetails.total_excl_vat = (orderDetails.vat !== undefined) ? orderDetails.total - orderDetails.vat : orderDetails.total;
+                                        orderDetails.total = results[0].total;
+                                        orders[0] = orderDetails;
+                                    }
 
                                     // get order products
-                                    connection.query('SELECT op.product_id,op.name,op.model,op.quantity,op.price,op.total,op.tax, CONCAT(st.value, "image/",pr.image) AS product_image_src FROM '+db+'.oc_setting st, '+db+'.oc_order_product op INNER JOIN '+db+'.oc_product pr ON pr.product_id=op.product_id WHERE op.order_id='+order_id+' AND st.key="config_url"',
+                                    connection.query('SELECT op.product_id,op.name,op.model,op.quantity,op.price,op.total,op.tax,pr.sku,IF(pr.image="","",CONCAT(st.value, "image/",pr.image)) AS product_image_src FROM '+db+'.oc_setting st, '+db+'.oc_order_product op INNER JOIN '+db+'.oc_product pr ON pr.product_id=op.product_id WHERE op.order_id='+order_id+' AND st.key="config_url"',
                                         function (error, results, fields) {
                                             if (error) {
                                                 throw error;
                                             } else {
                                                 var response = {
                                                     'status': 200,
-                                                    'orders': orderDetails,
+                                                    'orders': orders,
                                                     'order_lines': results
                                                 }
                                                 reply(response);
@@ -2991,7 +3026,7 @@ server.route({
                         var db = results[0].companydb;
 
                         // get all active products
-                        connection.query('SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,pr.price,IF(pr.image="","",CONCAT(st.value,"image/",pr.image)) AS product_image_src FROM '+db+'.oc_setting st, '+db+'.oc_product pr INNER JOIN '+db+'.oc_product_description pd ON pd.product_id=pr.product_id INNER JOIN '+db+'.oc_product_to_customer_group pc ON pc.product_id=pr.product_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_group_id=pc.customer_group_id WHERE pr.status=1 AND st.key="config_url" GROUP BY pr.product_id',
+                        connection.query('SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,pr.price,IF(pr.image="","",CONCAT(st.value,"image/",pr.image)) AS product_image_src,pr.tax_class_id AS vat_status_id FROM '+db+'.oc_setting st, '+db+'.oc_product pr INNER JOIN '+db+'.oc_product_description pd ON pd.product_id=pr.product_id INNER JOIN '+db+'.oc_product_to_customer_group pc ON pc.product_id=pr.product_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_group_id=pc.customer_group_id WHERE pr.status=1 AND st.key="config_url" GROUP BY pr.product_id',
                             function (error, results, fields) {
                                 if (error) {
                                     throw error;
@@ -3048,7 +3083,7 @@ server.route({
                         var db = results[0].companydb;
 
                         // get active products by specified category
-                        connection.query('SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,pr.price,IF(pr.image="","",CONCAT(st.value,"image/",pr.image)) AS product_image_src FROM '+db+'.oc_setting st, '+db+'.oc_product pr INNER JOIN '+db+'.oc_product_description pd ON pd.product_id=pr.product_id INNER JOIN '+db+'.oc_product_to_customer_group pc ON pc.product_id=pr.product_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_group_id=pc.customer_group_id INNER JOIN '+db+'.oc_product_to_category ct ON ct.product_id=pr.product_id WHERE ct.category_id='+category_id+' AND pr.status=1 AND st.key="config_url" GROUP BY pr.product_id',
+                        connection.query('SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,pr.price,IF(pr.image="","",CONCAT(st.value,"image/",pr.image)) AS product_image_src,pr.tax_class_id AS vat_status_id FROM '+db+'.oc_setting st, '+db+'.oc_product pr INNER JOIN '+db+'.oc_product_description pd ON pd.product_id=pr.product_id INNER JOIN '+db+'.oc_product_to_customer_group pc ON pc.product_id=pr.product_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_group_id=pc.customer_group_id INNER JOIN '+db+'.oc_product_to_category ct ON ct.product_id=pr.product_id WHERE ct.category_id='+category_id+' AND pr.status=1 AND st.key="config_url" GROUP BY pr.product_id',
                             function (error, results, fields) {
                                 if (error) throw error;
 
