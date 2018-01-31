@@ -179,7 +179,7 @@ server.route({
                     if (results.length > 0) {
 
                         var db = results[0].companydb;
-                        connection.query('SELECT ap.appointment_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,ap.duration_hours,ap.duration_minutes,nt.note_id,nt.note_content FROM '+db+'.oc_appointment ap left join '+db+'.oc_customer cs on cs.customer_id = ap.customer_id left join '+db+'.oc_address ad on ad.address_id = cs.address_id left join '+db+'.oc_notes nt on nt.appointment_id = ap.appointment_id WHERE ap.salesrep_id = '+r_id+' AND cs.customer_id ='+customer_id+' AND DATE_FORMAT(ap.appointment_date,"%Y-%m-%d") >= DATE_FORMAT(NOW(),"%Y-%m-%d")',
+                        connection.query('SELECT ap.appointment_id,ap.appointment_name,ap.appointment_description,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,ap.duration_hours,ap.duration_minutes,nt.note_id,nt.note_content FROM '+db+'.oc_appointment ap left join '+db+'.oc_customer cs on cs.customer_id = ap.customer_id left join '+db+'.oc_address ad on ad.address_id = cs.address_id left join '+db+'.oc_notes nt on nt.appointment_id = ap.appointment_id WHERE ap.salesrep_id = '+r_id+' AND cs.customer_id ='+customer_id+' AND DATE_FORMAT(ap.appointment_date,"%Y-%m-%d") >= DATE_FORMAT(NOW(),"%Y-%m-%d")',
                             function (error, results, fields) {
                                 if (error) throw error;
 
@@ -587,7 +587,6 @@ server.route({
                                           query += "INNER JOIN "+db+".oc_user rm ON rm.user_id=rt.sales_manager ";
                                           query += "WHERE qt.quote_id="+quote_id;
 
-                                          console.log();
                                           // get customer email from database to send order confirmation
                                           connection.query(query,
                                               function (error, results, fields) {
@@ -1034,7 +1033,6 @@ server.route({
                         connection.query('SELECT od.order_id,od.customer_id,od.total,od.date_added FROM '+db+'.oc_order od inner join '+db+'.oc_customer cs on cs.customer_id = od.customer_id WHERE cs.salesrep_id = '+r_id+' AND DATE_FORMAT(od.date_added,"%Y-%m") = DATE_FORMAT(NOW(),"%Y-%m")',
                             function (error, results, fields) {
                                 if (error) throw error;
-                                // console.log(fields);
                                 reply(results);
                             });
 
@@ -1141,7 +1139,7 @@ server.route({
 
                                 reply(results);
                             });
-                            
+
                     } else {
                         var response = {
                             'status': 400,
@@ -1725,7 +1723,7 @@ server.route({
 
                         var db = results[0].companydb;
 
-                        connection.query('SELECT ap.appointment_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content,sc.checkin_id,sc.checkin,sc.checkout FROM '+db+'.oc_appointment ap left join '+db+'.oc_customer cs on cs.customer_id = ap.customer_id left join '+db+'.oc_address ad on ad.address_id = cs.address_id left join '+db+'.oc_notes nt on nt.appointment_id = ap.appointment_id LEFT JOIN '+db+'.oc_salesrep_checkins sc on sc.appointment_id=ap.appointment_id WHERE ap.salesrep_id = '+r_id+' AND DATE_FORMAT(ap.appointment_date,"%Y-%m-%d") = DATE_FORMAT(NOW(),"%Y-%m-%d")',
+                        connection.query('SELECT ap.appointment_id,ap.appointment_name,ap.appointment_description,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content,sc.checkin_id,sc.checkin,sc.checkout FROM '+db+'.oc_appointment ap left join '+db+'.oc_customer cs on cs.customer_id = ap.customer_id left join '+db+'.oc_address ad on ad.address_id = cs.address_id left join '+db+'.oc_notes nt on nt.appointment_id = ap.appointment_id LEFT JOIN '+db+'.oc_salesrep_checkins sc on sc.appointment_id=ap.appointment_id WHERE ap.salesrep_id = '+r_id+' AND DATE_FORMAT(ap.appointment_date,"%Y-%m-%d") = DATE_FORMAT(NOW(),"%Y-%m-%d")',
                             function (error, results, fields) {
                                 if (error) throw error;
 
@@ -1776,7 +1774,7 @@ server.route({
 
                         var db = results[0].companydb;
 
-                        connection.query('SELECT ap.appointment_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content,sc.checkin_id,sc.checkin,sc.checkout FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs ON cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad ON ad.address_id = cs.address_id LEFT JOIN '+db+'.oc_notes nt ON nt.appointment_id = ap.appointment_id LEFT JOIN '+db+'.oc_salesrep_checkins sc ON sc.appointment_id = ap.appointment_id WHERE ap.salesrep_id = '+r_id+' AND YEARWEEK(ap.appointment_date) = YEARWEEK(CURDATE()) ORDER BY ap.appointment_date',
+                        connection.query('SELECT ap.appointment_id,ap.appointment_name,ap.appointment_description,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content,sc.checkin_id,sc.checkin,sc.checkout FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs ON cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad ON ad.address_id = cs.address_id LEFT JOIN '+db+'.oc_notes nt ON nt.appointment_id = ap.appointment_id LEFT JOIN '+db+'.oc_salesrep_checkins sc ON sc.appointment_id = ap.appointment_id WHERE ap.salesrep_id = '+r_id+' AND YEARWEEK(ap.appointment_date) = YEARWEEK(CURDATE()) ORDER BY ap.appointment_date',
                             function (error, results, fields) {
                                 if (error) throw error;
 
@@ -1831,7 +1829,7 @@ server.route({
 
                         var db = results[0].companydb;
 
-                        connection.query('SELECT ap.appointment_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content,sc.checkin_id,sc.checkin,sc.checkout FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs on cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad on ad.address_id = cs.address_id LEFT JOIN '+db+'.oc_notes nt on nt.appointment_id = ap.appointment_id LEFT JOIN '+db+'.oc_salesrep_checkins sc on sc.appointment_id = ap.appointment_id WHERE ap.salesrep_id = '+r_id+' AND YEAR(ap.appointment_date) = YEAR(CURDATE()) AND MONTH(ap.appointment_date)=MONTH(CURDATE()) ORDER BY ap.appointment_date',
+                        connection.query('SELECT ap.appointment_id,ap.appointment_name,ap.appointment_description,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content,sc.checkin_id,sc.checkin,sc.checkout FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs on cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad on ad.address_id = cs.address_id LEFT JOIN '+db+'.oc_notes nt on nt.appointment_id = ap.appointment_id LEFT JOIN '+db+'.oc_salesrep_checkins sc on sc.appointment_id = ap.appointment_id WHERE ap.salesrep_id = '+r_id+' AND YEAR(ap.appointment_date) = YEAR(CURDATE()) AND MONTH(ap.appointment_date)=MONTH(CURDATE()) ORDER BY ap.appointment_date',
                             function (error, results, fields) {
                                 if (error) throw error;
 
@@ -1889,7 +1887,7 @@ server.route({
 
                         var db = results[0].companydb;
 
-                        connection.query('SELECT ap.appointment_id,cs.customer_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content,sc.checkin_id,sc.checkin,sc.checkout FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs ON cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad ON ad.address_id = cs.address_id LEFT JOIN '+db+'.oc_notes nt ON nt.appointment_id = ap.appointment_id LEFT JOIN '+db+'.oc_salesrep_checkins sc ON sc.appointment_id = ap.appointment_id WHERE ap.salesrep_id ='+r_id,
+                        connection.query('SELECT ap.appointment_id,ap.appointment_name,ap.appointment_description,cs.customer_id,cs.firstname as customer_name,ap.appointment_date,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content,sc.checkin_id,sc.checkin,sc.checkout FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs ON cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad ON ad.address_id = cs.address_id LEFT JOIN '+db+'.oc_notes nt ON nt.appointment_id = ap.appointment_id LEFT JOIN '+db+'.oc_salesrep_checkins sc ON sc.appointment_id = ap.appointment_id WHERE ap.salesrep_id ='+r_id,
                             function (error, results, fields) {
                                 if (error) {
                                     throw error;
@@ -2328,6 +2326,37 @@ server.route({
  *                                          Sales Rep Related API Routes
  ***********************************************************************************************************************/
 
+ /**
+  *
+  * Route to search users
+  *
+  */
+server.route({
+    method: 'GET',
+    path: '/api/v1/users/search/{term}',
+    handler: function (request, reply) {
+        const term = request.params.term;
+        connection.query("SELECT * FROM super.user WHERE email='"+term+"'",
+            function (error, results, fields) {
+                if (error) {
+                    throw error;
+                } else {
+                    var response = {
+                        status: 200,
+                        data: results
+                    };
+                    reply(response);
+                }
+            });
+    },
+    config: {
+        validate: {
+            params: {
+                term: Joi.string().email()
+            }
+        }
+    }
+});
 
 /**
  *
@@ -2516,6 +2545,55 @@ server.route({
     }
 });
 
+/**
+ *
+ * Route to delete sales rep
+ *
+ */
+server.route({
+   method: 'DELETE',
+   path: '/api/v1/salesrep',
+   handler: function (request, reply) {
+       const companyId = request.payload.c_id;
+       const repId = request.payload.r_id;
+       connection.query("SELECT companydb FROM super.companies WHERE company_id="+companyId,
+           function (error, results, fields) {
+               if (error) {
+                   throw error;
+               } else {
+                   if (results.length > 0) {
+                       const db = results[0].companydb;
+                       connection.query("DELETE "+db+".oc_salesrep,super.user FROM "+db+".oc_salesrep JOIN super.user WHERE salesrep_id="+repId+" AND realId="+repId,
+                           function (error, results, fields) {
+                               if (error) {
+                                   throw error;
+                               } else {
+                                    var response = {
+                                        status: 200,
+                                        message: 'Sales Rep successfully deleted'
+                                    };
+                                    reply(response);
+                               }
+                           });
+                   } else {
+                       var response = {
+                           'status': 400,
+                           'error': 'Invalid company ID provided'
+                       };
+                       reply(response);
+                   }
+               }
+           });
+   },
+   config: {
+       validate: {
+           payload: {
+               c_id: Joi.number().integer().required(),
+               r_id: Joi.number().integer().required()
+           }
+       }
+   }
+});
 
 
 /**
