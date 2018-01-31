@@ -2336,7 +2336,7 @@ server.route({
     path: '/api/v1/users/search/{term}',
     handler: function (request, reply) {
         const term = request.params.term;
-        connection.query("SELECT * FROM super.user WHERE email='"+term+"'",
+        connection.query("SELECT uid,username,email,companyId,realId FROM super.user WHERE email='"+term+"'",
             function (error, results, fields) {
                 if (error) {
                     throw error;
