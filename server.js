@@ -2630,11 +2630,13 @@ server.route({
                                 if (error) {
                                     throw error;
                                 } else {
+                                    console.log(results);
                                     if (results.length > 0) {
                                         var response = {
                                             status: 400,
                                             message: "Appointment already has a check in"
                                         };
+                                        reply(response);
                                     } else {
 
                                         // get gps coordinates for the address specified
