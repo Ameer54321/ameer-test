@@ -2623,27 +2623,42 @@ server.route({
 
                     if (results.length > 0) {
 
-                        var db = results[0].companydb;
+                        const db = results[0].companydb;
 
-                        // get gps coordinates for the address specified
-                        geonoder.toCoordinates(checkInLocation, geonoder.providers.google, function(lat, long) {
-
-                            // record sales rep check-in
-                            connection.query("INSERT INTO " + db + ".oc_salesrep_checkins (salesrep_id,customer_id,appointment_id,location,start,end,checkin,checkin_location,latitude,longitude) VALUES (" + repId + "," + customerId + "," + appointmentId + ", '" + location + "','" + start + "','" + end + "','" + checkIn + "','" + checkInLocation + "', '"+lat+"', '"+long+"')",
-                                function (error, results, fields) {
-                                    if (error) {
-                                        throw error;
+                        connection.query("SELECT * FROM "+db+".oc_appointment ap INNER JOIN "+db+".oc_salesrep_checkins rc ON rc.appointment_id=ap.appointment_id WHERE ap.appointment_id="+appointmentId,
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+                                    if (results.length > 0) {
+                                        var response = {
+                                            status: 400,
+                                            message: "Appointment already has a check in"
+                                        };
                                     } else {
 
-                                        var response = {
-                                            status: 200,
-                                            checkin_id: results.insertId,
-                                            message: 'Successfully checked in'
-                                        };
-                                        reply(response);
+                                        // get gps coordinates for the address specified
+                                        geonoder.toCoordinates(checkInLocation, geonoder.providers.google, function(lat, long) {
+
+                                            // record sales rep check-in
+                                            connection.query("INSERT INTO "+db+".oc_salesrep_checkins (salesrep_id,customer_id,appointment_id,location,start,end,checkin,checkin_location,latitude,longitude) VALUES (" + repId + "," + customerId + "," + appointmentId + ", '" + location + "','" + start + "','" + end + "','" + checkIn + "','" + checkInLocation + "', '"+lat+"', '"+long+"')",
+                                                function (error, results, fields) {
+                                                    if (error) {
+                                                        throw error;
+                                                    } else {
+
+                                                        var response = {
+                                                            status: 200,
+                                                            checkin_id: results.insertId,
+                                                            message: 'Successfully checked in'
+                                                        };
+                                                        reply(response);
+                                                    }
+                                                });
+                                        });
                                     }
-                                });
-                        });
+                                }
+                            });
 
                     } else {
                         var response = {
