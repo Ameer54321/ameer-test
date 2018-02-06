@@ -1944,7 +1944,7 @@ server.route({
                         var db = results[0].companydb;
 
                         // get appointment details
-                        connection.query('SELECT ap.appointment_id,cs.customer_id,cs.firstname as customer_name,ap.appointment_date,ap.duration_hours,ap.duration_minutes,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content,sc.checkin_id,sc.checkin,sc.checkout FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs ON cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad ON ad.address_id = cs.address_id LEFT JOIN '+db+'.oc_notes nt ON nt.appointment_id = ap.appointment_id LEFT JOIN '+db+'.oc_salesrep_checkins sc ON sc.appointment_id = ap.appointment_id WHERE ap.appointment_id ='+appointmentId,
+                        connection.query('SELECT ap.appointment_id,ap.appointment_name,ap.appointment_description,cs.customer_id,cs.firstname as customer_name,ap.appointment_date,ap.duration_hours,ap.duration_minutes,ad.address_1,ad.address_2,ad.city,ad.postcode,nt.note_id,nt.note_content,sc.checkin_id,sc.checkin,sc.checkout FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs ON cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_address ad ON ad.address_id = cs.address_id LEFT JOIN '+db+'.oc_notes nt ON nt.appointment_id = ap.appointment_id LEFT JOIN '+db+'.oc_salesrep_checkins sc ON sc.appointment_id = ap.appointment_id WHERE ap.appointment_id ='+appointmentId,
                             function (error, results, fields) {
                                 if (error) {
                                     throw error;
@@ -2630,7 +2630,7 @@ server.route({
                                 if (error) {
                                     throw error;
                                 } else {
-                                    console.log(results);
+
                                     if (results.length > 0) {
                                         var response = {
                                             status: 400,
