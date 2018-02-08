@@ -3120,7 +3120,7 @@ server.route({
                         var db = results[0].companydb;
 
                         // get all active products
-                        connection.query('SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,pr.price,IF(pr.image="","",CONCAT(st.value,"image/",pr.image)) AS product_image_src,pr.tax_class_id AS vat_status_id FROM '+db+'.oc_setting st, '+db+'.oc_product pr INNER JOIN '+db+'.oc_product_description pd ON pd.product_id=pr.product_id INNER JOIN '+db+'.oc_product_to_customer_group pc ON pc.product_id=pr.product_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_group_id=pc.customer_group_id WHERE pr.status=1 AND st.key="config_url" GROUP BY pr.product_id',
+                        connection.query('SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,pr.price,IF(pr.image="","",CONCAT(st.value,"image/",pr.image)) AS product_image_src,pr.tax_class_id AS vat_status_id FROM '+db+'.oc_setting st, '+db+'.oc_product pr INNER JOIN '+db+'.oc_product_description pd ON pd.product_id=pr.product_id INNER JOIN '+db+'.oc_product_to_customer_group pc ON pc.product_id=pr.product_id LEFT JOIN '+db+'.oc_customer cs ON cs.customer_group_id=pc.customer_group_id WHERE pr.status=1 AND st.key="config_url" GROUP BY pr.product_id',
                             function (error, results, fields) {
                                 if (error) {
                                     throw error;
