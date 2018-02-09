@@ -16,7 +16,7 @@ const parser = require('json-parser');
 // Create a server with a host and port
 const server = new Hapi.Server();
 var corsHeaders = require('hapi-cors-headers');
-var port = process.env.PORT || 1337;
+var port = process.env.PORT || 8000;
 
 /*change below to false if in production*/
 var istest = false;
@@ -2156,13 +2156,13 @@ server.route({
 
                     /**
                      * @include tax (or VAT) details on login */
-                    connection.query('SELECT st.key, st.value, tr.name, tr.rate, sr.salesrep_name FROM '+db+'.oc_setting st, '+db+'.oc_tax_rate tr, '+db+'.oc_salesrep sr WHERE st.key="tax_status" AND sr.salesrep_id='+repId,
+                    connection.query('SELECT st.key,st.value,tr.name,tr.rate,sr.salesrep_name,sr.prompt_change_password FROM '+db+'.oc_setting st, '+db+'.oc_tax_rate tr, '+db+'.oc_salesrep sr WHERE st.key="tax_status" AND sr.salesrep_id='+repId,
                         function (error, results, fields) {
 
                             if (error) {
                                 throw error;
                             } else {
-
+ 
                                 var response = {
                                     'status': 200,
                                     'message': 'login succesful',
@@ -2173,16 +2173,16 @@ server.route({
                                     'rep_name': results[0].salesrep_name,
                                     'tax_status': results[0].value,
                                     'tax_name': results[0].name,
-                                    'tax_rate': results[0].rate.toFixed(2)
+                                    'tax_rate': results[0].rate.toFixed(2),
+                                    'prompt_change_password': results[0].prompt_change_password
                                 };
                                 reply(response);
-
                             }
                         });
                 }else{
                     var response = {
                         'response': 400,
-                        'message': 'Incorrect username and password'
+                        'message': 'Incorrect username and/or password'
                     }
                     reply(response);
                 }
@@ -2232,23 +2232,31 @@ server.route({
 
                                     if (results) {
 
-                                        connection.query("SELECT rm.email AS manager_email FROM "+db+".oc_salesrep sr INNER JOIN "+db+".oc_team rt ON rt.team_id=sr.sales_team_id INNER JOIN "+db+".oc_user rm ON rm.user_id=rt.sales_manager WHERE sr.salesrep_id="+repId,
+                                        connection.query("UPDATE "+db+".oc_salesrep SET prompt_change_password=1 WHERE salesrep_id="+repId,
                                             function (error, results, fields) {
                                                 if (error) {
                                                     throw error;
                                                 } else {
 
-                                                    if (results.length > 0) {
-                                                        var support_desk = {contact: "support@cloudlogic.co.za"};
-                                                        var manager = {email: results[0].manager_email};
-                                                        comms.sendResetPassword(email, newPassword, support_desk, manager, reply);
-                                                    } else {
-                                                        var response = {
-                                                            status: 400,
-                                                            message: 'An unexpected error has occurred!'
-                                                        };
-                                                        reply(response);
-                                                    }
+                                                    connection.query("SELECT rm.email AS manager_email FROM "+db+".oc_salesrep sr INNER JOIN "+db+".oc_team rt ON rt.team_id=sr.sales_team_id INNER JOIN "+db+".oc_user rm ON rm.user_id=rt.sales_manager WHERE sr.salesrep_id="+repId,
+                                                        function (error, results, fields) {
+                                                            if (error) {
+                                                                throw error;
+                                                            } else {
+
+                                                                if (results.length > 0) {
+                                                                    var support_desk = {contact: "support@cloudlogic.co.za"};
+                                                                    var manager = {email: results[0].manager_email};
+                                                                    comms.sendResetPassword(email, newPassword, support_desk, manager, reply);
+                                                                } else {
+                                                                    var response = {
+                                                                        status: 400,
+                                                                        message: 'An unexpected error has occurred!'
+                                                                    };
+                                                                    reply(response);
+                                                                }
+                                                            }
+                                                        });
                                                 }
                                             });
 
@@ -2276,6 +2284,90 @@ server.route({
     config: {
         validate: {
             payload: {
+                email: Joi.string().email().required()
+            }
+        }
+    }
+});
+
+
+server.route({
+    method: 'POST',
+    path: '/api/v1/salesrep/changepassword',
+    handler: function (request, reply) {
+        const companyId = request.payload.c_id;
+        const email = request.payload.email;
+        const password = request.payload.password;
+        const repId = request.payload.r_id;
+
+        connection.query("SELECT companydb FROM super.companies WHERE company_id="+companyId,
+            function (error, results, fields) {
+                if (error) {
+                    throw error;
+                } else {
+
+                    if (results.length > 0) {
+
+                        const db = results[0].companydb;
+
+                        // encryption
+                        var salt = Bcrypt.genSaltSync();
+                        var encryptedPassword = Bcrypt.hashSync(password, salt);
+
+                        connection.query("UPDATE super.user SET password='"+encryptedPassword+"', salt='"+salt+"' WHERE email='"+email+"' AND realId="+repId,
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+
+                                    connection.query("UPDATE "+db+".oc_salesrep SET prompt_change_password=0 WHERE salesrep_id="+repId,
+                                        function (error, results, fields) {
+                                            if (error) {
+                                                throw error;
+                                            } else {
+
+                                                connection.query("SELECT rm.email AS manager_email FROM "+db+".oc_salesrep sr INNER JOIN "+db+".oc_team rt ON rt.team_id=sr.sales_team_id INNER JOIN "+db+".oc_user rm ON rm.user_id=rt.sales_manager WHERE sr.salesrep_id="+repId,
+                                                    function (error, results, fields) {
+                                                        if (error) {
+                                                            throw error;
+                                                        } else {
+
+                                                            if (results.length > 0) {
+                                                                var support_desk = {contact: "support@cloudlogic.co.za"};
+                                                                var manager = {email: results[0].manager_email};
+                                                                comms.sendChangePassword(email, support_desk, manager, reply);
+                                                            } else {
+                                                                var response = {
+                                                                    status: 200,
+                                                                    message: 'Password successfully changed!',
+                                                                    email_results: {
+                                                                        error: "Email not sent to user"
+                                                                    }
+                                                                };
+                                                                reply(response);
+                                                            }
+                                                        }
+                                                    });
+                                            }
+                                        });
+                                }
+                            });
+                    } else {
+                        var response = {
+                            status: 400,
+                            message: "Invalid company ID provided"
+                        };
+                        reply(response);
+                    }
+                }
+            });
+    },
+    config: {
+        validate: {
+            payload: {
+                c_id: Joi.number().integer().required(),
+                r_id: Joi.number().integer().required(),
+                password: Joi.string().required().min(12),
                 email: Joi.string().email().required()
             }
         }

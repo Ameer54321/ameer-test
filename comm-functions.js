@@ -356,10 +356,58 @@ module.exports = function() {
         });
     };
 
+
+    /**
+     * Send Reset Password Email
+     * Send new auto-generated password
+     * @param email
+     * @param password
+     * @param reply
+     */
+    function sendChangePassword(email, support_desk, manager, reply) {
+        var params = {
+            template_name: 'change-password',
+            template_content: [],
+            message: {
+                subject: 'Password Changed',
+                to: [{
+                    email: email,
+                    type: 'to'
+                }],
+                global_merge_vars: [{
+                    name: 'SUPPORT_EMAIL',
+                    content: support_desk.contact
+                }, {
+                    name: 'MANAGER_EMAIL',
+                    content: manager.email
+                }]
+            },
+            async: false
+        };
+
+        // send reset password email to user
+        emailClient.sendTemplate(params, function (res) {
+            var response = {
+                status: 200,
+                message: 'Password successfully changed!',
+                email_results: res
+            };
+            reply(response);
+        }, function(error) {
+            var response = {
+                status: 200,
+                message: 'Password successfully changed!',
+                email_results: error
+            };
+            reply(response);
+        });
+    };
+
     return {
         sendWelcomeEmail: sendWelcomeEmail,
         sendResetPassword: sendResetPassword,
-        sendQuoteEmails: sendQuoteEmails
+        sendQuoteEmails: sendQuoteEmails,
+        sendChangePassword: sendChangePassword
     };
 
 }();
