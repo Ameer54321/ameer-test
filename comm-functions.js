@@ -2,6 +2,7 @@ const emailClient = require('./email_client');
 const generatePdf = require('./generate-pdf');
 const request = require('request').defaults({ encoding: null });
 const fs = require('fs');
+const os = require('os');
 module.exports = function() {
 
     /**
@@ -11,18 +12,20 @@ module.exports = function() {
      * @param quote_number
      * @param reply
      */
-    function sendQuoteEmails(customer, manager, company, rep, quote, reply) {
+    function sendQuoteEmails(customer, manager, company, rep, quote, reply, req) {
         generatePdf.generateQuotePdf(customer, manager, company, rep, quote, function (error, result) {
             if (error) {
                 reply(error);
             } else {
-                request.get("http://localhost/api-logicsuite/quote.pdf", function (error, response, body) {
+                var hostname = os.hostname();
+                var basePath = req.connection.info.protocol + "://localhost/api-logicsuite/";
+                request.get(basePath + "quote.pdf", function (error, response, body) {
                     if (!error && response.statusCode == 200) {
                         var attachments = [{
                             type: response.headers["content-type"],
                             name: "Quote-"+quote.number+".pdf",
                             content: new Buffer(body).toString('base64')
-                        }]
+                        }];
                         sendQuoteEmailToCustomer(customer, manager, company, rep, quote, reply, attachments);
                     } else {
                         reply({status:400});

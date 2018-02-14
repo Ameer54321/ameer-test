@@ -622,7 +622,7 @@ server.route({
                                                               vat: (cart.cart_total_vat !== undefined) ? cart.cart_total_vat.toFixed(2) : 0.00.toFixed(2)
                                                           };
                                                           var manager = {email: results[0].manager_email};
-                                                          comms.sendQuoteEmails(customer, manager, company, rep, quote, reply);
+                                                          comms.sendQuoteEmails(customer, manager, company, rep, quote, reply, request);
                                                       } else {
                                                           var response = {
                                                               status: 200,
