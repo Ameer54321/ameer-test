@@ -29,7 +29,7 @@ module.exports = function() {
                         sendQuoteEmailToCustomer(customer, manager, company, rep, quote, reply, attachments);
                     } else {
                         // @TODO: Need to fix the path error
-                        sendQuoteEmailToCustomer(customer, manager, company, rep, quote, reply, attachments);
+                        sendQuoteEmailToCustomer(customer, manager, company, rep, quote, reply, []);
                         // reply({status:400});
                     }
                 });
@@ -47,7 +47,7 @@ module.exports = function() {
                     email: customer.email,
                     type: 'to'
                 }],
-                attachments: attachments,
+                // attachments: attachments,
                 global_merge_vars: [{
                     name: 'CUST_NAME',
                     content: customer.name
@@ -120,7 +120,7 @@ module.exports = function() {
                     email: rep.email,
                     type: 'to'
                 }],
-                attachments: attachments,
+                // attachments: attachments,
                 global_merge_vars: [{
                     name: 'CUST_NAME',
                     content: customer.name
@@ -193,7 +193,7 @@ module.exports = function() {
                     email: manager.email,
                     type: 'to'
                 }],
-                attachments: attachments,
+                // attachments: attachments,
                 global_merge_vars: [{
                     name: 'CUST_NAME',
                     content: customer.name
