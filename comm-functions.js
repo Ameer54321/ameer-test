@@ -28,7 +28,9 @@ module.exports = function() {
                         }];
                         sendQuoteEmailToCustomer(customer, manager, company, rep, quote, reply, attachments);
                     } else {
-                        reply({status:400});
+                        // @TODO: Need to fix the path error
+                        sendQuoteEmailToCustomer(customer, manager, company, rep, quote, reply, attachments);
+                        // reply({status:400});
                     }
                 });
             }
