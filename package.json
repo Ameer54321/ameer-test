@@ -19,6 +19,7 @@
     "mandrill-api": "1.0.45",
     "mysql": "^2.15.0",
     "nodemon": "^1.12.1",
+    "os": "^0.1.1",
     "password-generator": "2.2.0",
     "request": "^2.83.0"
   }
