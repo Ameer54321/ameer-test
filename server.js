@@ -1381,6 +1381,123 @@ server.route({
 
 
 /***********************************************************************************************************************
+ *                                          Country Related API Routes
+ ***********************************************************************************************************************/
+
+
+/**
+ *
+ * Route to retrieve countries
+ *
+ */
+server.route({
+    method: 'GET',
+    path: '/api/v1/countries/{c_id}',
+    handler: function (request, reply) {
+        const companyId = request.params.c_id;
+
+        // get company db
+        connection.query('SELECT companydb FROM super.companies WHERE company_id='+companyId,
+            function (error, results, fields) {
+                if (error) {
+                    throw error;
+                } else {
+
+                    if (results.length > 0) {
+
+                        var db = results[0].companydb;
+
+                        connection.query('SELECT c.country_id,c.name,c.iso_code_2,c.iso_code_3 FROM '+db+'.oc_country c WHERE c.status=1',
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+                                    var response = {
+                                        'status': 200,
+                                        'provinces': results
+                                    }
+                                    reply(response);
+                                }
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
+                }
+            });
+    },
+    config: {
+        validate: {
+            params: {
+                c_id: Joi.number().integer().required()
+            }
+        }
+    }
+});
+
+
+/**
+ *
+ * Route to retrieve country's provinces
+ *
+ */
+server.route({
+    method: 'GET',
+    path: '/api/v1/countries/{c_id}/{country_id}/provinces',
+    handler: function (request, reply) {
+        const companyId = request.params.c_id;
+        const countryId = request.params.country_id;
+
+        // get company db
+        connection.query('SELECT companydb FROM super.companies WHERE company_id='+companyId,
+            function (error, results, fields) {
+                if (error) {
+                    throw error;
+                } else {
+
+                    if (results.length > 0) {
+
+                        var db = results[0].companydb;
+
+                        connection.query('SELECT z.zone_id AS region_id,z.country_id,z.name,z.code FROM '+db+'.oc_zone z WHERE z.status=1 AND z.country_id='+countryId,
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+                                    var response = {
+                                        'status': 200,
+                                        'provinces': results
+                                    }
+                                    reply(response);
+                                }
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
+                }
+            });
+    },
+    config: {
+        validate: {
+            params: {
+                country_id: Joi.number().integer().required(),
+                c_id: Joi.number().integer().required()
+            }
+        }
+    }
+});
+
+
+/***********************************************************************************************************************
  *                                          Customer Related API Routes
  ***********************************************************************************************************************/
 
@@ -1435,7 +1552,7 @@ server.route({
         const address_2 = (request.payload.address_2) ? request.payload.address_2 : "";
         const city = request.payload.city;
         const postcode = request.payload.postcode;
-        const country_id = request.payload.country_id;
+        const country_id = 193;//request.payload.country_id;
         const zone_id = request.payload.region_id;
 
         // get latitude and longitude from address
