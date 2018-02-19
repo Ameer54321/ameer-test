@@ -454,6 +454,8 @@ server.route({
         const address_2 = request.payload.address_2;
         const city = request.payload.city;
         const postcode = request.payload.postcode;
+        const region_id = request.payload.region_id;
+        const country_id = request.payload.country_id;
 
         connection.query('SELECT companydb FROM super.companies WHERE company_id=' + c_id,
             function (error, results, fields) {
@@ -465,13 +467,13 @@ server.route({
 
                         var db = results[0].companydb;
 
-                        connection.query('UPDATE ' + db + '.oc_customer SET email="' + email + '",telephone="' + telephone + '",fax="' + fax + '" WHERE customer_id=' + customer_id,
+                        connection.query('UPDATE '+db+'.oc_customer SET email="'+email+'",telephone="'+telephone+'",fax="'+fax+'" WHERE customer_id='+customer_id,
                             function (error, results, fields) {
                                 if (error) {
                                     throw error;
                                 } else {
 
-                                    connection.query('UPDATE ' + db + '.oc_address SET address_1="' + address_1 + '",address_2="' + address_2 + '",city="' + city + '",postcode="' + postcode + '" WHERE address_id=' + address_id,
+                                    connection.query('UPDATE '+db+'.oc_address SET address_1="'+address_1+'",address_2="'+address_2+'",city="'+city+'",postcode="'+postcode+'",zone_id="'+region_id+'",country_id="'+country_id+'" WHERE address_id='+address_id,
                                         function (error, results, fields) {
                                             if (error) {
                                                 throw error;
@@ -502,12 +504,14 @@ server.route({
                 c_id: Joi.number().integer().required(),
                 email: Joi.string().email().required(),
                 telephone: Joi.string().required(),
-                fax: Joi.string(),
+                fax: Joi.string().allow('').optional(),
                 address_id: Joi.number().integer().required(),
                 address_1: Joi.string().required(),
-                address_2: Joi.string(),
+                address_2: Joi.string().allow('').optional(),
                 city: Joi.string().required(),
-                postcode: Joi.string().required()
+                postcode: Joi.string().required(),
+                region_id: Joi.string().required(),
+                country_id: Joi.string().required()
             }
         }
     }
@@ -1552,7 +1556,7 @@ server.route({
         const address_2 = (request.payload.address_2) ? request.payload.address_2 : "";
         const city = request.payload.city;
         const postcode = request.payload.postcode;
-        const country_id = 193;//request.payload.country_id;
+        const country_id = request.payload.country_id;
         const zone_id = request.payload.region_id;
 
         // get latitude and longitude from address
@@ -1636,10 +1640,10 @@ server.route({
                 r_id: Joi.number().integer().required(),
                 company_name: Joi.string().required(),
                 telephone: Joi.string().required(),
-                fax: Joi.string(),
+                fax: Joi.string().allow('').optional(),
                 email: Joi.string().email().required(),
                 address_1: Joi.string().required(),
-                address_2: Joi.string(),
+                address_2: Joi.string().allow('').optional(),
                 city: Joi.string().required(),
                 postcode: Joi.string().required(),
                 country_id: Joi.number().integer().required(),
