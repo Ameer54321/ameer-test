@@ -401,7 +401,7 @@ server.route({
 
                     if (results.length > 0) {
                         var db = results[0].companydb;
-                        connection.query('SELECT cs.firstname,cs.lastname,cs.email,cs.telephone,cs.fax,cs.address_id,ca.address_1,ca.address_2,ca.city,ca.postcode FROM ' + db + '.oc_customer cs INNER JOIN ' + db + '.oc_address ca ON ca.address_id=cs.address_id WHERE cs.customer_id=' + customer_id,
+                        connection.query('SELECT cs.firstname,cs.lastname,cs.email,cs.telephone,cs.fax,cs.address_id,ca.address_1,ca.address_2,ca.city,ca.postcode,ca.country_id,ca.zone_id AS region_id FROM ' + db + '.oc_customer cs INNER JOIN ' + db + '.oc_address ca ON ca.address_id=cs.address_id WHERE cs.customer_id=' + customer_id,
                             function (error, results, fields) {
                                 if (error) {
                                     throw error;
