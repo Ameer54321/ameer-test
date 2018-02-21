@@ -510,8 +510,8 @@ server.route({
                 address_2: Joi.string().allow('').optional(),
                 city: Joi.string().required(),
                 postcode: Joi.string().required(),
-                region_id: Joi.string().required(),
-                country_id: Joi.string().required()
+                region_id: Joi.number().integer().required(),
+                country_id: Joi.number().integer().required()
             }
         }
     }
