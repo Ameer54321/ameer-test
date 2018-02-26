@@ -2157,6 +2157,67 @@ server.route({
 
 
 /**
+ * Route to retrieve appointments by specific date
+ *
+ * @method GET
+ * @path /api/v1/appointments/{r_id}/{c_id}/{appointment_date}
+ *
+ */
+server.route({
+    method: 'GET',
+    path: '/api/v1/appointments/{r_id}/{c_id}/{appointment_date}',
+    handler: function (request, reply) {
+        const repId = request.params.r_id;
+        const companyId = request.params.c_id;
+        const appointmentDate = new Date(request.params.appointment_date).toISOString().slice(0,10);
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id='+companyId,
+            function (error, results, fields) {
+                if (error){
+                    throw error;
+                } else {
+
+                    if (results.length > 0) {
+
+                        var db = results[0].companydb;
+
+                        connection.query('SELECT ap.appointment_id,ap.appointment_name,ap.appointment_description,ap.appointment_date,ap.type,IF(type="Existing Business" AND ap.appointment_address IS NULL,CONCAT(ad.address_1," ",ad.address_2," ",ad.city," ",ad.postcode),ap.appointment_address) AS appointment_address,IF(type="New Business",pc.prospect_id,cs.customer_id) AS customer_id,IF(type="New Business",pc.name,cs.firstname) AS customer_name,nt.note_id,nt.note_content,sc.checkin_id,sc.checkin,sc.checkout FROM '+db+'.oc_appointment ap LEFT JOIN '+db+'.oc_customer cs ON cs.customer_id = ap.customer_id LEFT JOIN '+db+'.oc_prospective_customer pc ON pc.prospect_id=ap.customer_id LEFT JOIN '+db+'.oc_address ad ON ad.address_id=cs.address_id LEFT JOIN '+db+'.oc_notes nt ON nt.appointment_id=ap.appointment_id LEFT JOIN '+db+'.oc_salesrep_checkins sc ON sc.appointment_id = ap.appointment_id WHERE DATE(ap.appointment_date)="'+appointmentDate+'" AND ap.salesrep_id='+repId,
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+                                    var response = {
+                                        'status': 200,
+                                        'appointments': results
+                                    };
+                                    reply(response);
+                                }
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
+                }
+            });
+    },
+    config: {
+        validate: {
+            params: {
+                r_id: Joi.number().integer().required(),
+                c_id: Joi.number().integer().required(),
+                appointment_date: Joi.date().required()
+            }
+        }
+    }
+});
+
+
+
+/**
  *
  * Route to retrieve a single appointment details
  *
