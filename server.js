@@ -1748,7 +1748,7 @@ server.route({
                 title: Joi.string().required(),
                 c_id: Joi.number().integer().required(),
                 r_id: Joi.number().integer().required(),
-                customer_id: Joi.number().integer().allow('').optional(),
+                customer_id: Joi.number().integer().allow(null).optional(),
                 customer_name: Joi.string().required(),
                 address: Joi.string().required(),
                 appointment_date: Joi.string().required(),
