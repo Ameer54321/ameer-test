@@ -3167,7 +3167,7 @@ server.route({
                         var db = results[0].companydb;
 
                         // get sales rep visits
-                        connection.query("SELECT rc.checkin_id,rc.start,rc.end,rc.checkin,rc.checkout,rc.location,rc.checkin_location,rc.remarks,rc.latitude,rc.longitude FROM "+db+".oc_salesrep_checkins rc INNER JOIN "+db+".oc_customer cs ON cs.customer_id=rc.customer_id WHERE rc.salesrep_id="+repId+" AND cs.customer_id="+customerId,
+                        connection.query("SELECT rc.checkin_id,rc.start,rc.end,rc.checkin,rc.checkout,rc.location,rc.checkin_location,rc.remarks,rc.latitude,rc.longitude,ap.type AS appointment_type,ap.appointment_name,ap.appointment_description FROM "+db+".oc_salesrep_checkins rc INNER JOIN "+db+".oc_appointment ap ON ap.appointment_id=rc.appointment_id INNER JOIN "+db+".oc_customer cs ON cs.customer_id=rc.customer_id WHERE rc.salesrep_id="+repId+" AND cs.customer_id="+customerId,
                             function (error, results, fields) {
                                 if (error) {
                                     throw error;
