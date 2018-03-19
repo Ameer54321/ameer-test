@@ -1136,7 +1136,7 @@ server.route({
                     if (results.length > 0) {
 
                         var db = results[0].companydb;
-                        connection.query('SELECT SUM(od.total) AS total FROM '+db+'.oc_order od inner join '+db+'.oc_customer cs on cs.customer_id = od.customer_id WHERE cs.salesrep_id = '+r_id+' AND DATE_FORMAT(od.date_added,"%Y-%m") = DATE_FORMAT(NOW(),"%Y-%m") AND od.order_status_id=15',
+                        connection.query('SELECT FORMAT(COALESCE(SUM(od.total), 0), 2) AS total FROM '+db+'.oc_order od inner join '+db+'.oc_customer cs on cs.customer_id = od.customer_id WHERE cs.salesrep_id = '+r_id+' AND DATE_FORMAT(od.date_added,"%Y-%m") = DATE_FORMAT(NOW(),"%Y-%m") AND od.order_status_id=15',
                             function (error, results, fields) {
                                 if (error) throw error;
 
