@@ -1139,7 +1139,8 @@ server.route({
                         connection.query('SELECT FORMAT(COALESCE(SUM(od.total), 0), 2) AS total FROM '+db+'.oc_order od INNER JOIN '+db+'.oc_customer cs on cs.customer_id = od.customer_id WHERE cs.salesrep_id = '+r_id+' AND DATE_FORMAT(od.date_added,"%Y-%m") = DATE_FORMAT(NOW(),"%Y-%m") AND od.order_status_id=15 AND od.isReplogic=1',
                             function (error, results, fields) {
                                 if (error) throw error;
-
+                                var total = results[0].total.replace(",","");
+                                results[0].total = parser.parse(total).toFixed(2);
                                 reply(results);
                             });
 
