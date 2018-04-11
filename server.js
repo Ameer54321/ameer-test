@@ -393,7 +393,7 @@ server.route({
         const customer_id = request.params.customer_id;
         const c_id = request.params.c_id;
 
-        connection.query('SELECT companydb FROM super.companies WHERE company_id = "' + c_id + '"',
+        connection.query('SELECT companydb FROM super.companies WHERE company_id='+c_id,
             function (error, results, fields) {
                 if (error) {
                     throw error;
@@ -401,7 +401,7 @@ server.route({
 
                     if (results.length > 0) {
                         var db = results[0].companydb;
-                        connection.query('SELECT cs.firstname,cs.lastname,cs.email,cs.telephone,cs.fax,cs.address_id,ca.address_1,ca.address_2,ca.city,ca.postcode,ca.country_id,ca.zone_id AS region_id FROM ' + db + '.oc_customer cs INNER JOIN ' + db + '.oc_address ca ON ca.address_id=cs.address_id WHERE cs.customer_id=' + customer_id,
+                        connection.query('SELECT cs.customer_group_id,cg.name AS contract_pricing,cs.firstname,cs.lastname,cs.email,cs.telephone,cs.fax,cs.address_id,ca.address_1,ca.address_2,ca.city,ca.postcode,ca.country_id,ca.zone_id AS region_id FROM '+db+'.oc_customer cs INNER JOIN '+db+'.oc_address ca ON ca.address_id=cs.address_id INNER JOIN '+db+'.oc_customer_group_description cg ON cg.customer_group_id=cs.customer_group_id WHERE cs.customer_id='+customer_id,
                             function (error, results, fields) {
                                 if (error) {
                                     throw error;
@@ -512,6 +512,67 @@ server.route({
                 postcode: Joi.string().required(),
                 region_id: Joi.number().integer().required(),
                 country_id: Joi.number().integer().required()
+            }
+        }
+    }
+});
+
+
+/***********************************************************************************************************************
+ *                                         Contract Pricing Related API Routes
+ ***********************************************************************************************************************/
+
+
+
+/**
+ *
+ * Route to retrieve contract pricing options
+ *
+ */
+server.route({
+    method: 'GET',
+    path: '/api/v1/contract_pricing/{c_id}',
+    handler: function (request, reply) {
+        const c_id = request.params.c_id;
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id='+c_id,
+            function (error, results, fields) {
+                if (error) {
+                    throw error;
+                } else {
+
+                    if (results.length > 0) {
+
+                        var db = results[0].companydb;
+
+                        // quotes awaiting approval
+                        connection.query('SELECT customer_group_id,name AS contract_pricing FROM '+db+'.oc_customer_group_description',
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+                                    var response = {
+                                        status: 200,
+                                        contract_pricing_options: results
+                                    };
+                                    reply(response);
+                                }
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
+                }
+            });
+    },
+    config: {
+        validate: {
+            params: {
+                c_id: Joi.number().integer().required()
             }
         }
     }
@@ -773,20 +834,23 @@ server.route({
                             } else {
 
                                 const company = {};
-                                for (var i=0; i<results.length; i++) {
-                                    if (results[i].value.length > 0) {
-                                        var key = results[i].key.replace('config_', '');
-                                        company[key] = results[i].value;
+                                if (results.length > 0) {
+                                    for (var i=0; i<results.length; i++) {
+                                        if (results[i].value.length > 0) {
+                                            var key = results[i].key.replace('config_', '');
+                                            company[key] = results[i].value;
+                                        }
                                     }
                                 }
                                 var query = '';
                                 query += 'SELECT oq.quote_id,oq.status,oq.date_added,oq.cart,cs.email,cs.telephone,CONCAT(ca.address_1," ",ca.address_2," ",ca.city," ",postcode) AS customer_address,';
-                                query += 'cs.firstname AS customer_name,CONCAT(cc.first_name, " ", cc.last_name) AS contact_name,ca.address_1 AS customer_addr1,ca.address_2 AS customer_addr2,';
+                                query += 'cs.customer_group_id,cg.name AS contract_pricing,cs.firstname AS customer_name,CONCAT(cc.first_name, " ", cc.last_name) AS contact_name,ca.address_1 AS customer_addr1,ca.address_2 AS customer_addr2,';
                                 query += 'IF(ca.country_id=193, "South Africa","") AS customer_country,ca.city AS customer_city,ca.postcode  AS customer_postcode,CONCAT(sr.salesrep_name," ",sr.salesrep_lastname) AS rep_name ';
                                 query += 'FROM '+db+'.oc_replogic_order_quote oq ';
                                 query += 'INNER JOIN '+db+'.oc_salesrep sr ON sr.salesrep_id=oq.salesrep_id ';
                                 query += 'INNER JOIN '+db+'.oc_customer cs ON cs.customer_id=oq.customer_id ';
                                 query += 'INNER JOIN '+db+'.oc_customer_contact cc ON cc.customer_con_id=oq.customer_contact_id ';
+                                query += 'INNER JOIN '+db+'.oc_customer_group_description cg ON cg.customer_group_id=cs.customer_group_id ';
                                 query += 'INNER JOIN '+db+'.oc_address ca ON ca.customer_id=cs.customer_id ';
                                 query += 'INNER JOIN '+db+'.oc_rep_settings rs ON rs.company_id='+c_id+' ';
                                 query += 'WHERE oq.quote_id='+quote_id;
@@ -795,12 +859,16 @@ server.route({
                                         if (error) {
                                             throw error;
                                         } else {
-                                            results[0].cart = parser.parse(results[0].cart);
+                                            if (results.length > 0) {
+                                                results[0].cart = parser.parse(results[0].cart);
+                                            }
                                             var response = {
                                                 status: 200,
-                                                order_quotes: results,
-                                                company: company
+                                                order_quotes: results
                                             };
+                                            if (results.length > 0) {
+                                                response.company = company;
+                                            }
                                             reply(response);
                                         }
                                     });
@@ -1306,12 +1374,13 @@ server.route({
                         // get order details
                         var query = '';
                         query += 'SELECT od.order_id,od.order_status_id,od.customer_id,';
-                        query += 'cs.firstname AS customer,cs.email,cs.telephone,CONCAT(ca.address_1," ",ca.address_2,", ",ca.city," ",ca.postcode) AS address,';
+                        query += 'cs.customer_group_id,cg.name AS contract_pricing,cs.firstname AS customer,cs.email,cs.telephone,CONCAT(ca.address_1," ",ca.address_2,", ",ca.city," ",ca.postcode) AS address,';
                         query += 'CONCAT(od.shipping_firstname," ",od.shipping_lastname) AS shipping_contact,';
                         query += 'CONCAT(od.shipping_address_1," ",od.shipping_address_2,", ",od.shipping_city," ",od.shipping_postcode) AS shipping_address,od.total,od.date_added,ot.code,ot.value ';
                         query += 'FROM '+db+'.oc_order_total ot, '+db+'.oc_order od ';
                         query += 'LEFT JOIN '+db+'.oc_customer cs ON cs.customer_id=od.customer_id ';
                         query += 'LEFT JOIN '+db+'.oc_address ca ON ca.address_id=cs.address_id ';
+                        query += 'LEFT JOIN '+db+'.oc_customer_group_description cg ON cg.customer_group_id=cs.customer_group_id ';
                         query += 'WHERE od.order_id='+order_id+' AND ot.order_id='+order_id;
                         connection.query(query,
                             function (error, results, fields) {
@@ -1327,6 +1396,8 @@ server.route({
                                         orderDetails.order_status_id = results[0].order_status_id;
                                         orderDetails.customer_id = results[0].customer_id;
                                         orderDetails.customer = results[0].customer;
+                                        orderDetails.customer_group_id = results[0].customer_group_id;
+                                        orderDetails.contract_pricing = results[0].contract_pricing;
                                         orderDetails.date_added = results[0].date_added;
                                         orderDetails.email = results[0].email;
                                         orderDetails.telephone = results[0].telephone;
@@ -1528,9 +1599,9 @@ server.route({
         const telephone = request.payload.telephone;
         const fax = (request.payload.fax) ? request.payload.fax : "";
         const email = request.payload.email;
+        const customer_group_id = request.payload.contract_pricing;
 
         // hard-coded fields/values
-        const customer_group_id = 1;
         const store_id = 0;
         const language_id = 1;
         const address_id = 0; // will be updated on after the address insert later on (below)
@@ -1648,7 +1719,8 @@ server.route({
                 city: Joi.string().required(),
                 postcode: Joi.string().required(),
                 country_id: Joi.number().integer().required(),
-                region_id: Joi.number().integer().required()
+                region_id: Joi.number().integer().required(),
+                contract_pricing: Joi.number().integer().required()
             }
         }
     }
