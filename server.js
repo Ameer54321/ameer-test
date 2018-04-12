@@ -11,6 +11,7 @@ const emailClient = require('./email_client');
 const comms = require('./comm-functions');
 const geonoder = require('geonoder');
 const parser = require('json-parser');
+const jsStringEscape = require('js-string-escape')
 // const generatePdf = require('./generate-pdf');
 
 // Create a server with a host and port
@@ -608,10 +609,18 @@ server.route({
 
                         const companyName = results[0].companyname;
                         const db = results[0].companydb;
-                        const cartJson = JSON.stringify(cart);
+
+                        if (cart.cart_items.length > 0) {
+                            for (var i = 0; i < cart.cart_items.length; i++) {
+                                if (cart.cart_items[i].name !== undefined) {
+                                    cart.cart_items[i].name = jsStringEscape(cart.cart_items[i].name);
+                                }
+                            }
+                        }
+                        const cartJson = jsStringEscape(JSON.stringify(cart));
 
                         // insert order quote information
-                        connection.query("INSERT INTO "+db+".oc_replogic_order_quote (salesrep_id, customer_id, customer_contact_id, cart, date_added) VALUES ("+r_id+", "+customer_id+", "+contact_id+", '"+cartJson+"', NOW())",
+                        connection.query('INSERT INTO '+db+'.oc_replogic_order_quote (salesrep_id, customer_id, customer_contact_id, cart, date_added) VALUES ('+r_id+', '+customer_id+', '+contact_id+', "'+cartJson+'", NOW())',
                             function (error, results, fields) {
                                 if (error) {
                                     throw error;
