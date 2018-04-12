@@ -16,6 +16,7 @@
     "html-pdf": "^2.2.0",
     "joi": "^11.3.4",
     "joi-date-extensions": "^1.1.1",
+    "js-string-escape": "^1.0.1",
     "json-parser": "^1.1.5",
     "mandrill-api": "1.0.45",
     "mysql": "^2.15.0",
