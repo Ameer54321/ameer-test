@@ -127,7 +127,12 @@ server.route({
                     if (results.length > 0) {
 
                         var db = results[0].companydb;
-                        connection.query('SELECT customer_id,firstname as name,email,telephone FROM '+db+'.oc_customer WHERE salesrep_id = "' + r_id + '"',
+                        var query = ``;
+
+                        query += `SELECT customer_id,firstname as name,email,telephone,customer_group_id `;
+                        query += `FROM ${db}.oc_customer `;
+                        query += `WHERE salesrep_id=${r_id}`;
+                        connection.query(query,
                             function (error, results, fields) {
                                 if (error) throw error;
 
