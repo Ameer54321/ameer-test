@@ -3578,6 +3578,7 @@ server.route({
     path: '/api/v1/products/{c_id}',
     handler: function (request, reply) {
         const c_id = request.params.c_id;
+        const group = request.query.group;
 
         connection.query('SELECT companydb FROM super.companies WHERE company_id = "' + c_id + '"',
             function (error, results, fields) {
@@ -3588,9 +3589,28 @@ server.route({
                     if (results.length > 0) {
 
                         var db = results[0].companydb;
+                        var query = ``;
 
                         // get all active products
-                        connection.query('SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,pr.price,IF(pr.image="","",CONCAT(st.value,"image/",pr.image)) AS product_image_src,pr.tax_class_id AS vat_status_id FROM '+db+'.oc_setting st, '+db+'.oc_product pr INNER JOIN '+db+'.oc_product_description pd ON pd.product_id=pr.product_id INNER JOIN '+db+'.oc_product_to_customer_group pc ON pc.product_id=pr.product_id LEFT JOIN '+db+'.oc_customer cs ON cs.customer_group_id=pc.customer_group_id WHERE pr.status=1 AND st.key="config_url" GROUP BY pr.product_id',
+                        if (group == null) {
+                            query += `SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,pr.price,IF(pr.image="","",CONCAT(st.value,"image/",pr.image)) AS product_image_src,pr.tax_class_id AS vat_status_id `;
+                            query += `FROM ${db}.oc_setting st, ${db}.oc_product pr `;
+                            query += `INNER JOIN ${db}.oc_product_description pd ON pd.product_id=pr.product_id `;
+                            query += `INNER JOIN ${db}.oc_product_to_customer_group pc ON pc.product_id=pr.product_id `;
+                            query += `LEFT JOIN ${db}.oc_customer cs ON cs.customer_group_id=pc.customer_group_id `;
+                            query += `WHERE pr.status=1 AND st.key="config_url" `;
+                            query += `GROUP BY pr.product_id`;
+                        } else {
+                            query += `SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,gp.price,IF(pr.image="","",CONCAT(st.value,"image/",pr.image)) AS product_image_src,pr.tax_class_id AS vat_status_id `;
+                            query += `FROM ${db}.oc_setting st, ${db}.oc_product pr `;
+                            query += `INNER JOIN ${db}.oc_product_description pd ON pd.product_id=pr.product_id `;
+                            query += `INNER JOIN ${db}.oc_product_to_customer_group pc ON pc.product_id=pr.product_id `;
+                            query += `INNER JOIN ${db}.oc_product_to_customer_group_prices gp ON gp.product_id=pr.product_id `;
+                            query += `LEFT JOIN ${db}.oc_customer cs ON cs.customer_group_id=pc.customer_group_id `;
+                            query += `WHERE pr.status=1 AND st.key="config_url" AND cs.customer_group_id=${group} `;
+                            query += `GROUP BY pr.product_id`;
+                        }
+                        connection.query(query,
                             function (error, results, fields) {
                                 if (error) {
                                     throw error;
@@ -3616,6 +3636,9 @@ server.route({
     },
     config: {
         validate: {
+            query: Joi.object().keys({
+                group: Joi.number().integer()
+            }),
             params: {
                 c_id: Joi.number().integer().required()
             }
