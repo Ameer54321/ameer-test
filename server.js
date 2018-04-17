@@ -1003,7 +1003,9 @@ server.route({
 
                                     for (var i=0; i<results.length; i++) {
                                         var cart = parser.parse(results[i].cart);
-                                        total += cart.cart_total_price;
+                                        if (typeof cart.cart_total_price === "number") {
+                                            total += cart.cart_total_price;
+                                        }
                                     }
                                     var response = {
                                         status: 200,
