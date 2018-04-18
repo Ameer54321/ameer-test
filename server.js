@@ -1389,15 +1389,19 @@ server.route({
 
                         // get order details
                         var query = '';
-                        query += 'SELECT od.order_id,od.order_status_id,od.customer_id,';
-                        query += 'cs.customer_group_id,cg.name AS contract_pricing,cs.firstname AS customer,cs.email,cs.telephone,CONCAT(ca.address_1," ",ca.address_2,", ",ca.city," ",ca.postcode) AS address,';
-                        query += 'CONCAT(od.shipping_firstname," ",od.shipping_lastname) AS shipping_contact,';
-                        query += 'CONCAT(od.shipping_address_1," ",od.shipping_address_2,", ",od.shipping_city," ",od.shipping_postcode) AS shipping_address,od.total,od.date_added,ot.code,ot.value ';
-                        query += 'FROM '+db+'.oc_order_total ot, '+db+'.oc_order od ';
-                        query += 'LEFT JOIN '+db+'.oc_customer cs ON cs.customer_id=od.customer_id ';
-                        query += 'LEFT JOIN '+db+'.oc_address ca ON ca.address_id=cs.address_id ';
-                        query += 'LEFT JOIN '+db+'.oc_customer_group_description cg ON cg.customer_group_id=cs.customer_group_id ';
-                        query += 'WHERE od.order_id='+order_id+' AND ot.order_id='+order_id;
+                        query += `SELECT od.order_id,od.order_status_id,od.customer_id,`;
+                        query += `cs.customer_group_id,cg.name AS contract_pricing,cs.firstname AS customer,cs.email,cs.telephone,CONCAT(ca.address_1," ",ca.address_2,", ",ca.city," ",ca.postcode) AS address,`;
+                        query += `CONCAT(od.shipping_firstname," ",od.shipping_lastname) AS shipping_contact,`;
+                        query += `CONCAT(od.shipping_address_1," ",od.shipping_address_2,", ",od.shipping_city," ",od.shipping_postcode) AS shipping_address,od.total,od.date_added,ot.code,ot.value,`;
+                        query += `CONCAT(cc.first_name,' ',cc.last_name) AS contact_name `;
+                        query += `FROM ${db}.oc_order_total ot, ${db}.oc_order od `;
+                        query += `LEFT JOIN ${db}.oc_customer cs ON cs.customer_id=od.customer_id `;
+                        query += `LEFT JOIN ${db}.oc_replogic_order_quote oq ON oq.order_id=od.order_id `;
+                        query += `LEFT JOIN ${db}.oc_customer_contact cc ON cc.customer_con_id=oq.customer_contact_id `;
+                        query += `LEFT JOIN ${db}.oc_address ca ON ca.address_id=cs.address_id `;
+                        query += `LEFT JOIN ${db}.oc_customer_group_description cg ON cg.customer_group_id=cs.customer_group_id `;
+                        query += `WHERE od.order_id=${order_id} AND ot.order_id=${order_id} `;
+                        query += `GROUP BY od.order_id`;
                         connection.query(query,
                             function (error, results, fields) {
                                 if (error) {
@@ -1431,6 +1435,7 @@ server.route({
                                         }
                                         orderDetails.total_excl_vat = (orderDetails.vat !== undefined) ? orderDetails.total - orderDetails.vat : orderDetails.total;
                                         orderDetails.total = results[0].total;
+                                        orderDetails.contact_name = results[0].contact_name;
                                         orders[0] = orderDetails;
                                     }
 
@@ -3665,8 +3670,9 @@ server.route({
     handler: function (request, reply) {
         const c_id = request.params.c_id;
         const category_id = request.params.category_id;
+        const group = request.query.group;
 
-        connection.query('SELECT companydb FROM super.companies WHERE company_id = "' + c_id + '"',
+        connection.query(`SELECT companydb FROM super.companies WHERE company_id=${c_id}`,
             function (error, results, fields) {
                 if (error){
                     throw error;
@@ -3675,9 +3681,32 @@ server.route({
                     if (results.length > 0) {
 
                         var db = results[0].companydb;
+                        var query = ``;
+
+                        // get all active products
+                        if (group == null) {
+                            query += `SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,pr.price,IF(pr.image="","",CONCAT(st.value,"image/",pr.image)) AS product_image_src,pr.tax_class_id AS vat_status_id `;
+                            query += `FROM ${db}.oc_setting st, ${db}.oc_product pr `;
+                            query += `INNER JOIN ${db}.oc_product_description pd ON pd.product_id=pr.product_id `;
+                            query += `INNER JOIN ${db}.oc_product_to_customer_group pc ON pc.product_id=pr.product_id `;
+                            query += `INNER JOIN ${db}.oc_customer cs ON cs.customer_group_id=pc.customer_group_id `;
+                            query += `INNER JOIN ${db}.oc_product_to_category ct ON ct.product_id=pr.product_id `;
+                            query += `WHERE ct.category_id=${category_id} AND pr.status=1 AND st.key="config_url" `;
+                            query += `GROUP BY pr.product_id`;
+                        } else {
+                            query += `SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,gp.price,IF(pr.image="","",CONCAT(st.value,"image/",pr.image)) AS product_image_src,pr.tax_class_id AS vat_status_id `;
+                            query += `FROM ${db}.oc_setting st, ${db}.oc_product pr `;
+                            query += `INNER JOIN ${db}.oc_product_description pd ON pd.product_id=pr.product_id `;
+                            query += `INNER JOIN ${db}.oc_product_to_customer_group pc ON pc.product_id=pr.product_id `;
+                            query += `INNER JOIN ${db}.oc_product_to_customer_group_prices gp ON gp.product_id=pr.product_id `;
+                            query += `INNER JOIN ${db}.oc_customer cs ON cs.customer_group_id=pc.customer_group_id `;
+                            query += `INNER JOIN ${db}.oc_product_to_category ct ON ct.product_id=pr.product_id `;
+                            query += `WHERE ct.category_id=${category_id} AND pr.status=1 AND st.key="config_url" AND cs.customer_group_id=${group} `;
+                            query += `GROUP BY pr.product_id`;
+                        }
 
                         // get active products by specified category
-                        connection.query('SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,pr.price,IF(pr.image="","",CONCAT(st.value,"image/",pr.image)) AS product_image_src,pr.tax_class_id AS vat_status_id FROM '+db+'.oc_setting st, '+db+'.oc_product pr INNER JOIN '+db+'.oc_product_description pd ON pd.product_id=pr.product_id INNER JOIN '+db+'.oc_product_to_customer_group pc ON pc.product_id=pr.product_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_group_id=pc.customer_group_id INNER JOIN '+db+'.oc_product_to_category ct ON ct.product_id=pr.product_id WHERE ct.category_id='+category_id+' AND pr.status=1 AND st.key="config_url" GROUP BY pr.product_id',
+                        connection.query(query,
                             function (error, results, fields) {
                                 if (error) throw error;
 
@@ -3700,6 +3729,9 @@ server.route({
     },
     config: {
         validate: {
+            query: Joi.object().keys({
+                group: Joi.number().integer()
+            }),
             params: {
                 c_id: Joi.number().integer().required(),
                 category_id: Joi.number().integer().required()
