@@ -129,9 +129,10 @@ server.route({
                         var db = results[0].companydb;
                         var query = ``;
 
-                        query += `SELECT customer_id,firstname as name,email,telephone,customer_group_id `;
-                        query += `FROM ${db}.oc_customer `;
-                        query += `WHERE salesrep_id=${r_id}`;
+                        query += `SELECT cs.customer_id,cs.firstname as name,cs.email,cs.telephone,cs.customer_group_id,gd.name AS contract_pricing `;
+                        query += `FROM ${db}.oc_customer cs `;
+                        query += `LEFT JOIN ${db}.oc_customer_group_description gd ON gd.customer_group_id=cs.customer_group_id `;
+                        query += `WHERE cs.salesrep_id=${r_id}`;
                         connection.query(query,
                             function (error, results, fields) {
                                 if (error) throw error;
