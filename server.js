@@ -3618,7 +3618,7 @@ server.route({
                             query += `FROM ${db}.oc_setting st, ${db}.oc_product pr `;
                             query += `INNER JOIN ${db}.oc_product_description pd ON pd.product_id=pr.product_id `;
                             query += `INNER JOIN ${db}.oc_product_to_customer_group pc ON pc.product_id=pr.product_id `;
-                            query += `INNER JOIN ${db}.oc_product_to_customer_group_prices gp ON gp.product_id=pr.product_id AND gp.customer_group_id=${group} `;
+                            query += `LEFT JOIN ${db}.oc_product_to_customer_group_prices gp ON gp.product_id=pr.product_id AND gp.customer_group_id=${group} `;
                             query += `LEFT JOIN ${db}.oc_customer cs ON cs.customer_group_id=pc.customer_group_id `;
                             query += `WHERE pr.status=1 AND st.key="config_url" `;
                             query += `GROUP BY pr.product_id`;
