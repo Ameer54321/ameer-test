@@ -2630,24 +2630,15 @@ server.route({
                                                 } else {
 
                                                     connection.query("SELECT rm.email AS manager_email FROM "+db+".oc_salesrep sr INNER JOIN "+db+".oc_team rt ON rt.team_id=sr.sales_team_id INNER JOIN "+db+".oc_user rm ON rm.user_id=rt.sales_manager WHERE sr.salesrep_id="+repId,
-                                                        function (error, results, fields) {
-                                                            if (error) {
-                                                                throw error;
-                                                            } else {
-
-                                                                if (results.length > 0) {
-                                                                    var support_desk = {contact: "support@cloudlogic.co.za"};
-                                                                    var manager = {email: results[0].manager_email};
-                                                                    comms.sendResetPassword(email, newPassword, support_desk, manager, reply);
-                                                                } else {
-                                                                    var response = {
-                                                                        status: 400,
-                                                                        message: 'An unexpected error has occurred!'
-                                                                    };
-                                                                    reply(response);
-                                                                }
-                                                            }
-                                                        });
+                                                    function (error, results, fields) {
+                                                        if (error) {
+                                                            throw error;
+                                                        } else {
+                                                            var support_desk = {contact: "support@cloudlogic.co.za"};
+                                                            var manager = (results.length > 0) ? {email: results[0].manager_email} : {email: ""};
+                                                            comms.sendResetPassword(email, newPassword, support_desk, manager, reply);
+                                                        }
+                                                    });
                                                 }
                                             });
 
@@ -3592,6 +3583,7 @@ server.route({
     handler: function (request, reply) {
         const c_id = request.params.c_id;
         const group = request.query.group;
+        const products = request.query.products;
 
         connection.query('SELECT companydb FROM super.companies WHERE company_id = "' + c_id + '"',
             function (error, results, fields) {
@@ -3621,6 +3613,7 @@ server.route({
                             query += `LEFT JOIN ${db}.oc_product_to_customer_group_prices gp ON gp.product_id=pr.product_id AND gp.customer_group_id=${group} `;
                             query += `LEFT JOIN ${db}.oc_customer cs ON cs.customer_group_id=pc.customer_group_id `;
                             query += `WHERE pr.status=1 AND st.key="config_url" `;
+                            query += (typeof products !== "undefined") ? ` AND pr.product_id IN (${products})` : ``;
                             query += `GROUP BY pr.product_id`;
                         }
                         connection.query(query,
@@ -3650,7 +3643,8 @@ server.route({
     config: {
         validate: {
             query: Joi.object().keys({
-                group: Joi.number().integer()
+                group: Joi.number().integer(),
+                products: Joi.string()
             }),
             params: {
                 c_id: Joi.number().integer().required()
