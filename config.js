@@ -1,6 +1,7 @@
 // config.js
 
 const config = {
+	host: 'localhost',
 	port: process.env.PORT || 8000,
 	key: 'BbZJjyoXAdr8BUZuiKKARWimKfrSmQ6fv8kZ7OFfc',
 	database: {
@@ -19,9 +20,13 @@ const config = {
 		}
 	},
 	email: {
+		quote_url: 'http://dashbundle.co.za/emails/', 
 		mandrill: {
 			key: 'njqRVZ3J9J3psHDoFjnTLQ'
 		}
+	},
+	support: {
+		email: 'support@cloudlogic.co.za'
 	}
 }
 

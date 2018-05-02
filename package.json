@@ -10,19 +10,24 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
+    "boom": "^7.1.1",
+    "crypto": "^1.0.1",
     "geonoder": "0.1.0",
+    "glob": "^7.1.2",
+    "good": "^8.1.0",
     "hapi": "^16.6.2",
+    "hapi-auth-jwt": "^4.0.0",
     "hapi-cors-headers": "^1.0.3",
+    "hapi-session": "^0.1.2",
     "html-pdf": "^2.2.0",
     "joi": "^11.3.4",
-    "joi-date-extensions": "^1.1.1",
-    "js-string-escape": "^1.0.1",
     "json-parser": "^1.1.5",
+    "jsonwebtoken": "^8.2.0",
     "mandrill-api": "1.0.45",
     "mysql": "^2.15.0",
     "nodemon": "^1.12.1",
-    "os": "^0.1.1",
     "password-generator": "2.2.0",
+    "path": "^0.12.7",
     "request": "^2.83.0"
   }
 }
