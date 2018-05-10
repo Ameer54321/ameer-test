@@ -3767,7 +3767,7 @@ server.route({
                     if (results.length > 0) {
 
                         var db = results[0].companydb;
-                        connection.query('SELECT ct.category_id,cd.name,ct.parent_id FROM '+db+'.oc_category ct INNER JOIN '+db+'.oc_category_description cd ON cd.category_id=ct.category_id INNER JOIN '+db+'.oc_category_to_customer_group cc ON cc.category_id=ct.category_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_group_id=cc.customer_group_id GROUP BY ct.category_id',
+                        connection.query('SELECT ct.category_id,cd.name,ct.parent_id FROM '+db+'.oc_category ct INNER JOIN '+db+'.oc_category_description cd ON cd.category_id=ct.category_id INNER JOIN '+db+'.oc_category_to_customer_group cc ON cc.category_id=ct.category_id GROUP BY ct.category_id',
                             function (error, results, fields) {
                                 if (error) throw error;
 
