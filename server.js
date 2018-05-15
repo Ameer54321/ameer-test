@@ -1621,7 +1621,7 @@ server.route({
         const telephone = request.payload.telephone;
         const fax = (request.payload.fax) ? request.payload.fax : "";
         const email = request.payload.email;
-        const customer_group_id = request.payload.contract_pricing;
+        const customer_group_id = (request.payload.contract_pricing) ? request.payload.contract_pricing : 1;
 
         // hard-coded fields/values
         const store_id = 0;
@@ -1742,7 +1742,7 @@ server.route({
                 postcode: Joi.string().required(),
                 country_id: Joi.number().integer().required(),
                 region_id: Joi.number().integer().required(),
-                contract_pricing: Joi.number().integer().required()
+                contract_pricing: Joi.number().integer().allow(null).optional()
             }
         }
     }
