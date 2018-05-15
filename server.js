@@ -3600,7 +3600,7 @@ server.route({
 
                         // get all active products
                         if (group == null) {
-                            query += `SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,pr.price,IF(pr.image="","",REPLACE(CONCAT(rs.store_url,"image/cache/",pr.image), ".jpg", "-${imgSize}.jpg")) AS product_image_src,pr.tax_class_id AS vat_status_id `;
+                            query += `SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,pr.price,IF(pr.image="","",CONCAT(rs.store_url,"image/",pr.image)) AS product_image_src,pr.tax_class_id AS vat_status_id `;
                             query += `FROM ${db}.oc_product pr `;
                             query += `INNER JOIN ${db}.oc_product_description pd ON pd.product_id=pr.product_id `;
                             query += `INNER JOIN ${db}.oc_product_to_customer_group pc ON pc.product_id=pr.product_id `;
@@ -3609,7 +3609,7 @@ server.route({
                             query += `WHERE pr.status=1 `;
                             query += `GROUP BY pr.product_id`;
                         } else {
-                            query += `SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,IF(gp.price>=0,gp.price,pr.price) AS price,IF(pr.image="","",REPLACE(CONCAT(rs.store_url,"image/cache/",pr.image), ".jpg", "-${imgSize}.jpg")) AS product_image_src,pr.tax_class_id AS vat_status_id `;
+                            query += `SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,IF(gp.price>=0,gp.price,pr.price) AS price,IF(pr.image="","",CONCAT(rs.store_url,"image/",pr.image)) AS product_image_src,pr.tax_class_id AS vat_status_id `;
                             query += `FROM ${db}.oc_product pr `;
                             query += `INNER JOIN ${db}.oc_product_description pd ON pd.product_id=pr.product_id `;
                             query += `INNER JOIN ${db}.oc_product_to_customer_group pc ON pc.product_id=pr.product_id `;
@@ -3688,7 +3688,7 @@ server.route({
 
                         // get all active products
                         if (group == null) {
-                            query += `SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,pr.price,IF(pr.image="","",REPLACE(CONCAT(rs.store_url,"image/cache/",pr.image), ".jpg", "-${imgSize}.jpg")) AS product_image_src,pr.tax_class_id AS vat_status_id `;
+                            query += `SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,pr.price,IF(pr.image="","",CONCAT(rs.store_url,"image/",pr.image)) AS product_image_src,pr.tax_class_id AS vat_status_id `;
                             query += `FROM ${db}.oc_setting st, ${db}.oc_product pr `;
                             query += `INNER JOIN ${db}.oc_product_description pd ON pd.product_id=pr.product_id `;
                             query += `INNER JOIN ${db}.oc_product_to_customer_group pc ON pc.product_id=pr.product_id `;
@@ -3698,7 +3698,7 @@ server.route({
                             query += `WHERE ct.category_id=${categoryId} AND pr.status=1 `;
                             query += `GROUP BY pr.product_id`;
                         } else {
-                            query += `SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,IF(gp.price>=0,gp.price,pr.price) AS price,IF(pr.image="","",REPLACE(CONCAT(rs.store_url,"image/cache/",pr.image), ".jpg", "-${imgSize}.jpg")) AS product_image_src,pr.tax_class_id AS vat_status_id `;
+                            query += `SELECT pr.product_id,pr.sku,pr.stock_status_id,pd.name,IF(gp.price>=0,gp.price,pr.price) AS price,IF(pr.image="","",CONCAT(rs.store_url,"image/",pr.image)) AS product_image_src,pr.tax_class_id AS vat_status_id `;
                             query += `FROM ${db}.oc_setting st, ${db}.oc_product pr `;
                             query += `INNER JOIN ${db}.oc_product_description pd ON pd.product_id=pr.product_id `;
                             query += `INNER JOIN ${db}.oc_product_to_customer_group pc ON pc.product_id=pr.product_id `;
