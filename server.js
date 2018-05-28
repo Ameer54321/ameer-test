@@ -462,7 +462,8 @@ server.route({
         const city = request.payload.city;
         const postcode = request.payload.postcode;
         const region_id = request.payload.region_id;
-        const country_id = request.payload.country_id;
+        const country_id = 193;
+        // const country_id = request.payload.country_id;
 
         connection.query('SELECT companydb FROM super.companies WHERE company_id=' + c_id,
             function (error, results, fields) {
