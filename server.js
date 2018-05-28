@@ -626,99 +626,102 @@ server.route({
                         }
                         const cartJson = jsStringEscape(JSON.stringify(cart));
 
-                        // insert order quote information
-                        connection.query('INSERT INTO '+db+'.oc_replogic_order_quote (salesrep_id, customer_id, customer_contact_id, cart, date_added) VALUES ('+r_id+', '+customer_id+', '+contact_id+', "'+cartJson+'", NOW())',
-                            function (error, results, fields) {
-                                if (error) {
-                                    throw error;
-                                } else {
+                        connection.query("SET time_zone='+02:00'", 
+                        function (error, results, fields) {
+                            // insert order quote information
+                            connection.query('INSERT INTO '+db+'.oc_replogic_order_quote (salesrep_id, customer_id, customer_contact_id, cart, date_added) VALUES ('+r_id+', '+customer_id+', '+contact_id+', "'+cartJson+'", NOW())',
+                                function (error, results, fields) {
+                                    if (error) {
+                                        throw error;
+                                    } else {
 
-                                  // get newly inserted quote id
-                                  const quote_id = results.insertId;
+                                      // get newly inserted quote id
+                                      const quote_id = results.insertId;
 
-                                  // get company config settings [address, email, logo, name]
-                                  connection.query('SELECT st.key, st.value FROM '+db+'.oc_setting st WHERE st.key="config_address" OR st.key="config_email" OR st.key="config_image" OR st.key="config_name"',
-                                  function (error, results, fields) {
-                                      if (error) {
-                                          throw error;
-                                      } else {
+                                      // get company config settings [address, email, logo, name]
+                                      connection.query('SELECT st.key, st.value FROM '+db+'.oc_setting st WHERE st.key="config_address" OR st.key="config_email" OR st.key="config_image" OR st.key="config_name"',
+                                      function (error, results, fields) {
+                                          if (error) {
+                                              throw error;
+                                          } else {
 
-                                          // company details
-                                          const company = {};
-                                          for (var i=0; i<results.length; i++) {
-                                              if (results[i].value.length > 0) {
-                                                  var key = results[i].key.replace('config_', '');
-                                                  company[key] = results[i].value;
-                                              }
-                                          }
-
-                                          // build select query
-                                          var query = "";
-                                          query += "SELECT qt.quote_id,qt.cart,DATE_FORMAT(qt.date_added, '%M %d, %Y') AS quote_date,";
-                                          query += "CONCAT(rp.salesrep_name, ' ',rp.salesrep_lastname) AS rep_name,rp.email AS rep_email,";
-                                          query += "cs.firstname AS customer_name,cs.email AS customer_email,CONCAT(cc.first_name, ' ',cc.last_name) AS cust_contact_name,ca.address_1,";
-                                          query += "ca.address_2,ca.city,'South Africa' AS country,ca.postcode,rm.email AS manager_email ";
-                                          query += "FROM "+db+".oc_replogic_order_quote qt ";
-                                          query += "INNER JOIN "+db+".oc_salesrep rp ON rp.salesrep_id=qt.salesrep_id ";
-                                          query += "INNER JOIN "+db+".oc_customer cs ON cs.customer_id=qt.customer_id ";
-                                          query += "INNER JOIN "+db+".oc_customer_contact cc ON cc.customer_con_id=qt.customer_contact_id ";
-                                          query += "INNER JOIN "+db+".oc_address ca ON ca.address_id=cs.address_id ";
-                                          query += "INNER JOIN "+db+".oc_team rt ON rt.team_id=rp.sales_team_id ";
-                                          query += "INNER JOIN "+db+".oc_user rm ON rm.user_id=rt.sales_manager ";
-                                          query += "WHERE qt.quote_id="+quote_id;
-
-                                          // get customer email from database to send order confirmation
-                                          connection.query(query,
-                                              function (error, results, fields) {
-                                                  if (error) {
-                                                      throw error;
-                                                  } else {
-                                                      if (results.length > 0) {
-
-                                                          // customer
-                                                          var customer = {
-                                                              name: results[0].customer_name,
-                                                              email: results[0].customer_email,
-                                                              contact: {
-                                                                  name: results[0].cust_contact_name
-                                                              },
-                                                              address: {
-                                                                  line1: results[0].address_1,
-                                                                  line2: results[0].address_2,
-                                                                  city: results[0].city,
-                                                                  country: results[0].country,
-                                                                  postcode: results[0].postcode
-                                                              }
-                                                          };
-                                                          var cart = parser.parse(results[0].cart);
-                                                          var rep = {name: results[0].rep_name, email:results[0].rep_email};
-                                                          var quote = {
-                                                              number: results[0].quote_id,
-                                                              total: (cart.cart_total_incl_vat !== undefined) ? cart.cart_total_incl_vat.toFixed(2) : cart.cart_total_price.toFixed(2),
-                                                              url: 'http://dashbundle.co.za/emails/quote-online.html?id='+quote_id+'&cid='+c_id,
-                                                              date: results[0].quote_date,
-                                                              products: cart.cart_items,
-                                                              total_excl_vat: cart.cart_total_price.toFixed(2),
-                                                              total_incl_vat: (cart.cart_total_incl_vat !== undefined) ? cart.cart_total_incl_vat.toFixed(2) : cart.cart_total_price.toFixed(2),
-                                                              vat: (cart.cart_total_vat !== undefined) ? cart.cart_total_vat.toFixed(2) : 0.00.toFixed(2)
-                                                          };
-                                                          var manager = {email: results[0].manager_email};
-                                                          comms.sendQuoteEmails(customer, manager, company, rep, quote, reply, request);
-                                                      } else {
-                                                          var response = {
-                                                              status: 200,
-                                                              quote_id: quote_id,
-                                                              message: 'Emails could not be sent!'
-                                                          }
-                                                          reply(response);
-                                                      }
+                                              // company details
+                                              const company = {};
+                                              for (var i=0; i<results.length; i++) {
+                                                  if (results[i].value.length > 0) {
+                                                      var key = results[i].key.replace('config_', '');
+                                                      company[key] = results[i].value;
                                                   }
-                                              });
-                                          }
-                                      });
-                                }
-                            });
+                                              }
 
+                                              // build select query
+                                              var query = "";
+                                              query += "SELECT qt.quote_id,qt.cart,DATE_FORMAT(qt.date_added, '%M %d, %Y') AS quote_date,";
+                                              query += "CONCAT(rp.salesrep_name, ' ',rp.salesrep_lastname) AS rep_name,rp.email AS rep_email,";
+                                              query += "cs.firstname AS customer_name,cs.email AS customer_email,CONCAT(cc.first_name, ' ',cc.last_name) AS cust_contact_name,ca.address_1,";
+                                              query += "ca.address_2,ca.city,'South Africa' AS country,ca.postcode,rm.email AS manager_email ";
+                                              query += "FROM "+db+".oc_replogic_order_quote qt ";
+                                              query += "INNER JOIN "+db+".oc_salesrep rp ON rp.salesrep_id=qt.salesrep_id ";
+                                              query += "INNER JOIN "+db+".oc_customer cs ON cs.customer_id=qt.customer_id ";
+                                              query += "INNER JOIN "+db+".oc_customer_contact cc ON cc.customer_con_id=qt.customer_contact_id ";
+                                              query += "INNER JOIN "+db+".oc_address ca ON ca.address_id=cs.address_id ";
+                                              query += "INNER JOIN "+db+".oc_team rt ON rt.team_id=rp.sales_team_id ";
+                                              query += "INNER JOIN "+db+".oc_user rm ON rm.user_id=rt.sales_manager ";
+                                              query += "WHERE qt.quote_id="+quote_id;
+
+                                              // get customer email from database to send order confirmation
+                                              connection.query(query,
+                                                  function (error, results, fields) {
+                                                      if (error) {
+                                                          throw error;
+                                                      } else {
+                                                          if (results.length > 0) {
+
+                                                              // customer
+                                                              var customer = {
+                                                                  name: results[0].customer_name,
+                                                                  email: results[0].customer_email,
+                                                                  contact: {
+                                                                      name: results[0].cust_contact_name
+                                                                  },
+                                                                  address: {
+                                                                      line1: results[0].address_1,
+                                                                      line2: results[0].address_2,
+                                                                      city: results[0].city,
+                                                                      country: results[0].country,
+                                                                      postcode: results[0].postcode
+                                                                  }
+                                                              };
+                                                              var cart = parser.parse(results[0].cart);
+                                                              var rep = {name: results[0].rep_name, email:results[0].rep_email};
+                                                              var quote = {
+                                                                  number: results[0].quote_id,
+                                                                  total: (cart.cart_total_incl_vat !== undefined) ? cart.cart_total_incl_vat.toFixed(2) : cart.cart_total_price.toFixed(2),
+                                                                  url: 'http://dashbundle.co.za/emails/quote-online.html?id='+quote_id+'&cid='+c_id,
+                                                                  date: results[0].quote_date,
+                                                                  products: cart.cart_items,
+                                                                  total_excl_vat: cart.cart_total_price.toFixed(2),
+                                                                  total_incl_vat: (cart.cart_total_incl_vat !== undefined) ? cart.cart_total_incl_vat.toFixed(2) : cart.cart_total_price.toFixed(2),
+                                                                  vat: (cart.cart_total_vat !== undefined) ? cart.cart_total_vat.toFixed(2) : 0.00.toFixed(2)
+                                                              };
+                                                              var manager = {email: results[0].manager_email};
+                                                              comms.sendQuoteEmails(customer, manager, company, rep, quote, reply, request);
+                                                          } else {
+                                                              var response = {
+                                                                  status: 200,
+                                                                  quote_id: quote_id,
+                                                                  message: 'Emails could not be sent!'
+                                                              }
+                                                              reply(response);
+                                                          }
+                                                      }
+                                                  });
+                                              }
+                                          });
+                                    }
+                                });
+
+                        });
                     } else {
                         var response = {
                             'status': 400,
