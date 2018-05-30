@@ -293,7 +293,7 @@ server.route({
 
                         var db = results[0].companydb;
 
-                        connection.query('SELECT od.order_id,od.order_status_id,cs.salesrep_id,od.date_added,FORMAT(od.total,2) AS order_total,cs.firstname AS customer_name,CONCAT(cc.first_name," ",cc.last_name) AS contact_name FROM '+db+'.oc_order od INNER JOIN '+db+'.oc_customer cs ON cs.customer_id=od.customer_id LEFT JOIN '+db+'.oc_replogic_order_quote oq ON oq.order_id=od.order_id LEFT JOIN '+db+'.oc_customer_contact cc ON cc.customer_con_id=oq.customer_contact_id WHERE cs.customer_id='+customer_id+' AND od.isReplogic=1',
+                        connection.query('SELECT od.order_id,od.order_status_id,os.name AS order_status,cs.salesrep_id,od.date_added,FORMAT(od.total,2) AS order_total,cs.firstname AS customer_name,CONCAT(cc.first_name," ",cc.last_name) AS contact_name FROM '+db+'.oc_order od INNER JOIN '+db+'.oc_order_status os ON os.order_status_id=od.order_status_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_id=od.customer_id LEFT JOIN '+db+'.oc_replogic_order_quote oq ON oq.order_id=od.order_id LEFT JOIN '+db+'.oc_customer_contact cc ON cc.customer_con_id=oq.customer_contact_id WHERE cs.customer_id='+customer_id+' AND od.isReplogic=1',
                             function (error, results, fields) {
                                 if (error) throw error;
                                 var response = {
