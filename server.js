@@ -870,7 +870,7 @@ server.route({
                                 query += 'INNER JOIN '+db+'.oc_customer cs ON cs.customer_id=oq.customer_id ';
                                 query += 'INNER JOIN '+db+'.oc_customer_contact cc ON cc.customer_con_id=oq.customer_contact_id ';
                                 query += 'INNER JOIN '+db+'.oc_customer_group_description cg ON cg.customer_group_id=cs.customer_group_id ';
-                                query += 'INNER JOIN '+db+'.oc_address ca ON ca.customer_id=cs.customer_id ';
+                                query += 'LEFT JOIN '+db+'.oc_address ca ON ca.customer_id=cs.customer_id ';
                                 query += 'INNER JOIN '+db+'.oc_rep_settings rs ON rs.company_id='+c_id+' ';
                                 query += 'WHERE oq.quote_id='+quote_id;
                                 connection.query(query,
