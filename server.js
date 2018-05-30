@@ -1277,7 +1277,7 @@ server.route({
 
                         var db = results[0].companydb;
 
-                        connection.query('SELECT od.order_id,od.order_status_id,cs.salesrep_id,od.date_added,FORMAT(od.total,2) AS order_total,cs.firstname AS customer_name,CONCAT(cc.first_name," ",cc.last_name) AS contact_name FROM '+db+'.oc_order od INNER JOIN '+db+'.oc_customer cs ON cs.customer_id=od.customer_id LEFT JOIN '+db+'.oc_replogic_order_quote oq ON oq.order_id=od.order_id LEFT JOIN '+db+'.oc_customer_contact cc ON cc.customer_con_id=oq.customer_contact_id WHERE cs.salesrep_id='+r_id+' AND od.isReplogic=1',
+                        connection.query('SELECT od.order_id,od.order_status_id,os.name AS order_status,cs.salesrep_id,od.date_added,FORMAT(od.total,2) AS order_total,cs.firstname AS customer_name,CONCAT(cc.first_name," ",cc.last_name) AS contact_name FROM '+db+'.oc_order od INNER JOIN '+db+'.oc_order_status os ON os.order_status_id=od.order_status_id INNER JOIN '+db+'.oc_customer cs ON cs.customer_id=od.customer_id LEFT JOIN '+db+'.oc_replogic_order_quote oq ON oq.order_id=od.order_id LEFT JOIN '+db+'.oc_customer_contact cc ON cc.customer_con_id=oq.customer_contact_id WHERE cs.salesrep_id='+r_id+' AND od.isReplogic=1',
                             function (error, results, fields) {
                                 if (error) throw error;
 
@@ -1394,13 +1394,14 @@ server.route({
 
                         // get order details
                         var query = '';
-                        query += `SELECT od.order_id,od.order_status_id,od.customer_id,`;
+                        query += `SELECT od.order_id,od.order_status_id,os.name AS order_status,od.customer_id,`;
                         query += `cs.customer_group_id,cg.name AS contract_pricing,cs.firstname AS customer,cs.email,cs.telephone,CONCAT(ca.address_1," ",ca.address_2,", ",ca.city," ",ca.postcode) AS address,`;
                         query += `CONCAT(od.shipping_firstname," ",od.shipping_lastname) AS shipping_contact,`;
                         query += `CONCAT(od.shipping_address_1," ",od.shipping_address_2,", ",od.shipping_city," ",od.shipping_postcode) AS shipping_address,od.total,od.date_added,ot.code,ot.value,`;
                         query += `CONCAT(cc.first_name,' ',cc.last_name) AS contact_name `;
                         query += `FROM ${db}.oc_order_total ot, ${db}.oc_order od `;
                         query += `LEFT JOIN ${db}.oc_customer cs ON cs.customer_id=od.customer_id `;
+                        query += `LEFT JOIN ${db}.oc_order_status os ON os.order_status_id=od.order_status_id `;
                         query += `LEFT JOIN ${db}.oc_replogic_order_quote oq ON oq.order_id=od.order_id `;
                         query += `LEFT JOIN ${db}.oc_customer_contact cc ON cc.customer_con_id=oq.customer_contact_id `;
                         query += `LEFT JOIN ${db}.oc_address ca ON ca.address_id=cs.address_id `;
@@ -1419,6 +1420,7 @@ server.route({
                                         var orderDetails = {};
                                         orderDetails.order_id = results[0].order_id;
                                         orderDetails.order_status_id = results[0].order_status_id;
+                                        orderDetails.order_status = results[0].order_status;
                                         orderDetails.customer_id = results[0].customer_id;
                                         orderDetails.customer = results[0].customer;
                                         orderDetails.customer_group_id = results[0].customer_group_id;
