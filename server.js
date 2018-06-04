@@ -1199,12 +1199,13 @@ server.route({
         }
     }
 });
+
+
 /*
 *
 * route to retrieve all proccessed orders for the month
 *
 * */
-
 server.route({
     method: 'GET',
     path: '/api/v1/orders/{r_id}/{c_id}/total/processed',
@@ -1222,6 +1223,62 @@ server.route({
 
                         var db = results[0].companydb;
                         connection.query('SELECT FORMAT(COALESCE(SUM(od.total), 0), 2) AS total FROM '+db+'.oc_order od INNER JOIN '+db+'.oc_customer cs on cs.customer_id = od.customer_id WHERE cs.salesrep_id = '+r_id+' AND DATE_FORMAT(od.date_added,"%Y-%m") = DATE_FORMAT(NOW(),"%Y-%m") AND od.order_status_id=15 AND od.isReplogic=1',
+                            function (error, results, fields) {
+                                if (error) throw error;
+                                var total = results[0].total.replace(",","");
+                                results[0].total = parser.parse(total).toFixed(2);
+                                reply(results);
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
+                }
+            });
+
+    },
+    config: {
+        validate: {
+            params: {
+                r_id: Joi.number().integer(),
+                c_id: Joi.number().integer()
+            }
+        }
+    }
+});
+
+
+/*
+*
+* route to retrieve all confirmed orders for the month
+*
+* */
+server.route({
+    method: 'GET',
+    path: '/api/v1/orders/{r_id}/{c_id}/total/confirmed',
+    handler: function (request, reply) {
+        const r_id = request.params.r_id;
+        const c_id = request.params.c_id;
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = "' + c_id + '"',
+            function (error, results, fields) {
+                if (error){
+                    throw error;
+                } else {
+
+                    if (results.length > 0) {
+
+                        var db    = results[0].companydb;
+                        var query = ``;
+                        query    += `SELECT FORMAT(COALESCE(SUM(od.total), 0), 2) AS total `;
+                        query    += `FROM ${db}.oc_order od `;
+                        query    += `INNER JOIN ${db}.oc_customer cs ON cs.customer_id=od.customer_id `;
+                        query    += `WHERE cs.salesrep_id=${r_id} AND DATE_FORMAT(od.date_added,"%Y-%m")=DATE_FORMAT(NOW(),"%Y-%m") AND od.order_status_id=5 AND od.isReplogic=1`;
+                        connection.query(query,
                             function (error, results, fields) {
                                 if (error) throw error;
                                 var total = results[0].total.replace(",","");
@@ -1330,6 +1387,68 @@ server.route({
                         var db = results[0].companydb;
 
                         connection.query('SELECT COUNT(od.order_id) AS qty FROM '+db+'.oc_order od INNER JOIN '+db+'.oc_customer cs ON cs.customer_id = od.customer_id WHERE cs.salesrep_id = '+r_id+' AND od.isReplogic=1 AND DATE_FORMAT(od.date_added,"%Y-%m") = DATE_FORMAT(NOW(),"%Y-%m") AND od.order_status_id = 15',
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+                                    var response = {
+                                        'status': 200,
+                                        'count': results[0].qty
+                                    };
+                                    reply(response);
+                                }
+                            });
+
+                    } else {
+                        var response = {
+                            'status': 400,
+                            'error': 'Invalid company ID provided'
+                        };
+                        reply(response);
+                    }
+                }
+
+            });
+
+    },
+    config: {
+        validate: {
+            params: {
+                r_id: Joi.number().integer(),
+                c_id: Joi.number().integer()
+            }
+        }
+    }
+});
+
+
+/**
+ *
+ * Route to count all confirmed orders
+ *
+ */
+server.route({
+    method: 'GET',
+    path: '/api/v1/orders/{r_id}/{c_id}/count/confirmed',
+    handler: function (request, reply) {
+        const r_id = request.params.r_id;
+        const c_id = request.params.c_id;
+
+        connection.query('SELECT companydb FROM super.companies WHERE company_id = "' + c_id + '"',
+            function (error, results, fields) {
+                if (error){
+                    throw error;
+                } else {
+
+                    if (results.length > 0) {
+
+                        var db    = results[0].companydb;
+                        var query = ``;
+                        query    += `SELECT COUNT(od.order_id) AS qty `;
+                        query    += `FROM ${db}.oc_order od `;
+                        query    += `INNER JOIN ${db}.oc_customer cs ON cs.customer_id=od.customer_id `;
+                        query    += `WHERE cs.salesrep_id=${r_id} AND od.isReplogic=1 AND DATE_FORMAT(od.date_added,"%Y-%m")=DATE_FORMAT(NOW(),"%Y-%m") AND od.order_status_id=5`;
+                        connection.query(query,
                             function (error, results, fields) {
                                 if (error) {
                                     throw error;
