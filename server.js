@@ -2868,7 +2868,7 @@ server.route({
             payload: {
                 c_id: Joi.number().integer().required(),
                 r_id: Joi.number().integer().required(),
-                password: Joi.string().required().min(12),
+                password: Joi.string().required().min(8),
                 email: Joi.string().email().required()
             }
         }
