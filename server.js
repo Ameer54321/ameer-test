@@ -349,7 +349,7 @@ server.route({
 
                         var db = results[0].companydb;
 
-                        connection.query('SELECT oq.quote_id,oq.status,oq.date_added,oq.cart,cs.firstname AS customer_name,CONCAT(cc.first_name, " ", cc.last_name) AS contact_name FROM '+db+'.oc_replogic_order_quote oq INNER JOIN '+db+'.oc_customer cs ON cs.customer_id=oq.customer_id INNER JOIN '+db+'.oc_customer_contact cc ON cc.customer_con_id=oq.customer_contact_id WHERE oq.status IN (0,2) AND cs.customer_id='+customer_id,
+                        connection.query('SELECT oq.quote_id,oq.status,oq.date_added,oq.cart,cs.firstname AS customer_name,CONCAT(cc.first_name, " ", cc.last_name) AS contact_name FROM '+db+'.oc_replogic_order_quote oq INNER JOIN '+db+'.oc_customer cs ON cs.customer_id=oq.customer_id INNER JOIN '+db+'.oc_customer_contact cc ON cc.customer_con_id=oq.customer_contact_id WHERE oq.status IN (1,3) AND cs.customer_id='+customer_id,
                             function (error, results, fields) {
                                 if (error) {
                                     throw error;
@@ -786,7 +786,7 @@ server.route({
                         }
 
                         // query database
-                        connection.query('SELECT oq.quote_id,oq.status,oq.cart,oq.date_added,cs.firstname AS customer_name,CONCAT(cc.first_name, " ", cc.last_name) AS contact_name FROM '+db+'.oc_replogic_order_quote oq INNER JOIN '+db+'.oc_customer cs ON cs.customer_id=oq.customer_id INNER JOIN '+db+'.oc_customer_contact cc ON cc.customer_con_id=oq.customer_contact_id WHERE oq.status IN (0,2) AND oq.salesrep_id='+r_id+' '+query,
+                        connection.query('SELECT oq.quote_id,oq.status,oq.cart,oq.date_added,cs.firstname AS customer_name,CONCAT(cc.first_name, " ", cc.last_name) AS contact_name FROM '+db+'.oc_replogic_order_quote oq INNER JOIN '+db+'.oc_customer cs ON cs.customer_id=oq.customer_id INNER JOIN '+db+'.oc_customer_contact cc ON cc.customer_con_id=oq.customer_contact_id WHERE oq.status IN (1,3) AND oq.salesrep_id='+r_id+' '+query,
                             function (error, results, fields) {
                                 if (error) {
                                     throw error;
@@ -939,7 +939,7 @@ server.route({
                         var db = results[0].companydb;
 
                         // quotes awaiting approval
-                        connection.query('SELECT COUNT(oq.quote_id) AS qty FROM '+db+'.oc_replogic_order_quote oq WHERE oq.status=0 AND oq.salesrep_id='+r_id+' AND DATE_FORMAT(oq.date_added,"%Y-%m") = DATE_FORMAT(NOW(),"%Y-%m")',
+                        connection.query('SELECT COUNT(oq.quote_id) AS qty FROM '+db+'.oc_replogic_order_quote oq WHERE oq.status=1 AND oq.salesrep_id='+r_id+' AND DATE_FORMAT(oq.date_added,"%Y-%m") = DATE_FORMAT(NOW(),"%Y-%m")',
                             function (error, results, fields) {
                                 if (error) {
                                     throw error;
@@ -998,7 +998,7 @@ server.route({
                         var db = results[0].companydb;
 
                         // quotes awaiting approval
-                        connection.query('SELECT cart FROM '+db+'.oc_replogic_order_quote oq WHERE oq.status=0 AND oq.salesrep_id='+r_id+' AND DATE_FORMAT(oq.date_added,"%Y-%m") = DATE_FORMAT(NOW(),"%Y-%m")',
+                        connection.query('SELECT cart FROM '+db+'.oc_replogic_order_quote oq WHERE oq.status=1 AND oq.salesrep_id='+r_id+' AND DATE_FORMAT(oq.date_added,"%Y-%m") = DATE_FORMAT(NOW(),"%Y-%m")',
                             function (error, results, fields) {
                                 if (error) {
                                     throw error;
