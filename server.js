@@ -2655,48 +2655,53 @@ server.route({
             if(error){
                 throw error;
             } else {
-                var orgPassword = Bcrypt.compareSync(password, results[0].password);
-                if (orgPassword === true){
+                if (results.length > 0) {
+                    var orgPassword = Bcrypt.compareSync(password, results[0].password);
+                    if (orgPassword === true){
 
-                    const db = results[0].companydb;
-                    const companyName = results[0].companyname;
-                    const companyId = results[0].companyId;
-                    const repId = results[0].realId;
-                    const userId = results[0].uid;
+                        const db = results[0].companydb;
+                        const companyName = results[0].companyname;
+                        const companyId = results[0].companyId;
+                        const repId = results[0].realId;
+                        const userId = results[0].uid;
 
-                    /**
-                     * @include tax (or VAT) details on login */
-                    connection.query('SELECT st.key,st.value,tr.name,tr.rate,sr.salesrep_name,sr.prompt_change_password FROM '+db+'.oc_setting st, '+db+'.oc_tax_rate tr, '+db+'.oc_salesrep sr WHERE st.key="tax_status" AND sr.salesrep_id='+repId,
-                        function (error, results, fields) {
-
-                            if (error) {
-                                throw error;
-                            } else {
- 
-                                var response = {
-                                    'status': 200,
-                                    'message': 'login succesful',
-                                    'c_id': companyId,
-                                    'uid' : userId,
-                                    'r_id': repId,
-                                    'company_name': companyName,
-                                    'rep_name': results[0].salesrep_name,
-                                    'tax_status': results[0].value,
-                                    'tax_name': results[0].name,
-                                    'tax_rate': results[0].rate.toFixed(2),
-                                    'prompt_change_password': results[0].prompt_change_password
-                                };
-                                reply(response);
-                            }
-                        });
-                }else{
+                        /**
+                         * @include tax (or VAT) details on login */
+                        connection.query('SELECT st.key,st.value,tr.name,tr.rate,sr.salesrep_name,sr.prompt_change_password FROM '+db+'.oc_setting st, '+db+'.oc_tax_rate tr, '+db+'.oc_salesrep sr WHERE st.key="tax_status" AND sr.salesrep_id='+repId,
+                            function (error, results, fields) {
+                                if (error) {
+                                    throw error;
+                                } else {
+                                    var response = {
+                                        'status': 200,
+                                        'message': 'login succesful',
+                                        'c_id': companyId,
+                                        'uid' : userId,
+                                        'r_id': repId,
+                                        'company_name': companyName,
+                                        'rep_name': results[0].salesrep_name,
+                                        'tax_status': results[0].value,
+                                        'tax_name': results[0].name,
+                                        'tax_rate': results[0].rate.toFixed(2),
+                                        'prompt_change_password': results[0].prompt_change_password
+                                    };
+                                    reply(response);
+                                }
+                            });
+                    } else {
+                        var response = {
+                            'response': 400,
+                            'message': 'Incorrect username and/or password'
+                        }
+                        reply(response);
+                    }
+                } else {
                     var response = {
                         'response': 400,
                         'message': 'Incorrect username and/or password'
                     }
                     reply(response);
                 }
-
             }
         });
     }
