@@ -22,6 +22,9 @@ const config = {
 		mandrill: {
 			key: 'njqRVZ3J9J3psHDoFjnTLQ'
 		}
+	},
+	quotes: {
+		url: 'https://uat.saleslogic.io/emails/rep/templates/quote-online.html'
 	}
 }
 

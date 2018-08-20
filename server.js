@@ -7,24 +7,23 @@ const MySQL = require('mysql');
 const Joi = require('joi');
 const Bcrypt = require('bcrypt-nodejs');
 const generatePassword = require('password-generator');
-const emailClient = require('./email_client');
 const comms = require('./comm-functions');
 const geonoder = require('geonoder');
 const parser = require('json-parser');
-const jsStringEscape = require('js-string-escape')
-// const generatePdf = require('./generate-pdf');
+const jsStringEscape = require('js-string-escape');
+const config = require('./config');
 
 // Create a server with a host and port
 const server = new Hapi.Server();
 var corsHeaders = require('hapi-cors-headers');
-var port = process.env.PORT || 8000;
+var port = config.port;
 
 /*change below to false if in production*/
 var istest = false;
 
 // email configuration settings
 const emailSettings = {
-    api_key: 'njqRVZ3J9J3psHDoFjnTLQ'
+    api_key: config.email.mandrill.key
 };
 
 var host ='';
@@ -38,10 +37,10 @@ if(istest == true){
     database = 'super';
 
 }else{
-    host = '139.59.187.168';
-    user = 'root';
-    password = 'R6V08zZhJt';
-    database = 'super';
+    host = config.database.host;
+    user = config.database.user;
+    password = config.database.pass;
+    database = config.database.name;
 }
 const connection = MySQL.createConnection({
     host: host,
@@ -697,7 +696,7 @@ server.route({
                                                               var quote = {
                                                                   number: results[0].quote_id,
                                                                   total: (cart.cart_total_incl_vat !== undefined) ? cart.cart_total_incl_vat.toFixed(2) : cart.cart_total_price.toFixed(2),
-                                                                  url: 'http://dashbundle.co.za/emails/quote-online.html?id='+quote_id+'&cid='+c_id,
+                                                                  url: `${config.quotes.url}?id=${quote_id}&cid=${c_id}`,
                                                                   date: results[0].quote_date,
                                                                   products: cart.cart_items,
                                                                   total_excl_vat: cart.cart_total_price.toFixed(2),
