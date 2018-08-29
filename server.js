@@ -1516,7 +1516,7 @@ server.route({
                         query += `cs.customer_group_id,cg.name AS contract_pricing,cs.firstname AS customer,cs.email,cs.telephone,CONCAT(ca.address_1," ",ca.address_2,", ",ca.city," ",ca.postcode) AS address,`;
                         query += `CONCAT(od.shipping_firstname," ",od.shipping_lastname) AS shipping_contact,`;
                         query += `CONCAT(od.shipping_address_1," ",od.shipping_address_2,", ",od.shipping_city," ",od.shipping_postcode) AS shipping_address,od.total,od.date_added,ot.code,ot.value,`;
-                        query += `CONCAT(cc.first_name,' ',cc.last_name) AS contact_name `;
+                        query += `CONCAT(cc.first_name,' ',cc.last_name) AS contact_name, cc.email AS contact_email `;
                         query += `FROM ${db}.oc_order_total ot, ${db}.oc_order od `;
                         query += `LEFT JOIN ${db}.oc_customer cs ON cs.customer_id=od.customer_id `;
                         query += `LEFT JOIN ${db}.oc_order_status os ON os.order_status_id=od.order_status_id `;
@@ -1535,20 +1535,20 @@ server.route({
                                     const orders = [];
 
                                     if (results.length > 0) {
-                                        var orderDetails = {};
-                                        orderDetails.order_id = results[0].order_id;
-                                        orderDetails.order_status_id = results[0].order_status_id;
-                                        orderDetails.order_status = results[0].order_status;
-                                        orderDetails.customer_id = results[0].customer_id;
-                                        orderDetails.customer = results[0].customer;
+                                        var orderDetails               = {};
+                                        orderDetails.order_id          = results[0].order_id;
+                                        orderDetails.order_status_id   = results[0].order_status_id;
+                                        orderDetails.order_status      = results[0].order_status;
+                                        orderDetails.customer_id       = results[0].customer_id;
+                                        orderDetails.customer          = results[0].customer;
                                         orderDetails.customer_group_id = results[0].customer_group_id;
-                                        orderDetails.contract_pricing = results[0].contract_pricing;
-                                        orderDetails.date_added = results[0].date_added;
-                                        orderDetails.email = results[0].email;
-                                        orderDetails.telephone = results[0].telephone;
-                                        orderDetails.address = results[0].address;
-                                        orderDetails.shipping_contact = results[0].shipping_contact;
-                                        orderDetails.shipping_address = results[0].shipping_address;
+                                        orderDetails.contract_pricing  = results[0].contract_pricing;
+                                        orderDetails.date_added        = results[0].date_added;
+                                        orderDetails.email             = results[0].email;
+                                        orderDetails.telephone         = results[0].telephone;
+                                        orderDetails.address           = results[0].address;
+                                        orderDetails.shipping_contact  = results[0].shipping_contact;
+                                        orderDetails.shipping_address  = results[0].shipping_address;
                                         for (var i=0; i<results.length; i++) {
                                             if (results[i].code !== "shipping") {
                                                 if (results[i].code === "tax") {
@@ -1559,8 +1559,9 @@ server.route({
                                             } else orderDetails.shipping_rate = results[i].value;
                                         }
                                         orderDetails.total_excl_vat = (orderDetails.vat !== undefined) ? orderDetails.total - orderDetails.vat : orderDetails.total;
-                                        orderDetails.total = results[0].total;
-                                        orderDetails.contact_name = results[0].contact_name;
+                                        orderDetails.total          = results[0].total;
+                                        orderDetails.contact_name   = results[0].contact_name;
+                                        orderDetails.contact_email  = results[0].contact_email;
                                         orders[0] = orderDetails;
                                     }
 
