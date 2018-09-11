@@ -24,10 +24,10 @@ module.exports = function() {
         query += type+" JOIN "+table+" ";
     };
     Database.prototype.where = function(condition) {
-        query += "WHERE "+condition+" ";
+        query += (condition.length) ? "WHERE "+condition+" " : "";
     };
-    Database.prototype.order = function(order) {
-        query += "ORDER BY "+order+" ";
+    Database.prototype.order = function(order, sort) {
+        query += (order.length) ? "ORDER BY "+order+" "+sort+" " : "";
     };
     Database.prototype.group = function(group) {
         query += "GROUP BY "+group+" ";
