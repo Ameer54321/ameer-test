@@ -6,7 +6,7 @@ const glob   = require('glob');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt-nodejs');
 
-var port = process.env.PORT || 1337;
+var port = config.port;
 
 var database = new Database();
 var server = new Hapi.Server({debug: {request: ['info', 'error']}});
