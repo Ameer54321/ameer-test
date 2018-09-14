@@ -41,7 +41,7 @@ glob.sync('./routes/*.js', {
         options: {
             database: database,
             cookie: {
-                isSecure: false,
+                isSecure: false
             }
         }
     });
