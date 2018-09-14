@@ -1,7 +1,7 @@
 // config.js
 
 const config = {
-	host: 'localhost',
+	host: 'https://apirep.azurewebsites.net',
 	port: process.env.PORT || 8000,
 	key: 'BbZJjyoXAdr8BUZuiKKARWimKfrSmQ6fv8kZ7OFfc',
 	database: {
