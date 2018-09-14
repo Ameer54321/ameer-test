@@ -1,6 +1,7 @@
 // config.js
 
 const config = {
+	host: 'localhost',
 	port: process.env.PORT || 8000,
 	key: 'BbZJjyoXAdr8BUZuiKKARWimKfrSmQ6fv8kZ7OFfc',
 	database: {
@@ -19,12 +20,26 @@ const config = {
 		}
 	},
 	email: {
+		quote_url: 'http://dashbundle.co.za/emails/', 
 		mandrill: {
 			key: 'njqRVZ3J9J3psHDoFjnTLQ'
 		}
 	},
-	quotes: {
-		url: 'https://uat.saleslogic.io/emails/rep/templates/quote-online.html'
+	support: {
+		email: 'support@cloudlogic.co.za'
+	},
+	statuses: {
+		orders: {
+			pending: 1,
+			processing: 2,
+			confirmed: 5,
+			cancelled: 7
+		},
+		quotes: {
+			pending: 1,
+			converted: 2,
+			denied: 3
+		}
 	}
 }
 
