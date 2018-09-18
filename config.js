@@ -5,9 +5,9 @@ const config = {
 	port: process.env.PORT || 8000,
 	key: 'BbZJjyoXAdr8BUZuiKKARWimKfrSmQ6fv8kZ7OFfc',
 	database: {
-		host : '139.59.187.168',
-		user : 'root',
-		pass : 'R6V08zZhJt',
+		host : 'apptier-mysqldbsvr.mysql.database.azure.com',
+		user : 'cloudlogicdev@apptier-mysqldbsvr',
+		pass : 'RW9jkhtseg#!jh',
 		name : 'super'
 	},
 	auth: {
