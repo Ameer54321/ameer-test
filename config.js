@@ -4,6 +4,8 @@ const config = {
 	host: 'localhost',
 	port: process.env.PORT || 8000,
 	key: 'BbZJjyoXAdr8BUZuiKKARWimKfrSmQ6fv8kZ7OFfc',
+	var conn = mysql.createConnection({
+	host: {apptier-mysqldbsvr.mysql.database.azure.com}, user: {cloudlogicdev@apptier-mysqldbsvr}, password: {RW9jkhtseg#!jh}, database: {super}, Port: {3306}[, ssl:{ca:fs.readFileSync({ca-cert filename})}}]);
 	database: {
 		host : 'apptier-mysqldbsvr.mysql.database.azure.com',
 		user : 'cloudlogicdev@apptier-mysqldbsvr',
