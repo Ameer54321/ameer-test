@@ -3,15 +3,12 @@
 const config = require('../config');
 const crypto = require('crypto');
 const MySQL = require('mysql');
-/*
 const connection = MySQL.createConnection({
     host: config.database.host,
     user: config.database.user,
     password: config.database.pass,
     database: config.database.name
 });
-*/
-const connection = mysql.createConnection('mysql://cloudlogicdev@apptier-mysqldbsvr:W9jkhtseg#!jh@apptier-mysqldbsvr.mysql.database.azure.com/db?debug=true&timezone=0200');
 connection.connect();
 
 /**
