@@ -1,14 +1,14 @@
 // config.js
 
 const config = {
-	host: 'localhost',
+	host: 'https://salesapicleanup.azurewebsites.net',
 	port: process.env.PORT || 8000,
 	key: 'BbZJjyoXAdr8BUZuiKKARWimKfrSmQ6fv8kZ7OFfc',
 	database: {
-		host : 'apptier-mysqldbsvr.mysql.database.azure.com',
-		user : 'cloudlogicdev@apptier-mysqldbsvr',
-		pass : 'RW9jkhtseg#!jh',
-		name : 'super'
+		host : '127.0.0.1',
+		user : 'root',
+		pass : '',
+		name : 'dbtest'
 	},
 	auth: {
 		algorithm: [ 'HS256' ],  // only allow HS256 algorithm 
