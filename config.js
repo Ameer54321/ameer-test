@@ -1,14 +1,14 @@
 // config.js
 
 const config = {
-	host: 'https://salesapicleanup.azurewebsites.net',
-	port: process.env.PORT || 8000,
+	host: 'localhost',
+	port: process.env.PORT || 8080,
 	key: 'BbZJjyoXAdr8BUZuiKKARWimKfrSmQ6fv8kZ7OFfc',
 	database: {
-		host : '127.0.0.1',
+		host : '139.59.187.168',
 		user : 'root',
-		pass : '',
-		name : 'dbtest'
+		pass : 'R6V08zZhJt',
+		name : 'super'
 	},
 	auth: {
 		algorithm: [ 'HS256' ],  // only allow HS256 algorithm 

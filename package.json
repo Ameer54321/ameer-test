@@ -15,7 +15,7 @@
     "geonoder": "0.1.0",
     "glob": "^7.1.2",
     "good": "^8.1.0",
-    "hapi": "^16.6.2",
+    "hapi": "^16.6.3",
     "hapi-auth-jwt": "^4.0.0",
     "hapi-cors-headers": "^1.0.3",
     "hapi-session": "^0.1.2",
@@ -29,5 +29,8 @@
     "password-generator": "2.2.0",
     "path": "^0.12.7",
     "request": "^2.83.0"
+  },
+  "devDependencies": {
+    "ws": "3.3.2"
   }
 }
